@@ -516,15 +516,69 @@ function renderAll(){
   makeJournal()
 }
 
+const BACKUP_VERSION=1;
+const LAST_BACKUP_KEY='spRockCompanionLastBackup';
+
+function formatBackupDate(iso){
+  const d=new Date(iso);
+  return Number.isNaN(d.getTime())?'':d.toLocaleString('pt-BR');
+}
+function updateBackupHint(){
+  const last=localStorage.getItem(LAST_BACKUP_KEY);
+  const btn=document.querySelector('button[onclick="exportData()"]');
+  if(btn&&last)btn.title='Último backup: '+formatBackupDate(last);
+}
 function exportData(){
-  const blob=new Blob([JSON.stringify(data,null,2)],{type:'application/json'});
-  const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='sp-rock-trip-backup.json';a.click();
+  const exportedAt=new Date().toISOString();
+  const payload={app:'sp-rock-trip-companion',version:BACKUP_VERSION,exportedAt,data};
+  const blob=new Blob([JSON.stringify(payload,null,2)],{type:'application/json'});
+  const a=document.createElement('a');
+  const stamp=exportedAt.replace(/:/g,'-').replace(/\.\d{3}Z$/,'Z');
+  a.href=URL.createObjectURL(blob);
+  a.download='sp-rock-trip-backup-'+stamp+'.json';
+  a.click();
+  try{localStorage.setItem(LAST_BACKUP_KEY,exportedAt)}catch(e){}
+  updateBackupHint();
   setTimeout(()=>URL.revokeObjectURL(a.href),1000)
+}
+function validateBackup(imported){
+  if(!imported||typeof imported!=='object'||Array.isArray(imported))throw new Error('Formato inválido');
+  if(imported.app!==undefined&&imported.app!=='sp-rock-trip-companion')throw new Error('Backup de outro aplicativo');
+  if(imported.version!==undefined&&Number(imported.version)>BACKUP_VERSION)throw new Error('Versão de backup mais nova');
+  const candidate=imported.data!==undefined?imported.data:imported;
+  if(!candidate||typeof candidate!=='object'||Array.isArray(candidate))throw new Error('Dados inválidos');
+
+  const arrays=['purchases','expenses'];
+  arrays.forEach(k=>{if(candidate[k]!==undefined&&!Array.isArray(candidate[k]))throw new Error('Campo '+k+' inválido')});
+  const objects=['checks','tickets','journal','summary','hunt','limits'];
+  objects.forEach(k=>{if(candidate[k]!==undefined&&(!candidate[k]||typeof candidate[k]!=='object'||Array.isArray(candidate[k])))throw new Error('Campo '+k+' inválido')});
+
+  return {...blankData(),...candidate,
+    purchases:Array.isArray(candidate.purchases)?candidate.purchases:[],
+    expenses:Array.isArray(candidate.expenses)?candidate.expenses:[]
+  };
 }
 $('importFile').onchange=e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();
-  r.onload=()=>{try{const imported=JSON.parse(r.result);data={...blankData(),...imported};save();location.reload()}catch{alert('Backup inválido.')}};
+  r.onload=()=>{
+    try{
+      const imported=JSON.parse(r.result);
+      const restored=validateBackup(imported);
+      const when=imported.exportedAt?('\nBackup criado em: '+formatBackupDate(imported.exportedAt)):'';
+      if(!confirm('RESTAURAR BACKUP?\n\nOs registros atuais deste aparelho serão substituídos pelos dados do arquivo selecionado.'+when+'\n\nO roteiro, a lista de discos e o orçamento-base do aplicativo não serão alterados.')){
+        e.target.value='';
+        return;
+      }
+      data=restored;
+      save();
+      location.reload();
+    }catch(err){
+      e.target.value='';
+      alert('Backup inválido ou incompatível. Nenhum dado atual foi alterado.');
+    }
+  };
+  r.onerror=()=>{e.target.value='';alert('Não foi possível ler o arquivo de backup.')};
   r.readAsText(f)
 };
 function resetAll(){const dialog=$('resetDialog');if(!dialog.open)dialog.showModal()}
@@ -539,6 +593,7 @@ function confirmReset(){
 }
 
 renderAll();
+updateBackupHint();
 </script>
 
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>

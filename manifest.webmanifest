@@ -1,0 +1,13 @@
+{
+  "name": "São Paulo Rock Trip Companion",
+  "short_name": "SP Rock Trip",
+  "description": "São Paulo Rock Trip Companion 2026",
+  "start_url": "/Sp-trip-rock/",
+  "scope": "/Sp-trip-rock/",
+  "display": "standalone",
+  "background_color": "#080808",
+  "theme_color": "#080808",
+  "icons": [
+    {"src":"icon.svg","sizes":"any","type":"image/svg+xml","purpose":"any maskable"}
+  ]
+}

@@ -272,7 +272,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <section id="cacada" class="section"><h2 class="sectiontitle">🎯 Caçada de Vinil</h2>
 <div class="card huntintro"><b>OPERAÇÃO GARIMPO PAULISTA — WISHLIST DEFINITIVA</b>
-<p style="font-size:12px"><b>10 alvos principais</b>, <b>10 reservas</b> e <b>2 coringas</b>. Todos podem entrar na coleção em <b>LP ou CD</b>; a prioridade geral continua sendo o <b>preto com buraco no meio</b>. <span class="format-priority">LP &gt; CD</span></p>
+<p style="font-size:12px"><b>10 alvos principais</b> e <b>10 reservas</b>. Todos podem entrar na coleção em <b>LP ou CD</b>; a prioridade geral continua sendo o <b>preto com buraco no meio</b>. <span class="format-priority">LP &gt; CD</span></p>
 <p style="font-size:12px">Nos alvos principais, escolha o formato antes de avaliar a oferta: o semáforo muda automaticamente entre as faixas de LP e CD. Os limites por loja continuam como <b>limites operacionais iniciais</b>, não como teto da verba total de discos. Achados excepcionais podem furar a fila — e <b>Maggot Brain</b> continua sendo questão de honra.</p>
 <div class="huntbudget"><div>ERIC DISCOS<br><b id="huntEric">R$ 1.800</b><br><small>saldo da verba do local</small></div><div>NOVA BARÃO<br><b id="huntBarao">R$ 1.180</b><br><small>saldo da verba do local</small></div></div>
 <div class="huntfilters"><button class="btn alt" onclick="setHuntFilter('all')">TODOS</button><button class="btn alt" onclick="setHuntFilter('brit')">BRITÂNICO</button><button class="btn alt" onclick="setHuntFilter('metal')">METAL</button><button class="btn alt" onclick="setHuntFilter('punk')">PUNK</button><button class="btn alt" onclick="setHuntFilter('br')">BRASIL</button><button class="btn alt" onclick="setHuntFilter('hard70')">70s / HARD</button></div></div>
@@ -282,9 +282,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="reservelegend">Cada linha mostra <b>mínimo/ataque • médio • máximo/teto</b>. LP continua sendo a preferência; CD é alternativa válida.</div>
 <div id="reserveGrid" class="reservegrid"></div>
 </div>
-<div class="card" style="margin-top:14px"><b>🃏 2 CORINGAS — SE APARECEREM, OLHE COM CARINHO</b>
-<div id="coringaGrid" class="reservegrid"></div>
-</div></section>
+</section>
 <div class="metal-divider">☠ ϟ ☠ ϟ ☠</div><section id="compras" class="section"><h2 class="sectiontitle">💿 Compras / Haul</h2>
 <div class="card grid2">
 <div class="field"><label>Tipo</label><select id="ptype"><option>Disco</option><option>Merchandise</option><option>Livro</option><option>Outro</option></select></div>
@@ -472,11 +470,6 @@ const RESERVES=[
 {artist:'Steely Dan',album:'Aja',note:'jazz-rock / pop',prices:{LP:{low:150,avg:350,high:450},CD:{low:60,avg:150,high:250}}},
 {artist:'Accept',album:'Balls to the Wall',note:'heavy metal tradicional',prices:{LP:{low:160,avg:200,high:280},CD:{low:70,avg:110,high:160}}},
 {artist:'Sodom',album:'Agent Orange',note:'thrash metal',prices:{LP:{low:450,avg:650,high:900},CD:{low:100,avg:140,high:200}}},
-{artist:'Suede',album:'Suede',note:'britpop / alternativo',prices:{LP:{low:130,avg:190,high:280},CD:{low:70,avg:100,high:150}}},
-{artist:'Bad Religion',album:'Stranger Than Fiction',note:'punk melódico',prices:{LP:{low:250,avg:350,high:450},CD:{low:80,avg:120,high:160}}}
-];
-
-const WILDCARDS=[
 {artist:'Mountain',album:'Climbing!',note:'hard rock / 1970',prices:{LP:{low:180,avg:280,high:400},CD:{low:80,avg:130,high:200}}},
 {artist:'Redbone',album:'Wovoka',note:'rock / funk / 1973',prices:{LP:{low:120,avg:220,high:350},CD:{low:90,avg:130,high:180}}}
 ];
@@ -518,7 +511,7 @@ function renderReserveGroup(list,targetId){
   const box=$(targetId);if(!box)return;
   box.innerHTML=list.map((x,i)=>\`<div class="reserveitem"><div class="rtitle">\${i+1}. \${esc(x.artist)} — <i>\${esc(x.album)}</i></div><div class="rmeta">\${esc(x.note)}</div><div class="rprice"><span>LP</span><b>\${money(x.prices.LP.low)} / \${money(x.prices.LP.avg)} / \${money(x.prices.LP.high)}</b><span>CD</span><b>\${money(x.prices.CD.low)} / \${money(x.prices.CD.avg)} / \${money(x.prices.CD.high)}</b></div></div>\`).join('')
 }
-function renderReserves(){renderReserveGroup(RESERVES,'reserveGrid');renderReserveGroup(WILDCARDS,'coringaGrid')}
+function renderReserves(){renderReserveGroup(RESERVES,'reserveGrid')}
 
 function renderAll(){function renderAll(){
   checks.forEach((b,i)=>{b.checked=!!data.checks[i];b.closest('.item').classList.toggle('done',b.checked)});

@@ -1,4 +1,4 @@
-const CACHE='sp-rock-trip-v4';
+const CACHE='sp-rock-trip-v5';
 const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
 const COVER_ASSETS=[
 "https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200",
@@ -33,6 +33,8 @@ self.addEventListener('activate',e=>e.waitUntil((async()=>{
   const keys=await caches.keys();
   await Promise.all(keys.filter(k=>k!==CACHE&&k.startsWith('sp-rock-trip-')).map(k=>caches.delete(k)));
   await self.clients.claim();
+  const clients=await self.clients.matchAll({type:'window',includeUncontrolled:true});
+  await Promise.allSettled(clients.map(c=>c.navigate(c.url)));
 })()));
 self.addEventListener('fetch',e=>{
   const req=e.request;

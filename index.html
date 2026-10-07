@@ -258,8 +258,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <div class="day poster-vulcano"><div class="dayhead"><b>17/10</b><span>SÁBADO • HORROR + VULCANO</span></div>
 <div class="item"><div class="row"><div class="time">12:00</div><div><h3>Horror Expo 2026</h3><p>Expo Barra Funda • Rua Tagipuru, 1001.</p><div class="transport"><b>🚶 Transporte</b><br>Bê Hotel → Expo Barra Funda • a pé.</div><div class="chips"><span class="chip">🎟 Clube do Ingresso</span></div><div class="ticket"><a class="btn" href="https://www.clubedoingresso.com/" target="_blank">🎟 ABRIR INGRESSO</a><label class="btn alt"><input type="checkbox" class="ticketcheck"> Conferido</label></div></div><input class="check" type="checkbox"></div></div>
-<div class="item"><div class="row"><div class="time">18:00</div><div><h3>Fabrique Club</h3><p>Rua Barra Funda, 1071 • portas 18h.</p></div><input class="check" type="checkbox"></div></div>
-<div class="item"><div class="row"><div class="time">19:00</div><div><h3>Hellbutcher + Vulcano</h3><p>Pentacrostic + Gutted Souls.</p><div class="transport"><b>🚶 Transporte</b><br>Região da Barra Funda • priorizar caminhada ou carro por app curto.</div><div class="chips"><span class="chip">SUPPORT THE UNDERGROUND</span><span class="chip">🎟 Link pendente</span></div></div><input class="check" type="checkbox"></div></div></div>
+<div class="item"><div class="row"><div class="time">18:00</div><div><h3>Fabrique Club • Hellbutcher + Vulcano + Pentacrostic + Gutted Souls</h3><p>Rua Barra Funda, 1071 • portas 18h • shows a partir das 19h.</p><div class="transport"><b>🚶 Transporte</b><br>Região da Barra Funda • priorizar caminhada ou carro por app curto.</div><div class="chips"><span class="chip">SUPPORT THE UNDERGROUND</span><span class="chip">🎟 Clube do Ingresso</span></div><div class="ticket"><a class="btn" href="https://www.clubedoingresso.com/evento/hellbutcher-fabriqueclub" target="_blank">🎟 ABRIR INGRESSO</a><label class="btn alt"><input type="checkbox" class="ticketcheck"> Conferido</label></div></div><input class="check" type="checkbox"></div></div></div>
 
 <div class="day poster-amorphis"><div class="dayhead"><b>18/10</b><span>DOMINGO • CULTURA + AMORPHIS</span></div>
 <div class="item"><div class="row"><div class="time">09:00</div><div><h3>Museu da Língua Portuguesa</h3><p>Estação da Luz.</p><div class="transport"><b>🚆 Trem / Metrô</b><br><strong>Embarque:</strong> Palmeiras–Barra Funda<br><strong>Desembarque:</strong> Luz. Alternativa: L3 até Sé → L1 → Luz.</div></div><input class="check" type="checkbox"></div></div>
@@ -666,5 +665,5 @@ renderAll();
 updateBackupHint();
 </script>
 
-<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js').catch(()=>{}));}</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{}));}</script>
 </body></html>

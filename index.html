@@ -210,6 +210,26 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#080808">
 <link rel="icon" href="icon.svg" type="image/svg+xml">
+
+<style id="wishlist-final-2026">
+/* Ajustes factuais/funcionais da wishlist definitiva — identidade visual preservada */
+.wanted:before{content:'WANTED • ' attr(data-format)}
+.huntcoverwrap{width:100%;aspect-ratio:1/1;margin:8px 0 10px;overflow:hidden;border:2px solid #3b3224;background:#1b1711;box-shadow:inset 0 0 0 2px #cbbd96}
+.huntcover{display:block;width:100%;height:100%;object-fit:cover}
+.huntformat{display:grid;grid-template-columns:auto 1fr;gap:7px;align-items:center;margin:8px 0 2px}
+.huntformat label{font:900 10px Impact,'Arial Black';letter-spacing:1.4px}
+.huntformat select{width:100%;padding:8px;font-size:12px}
+.reservegrid{display:grid;grid-template-columns:repeat(auto-fit,minmax(245px,1fr));gap:8px;margin-top:10px}
+.reserveitem{border:1px solid #665a45;background:#0d0d0c;padding:10px}
+.reserveitem .rtitle{font-weight:900;line-height:1.25}
+.reserveitem .rmeta{font-size:10px;opacity:.72;margin:3px 0 7px;text-transform:uppercase;letter-spacing:.7px}
+.reserveitem .rprice{display:grid;grid-template-columns:34px 1fr;gap:6px;font-size:11px;line-height:1.55}
+.reserveitem .rprice b{color:var(--gold)}
+.reservelegend{font-size:11px;opacity:.78;margin-top:7px}
+.format-priority{display:inline-block;margin-left:4px;padding:2px 6px;border:1px solid #8c8066;font-size:10px;font-weight:900;letter-spacing:1px}
+@media(max-width:600px){.reservegrid{grid-template-columns:1fr}.huntcoverwrap{max-height:none}}
+</style>
+
 </head>
 <body>
 <div class="top"><div class="bar"><div class="fill" id="fill"></div></div><div class="prog" id="prog">0% DA MISSÃO CUMPRIDA</div></div>
@@ -252,27 +272,29 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 </section>
 
 <section id="cacada" class="section"><h2 class="sectiontitle">🎯 Caçada de Vinil</h2>
-<div class="card huntintro"><b>OPERAÇÃO GARIMPO PAULISTA — WISHLIST FINAL</b>
-<p style="font-size:12px"><b>10 alvos principais</b> e <b>10 suplentes</b>. Prioridade absoluta para LP e uma regra simples: <b>não comprar em vinil nada que já exista na coleção em CD</b>. Os alvos principais mantêm o registro de preço, local e compra; os suplentes ficam propositalmente em uma lista mais enxuta para não sobrecarregar o Companion.</p>
-<p style="font-size:12px">Os limites por loja abaixo continuam como <b>limites operacionais iniciais</b>, não como teto da verba total de discos. Achados excepcionais podem furar a fila — e <b>Maggot Brain</b> continua sendo questão de honra.</p>
+<div class="card huntintro"><b>OPERAÇÃO GARIMPO PAULISTA — WISHLIST DEFINITIVA</b>
+<p style="font-size:12px"><b>10 alvos principais</b>, <b>10 reservas</b> e <b>2 coringas</b>. Todos podem entrar na coleção em <b>LP ou CD</b>; a prioridade geral continua sendo o <b>preto com buraco no meio</b>. <span class="format-priority">LP &gt; CD</span></p>
+<p style="font-size:12px">Nos alvos principais, escolha o formato antes de avaliar a oferta: o semáforo muda automaticamente entre as faixas de LP e CD. Os limites por loja continuam como <b>limites operacionais iniciais</b>, não como teto da verba total de discos. Achados excepcionais podem furar a fila — e <b>Maggot Brain</b> continua sendo questão de honra.</p>
 <div class="huntbudget"><div>ERIC DISCOS<br><b id="huntEric">R$ 1.800</b><br><small>saldo da verba do local</small></div><div>NOVA BARÃO<br><b id="huntBarao">R$ 1.180</b><br><small>saldo da verba do local</small></div></div>
-<div class="huntfilters"><button class="btn alt" onclick="setHuntFilter('all')">TODOS</button><button class="btn alt" onclick="setHuntFilter('brit')">BRITÂNICO</button><button class="btn alt" onclick="setHuntFilter('metal')">METAL</button><button class="btn alt" onclick="setHuntFilter('punk')">PUNK</button><button class="btn alt" onclick="setHuntFilter('hard70')">HARD 70s</button></div></div>
-<div class="notice" style="margin-top:10px"><b>Semáforo de preço — referência 06/10/2026.</b> Faixas pensadas para cópia comum boa (VG+/NM) ou reedição decente. Primeiras prensagens, edições japonesas, promos, boxes e variantes raras exigem avaliação própria.</div>
+<div class="huntfilters"><button class="btn alt" onclick="setHuntFilter('all')">TODOS</button><button class="btn alt" onclick="setHuntFilter('brit')">BRITÂNICO</button><button class="btn alt" onclick="setHuntFilter('metal')">METAL</button><button class="btn alt" onclick="setHuntFilter('punk')">PUNK</button><button class="btn alt" onclick="setHuntFilter('br')">BRASIL</button><button class="btn alt" onclick="setHuntFilter('hard70')">70s / HARD</button></div></div>
+<div class="notice" style="margin-top:10px"><b>Semáforo de preço — referência 07/10/2026.</b> Valores em <b>mínimo/ataque • médio • máximo/teto</b>, separados por formato e pensados para cópia comum em bom estado (aprox. VG+/NM) ou reedição decente. Primeiras prensagens, edições japonesas, promos, boxes, variantes raras e exemplares excepcionalmente conservados exigem avaliação própria.</div>
 <div id="huntGrid" class="huntgrid"></div>
-<div class="card" style="margin-top:14px"><b>🛞 10 SUPLENTES — BANCO DE RESERVAS</b>
-<div style="margin-top:7px;font-size:11px;opacity:.78">Valores: <b>mínimo/ataque • médio • teto</b>. Até o primeiro: vale comprar. Até o teto: olhe bem. Acima do teto: passe longe.</div>
-<div style="margin-top:10px;font-size:13px;line-height:1.72">
-1. <b>Riot</b> — <i>Fire Down Under</i> <small style="opacity:.78">• R$ 220 / R$ 320 / R$ 450</small><br>2. <b>UFO</b> — <i>Phenomenon</i> <small style="opacity:.78">• R$ 220 / R$ 330 / R$ 430</small><br>3. <b>Thin Lizzy</b> — <i>Jailbreak</i> <small style="opacity:.78">• R$ 180 / R$ 280 / R$ 390</small><br>4. <b>Satan</b> — <i>Court in the Act</i> <small style="opacity:.78">• R$ 490 / R$ 700 / R$ 900</small><br>5. <b>Blue Öyster Cult</b> — <i>Secret Treaties</i> <small style="opacity:.78">• R$ 190 / R$ 300 / R$ 420</small><br>6. <b>Alice Cooper</b> — <i>Love It to Death</i> <small style="opacity:.78">• R$ 150 / R$ 230 / R$ 320</small><br>7. <b>Bad Company</b> — <i>Bad Company</i> <small style="opacity:.78">• R$ 150 / R$ 250 / R$ 350</small><br>8. <b>Scorpions</b> — <i>Taken by Force</i> <small style="opacity:.78">• R$ 160 / R$ 230 / R$ 320</small><br>9. <b>Black Flag</b> — <i>Damaged</i> <small style="opacity:.78">• R$ 200 / R$ 300 / R$ 380</small><br>10. <b>Sex Pistols</b> — <i>Never Mind the Bollocks, Here’s the Sex Pistols</i> <small style="opacity:.78">• R$ 230 / R$ 300 / R$ 380</small>
+<div class="card" style="margin-top:14px"><b>🛞 10 RESERVAS — BANCO DE SUPLENTES</b>
+<div class="reservelegend">Cada linha mostra <b>mínimo/ataque • médio • máximo/teto</b>. LP continua sendo a preferência; CD é alternativa válida.</div>
+<div id="reserveGrid" class="reservegrid"></div>
 </div>
+<div class="card" style="margin-top:14px"><b>🃏 2 CORINGAS — SE APARECEREM, OLHE COM CARINHO</b>
+<div id="coringaGrid" class="reservegrid"></div>
 </div></section>
 <div class="metal-divider">☠ ϟ ☠ ϟ ☠</div><section id="compras" class="section"><h2 class="sectiontitle">💿 Compras / Haul</h2>
 <div class="card grid2">
 <div class="field"><label>Tipo</label><select id="ptype"><option>Disco</option><option>Merchandise</option><option>Livro</option><option>Outro</option></select></div>
+<div class="field"><label>Formato (se for disco)</label><select id="pformat"><option value="LP">LP • vinil</option><option value="CD">CD</option></select></div>
 <div class="field"><label>Preço (R$)</label><input id="pprice" type="number" min="0" step="0.01" placeholder="0,00"></div>
 <div class="field"><label>Artista / item</label><input id="partist" placeholder="Artista ou produto"></div>
 <div class="field"><label>Título / descrição</label><input id="ptitle" placeholder="Álbum, camiseta..."></div>
 <div class="field"><label>Local</label><select id="pplace"><option>Eric Discos</option><option>Galeria Nova Barão</option><option>The Gathering</option><option>Apocalyptica</option><option>Vulcano/Hellbutcher</option><option>Amorphis</option><option>Eddie's Emporium</option><option>Horror Expo</option><option>Outro</option></select></div>
-<div class="field"><label>Edição / país / formato</label><input id="pedition" placeholder="CD, LP, edição..."></div>
+<div class="field"><label>Edição / país</label><input id="pedition" placeholder="1989 BR, reedição 180g, remaster..."></div>
 <div class="field wide"><label>Observação</label><input id="pnote" placeholder="Achado, estado, raridade..."></div>
 <button class="btn wide" onclick="addPurchase()">+ ADICIONAR À SACOLA</button>
 </div>
@@ -379,10 +401,12 @@ tchecks.forEach((b,i)=>{b.checked=!!data.tickets[i];b.onchange=()=>{data.tickets
 
 function addPurchase(){
   const price=num($('pprice').value);
+  const type=$('ptype').value;
   if(!$('partist').value.trim()&&!$('ptitle').value.trim())return alert('Informe o item ou o título da compra.');
   if(price<0)return alert('Informe um valor válido.');
-  data.purchases.push({type:$('ptype').value,price,artist:$('partist').value.trim(),title:$('ptitle').value.trim(),place:$('pplace').value,edition:$('pedition').value.trim(),note:$('pnote').value.trim()});
+  data.purchases.push({type,format:type==='Disco'?$('pformat').value:'',price,artist:$('partist').value.trim(),title:$('ptitle').value.trim(),place:$('pplace').value,edition:$('pedition').value.trim(),note:$('pnote').value.trim()});
   ['pprice','partist','ptitle','pedition','pnote'].forEach(id=>$(id).value='');
+  $('pformat').value='LP';
   save()
 }
 function delPurchase(i){data.purchases.splice(i,1);save()}
@@ -428,31 +452,76 @@ if((data.limits['Eric Discos']===750 && data.limits['Galeria Nova Barão']===400
 }let huntFilter='all';
 function limitSpent(place){return data.purchases.filter(x=>x.place===place).reduce((a,x)=>a+num(x.price),0)}
 const HUNT=[
-{id:'stoneroses',artist:'The Stone Roses',album:'The Stone Roses',tags:['brit'],mission:'🎯 ALVO • britânico / prioridade alta',tier:'target',low:260,avg:360,high:450},
-{id:'suede',artist:'Suede',album:'Suede',tags:['brit'],mission:'🎯 ALVO • britpop / lacuna',tier:'target',low:150,avg:200,high:300},
-{id:'saxon',artist:'Saxon',album:'Wheels of Steel',tags:['metal'],mission:'🎯 ALVO • metal tradicional',tier:'target',low:170,avg:240,high:350},
-{id:'accept',artist:'Accept',album:'Balls to the Wall',tags:['metal'],mission:'🎯 ALVO • metal tradicional',tier:'target',low:150,avg:220,high:320},
-{id:'sodom',artist:'Sodom',album:'Agent Orange',tags:['metal'],mission:'🎯 ALVO • thrash / prioridade alta',tier:'target',low:270,avg:400,high:600},
-{id:'overkill',artist:'Overkill',album:'The Years of Decay',tags:['metal'],mission:'🎯 ALVO • thrash / lacuna',tier:'target',low:300,avg:400,high:550},
-{id:'colera',artist:'Cólera',album:'Pela Paz em Todo Mundo',tags:['punk','br'],mission:'🎯 ALVO • punk BR',tier:'target',low:200,avg:280,high:350},
-{id:'grito',artist:'Vários Artistas',album:'Grito Suburbano',tags:['punk','br'],mission:'🎯 ALVO • punk BR / item especial',tier:'target',low:290,avg:375,high:500},
-{id:'funkadelic',artist:'Funkadelic',album:'Maggot Brain',tags:['hard70'],mission:'🦄 QUESTÃO DE HONRA • achou a cópia certa: reavaliar a fila',tier:'wildcard',low:200,avg:365,high:500},
-{id:'budgie',artist:'Budgie',album:'Never Turn Your Back on a Friend',tags:['hard70','metal'],mission:'🎯 ALVO • surpresa / hard 70s / proto-metal',tier:'target',low:180,avg:280,high:380}
+{id:'funkadelic',artist:'Funkadelic',album:'Maggot Brain',tags:['hard70'],mission:'🦄 QUESTÃO DE HONRA • prioridade máxima',tier:'wildcard',cover:'https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200',prices:{LP:{low:250,avg:400,high:550},CD:{low:90,avg:140,high:225}}},
+{id:'stoneroses',artist:'The Stone Roses',album:'The Stone Roses',tags:['brit'],mission:'🎯 ALVO • britânico / prioridade alta',tier:'target',cover:'https://is1-ssl.mzstatic.com/image/thumb/Music/d2/db/21/mzi.kihcrutv.jpg/1200x1200bb.jpg',prices:{LP:{low:250,avg:300,high:350},CD:{low:90,avg:150,high:260}}},
+{id:'badbrains',artist:'Bad Brains',album:'Bad Brains',tags:['punk'],mission:'🎯 ALVO • hardcore essencial',tier:'target',cover:'https://www.nacionrock.com/wp-content/uploads/1342151305_bad_brains_-_1982_bad_brains.jpg',prices:{LP:{low:250,avg:350,high:450},CD:{low:80,avg:130,high:180}}},
+{id:'satan',artist:'Satan',album:'Court in the Act',tags:['metal'],mission:'🎯 ALVO DIFÍCIL • NWOBHM',tier:'target',cover:'https://media1.jpc.de/image/w1155/front/0/3760053842985.jpg',prices:{LP:{low:200,avg:350,high:500},CD:{low:110,avg:160,high:220}}},
+{id:'comeco',artist:'Vários Artistas',album:'O Começo do Fim do Mundo',tags:['punk','br'],mission:'🎯 ALVO • documento do punk brasileiro',tier:'target',cover:'https://i.scdn.co/image/ab67616d0000b273edefe7d1e022703293c382ac',prices:{LP:{low:350,avg:500,high:650},CD:{low:100,avg:125,high:150}}},
+{id:'cazuza',artist:'Cazuza',album:'Ideologia',tags:['br'],mission:'🎯 ALVO • clássico brasileiro',tier:'target',cover:'https://coverartarchive.org/release/55ddf8e9-aa31-4a43-a1a0-8a6c9641a61e/front-1200',prices:{LP:{low:100,avg:160,high:220},CD:{low:30,avg:80,high:150}}},
+{id:'saxon',artist:'Saxon',album:'Wheels of Steel',tags:['metal'],mission:'🎯 ALVO • metal tradicional',tier:'target',cover:'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/80/a8/9a/80a89a18-88bd-4d3a-34cb-5c1748d24f0c/5099969444555.jpg/1200x1200bf-60.jpg',prices:{LP:{low:125,avg:200,high:300},CD:{low:70,avg:100,high:150}}},
+{id:'loureed',artist:'Lou Reed',album:'Transformer',tags:['hard70'],mission:'🎯 ALVO • clássico 70s',tier:'target',cover:'https://muzikercdn.com/uploads/products/3728/372882/thumb_large_d_gallery_99118693.jpg',prices:{LP:{low:125,avg:180,high:260},CD:{low:50,avg:80,high:130}}},
+{id:'rdp',artist:'Ratos de Porão',album:'Descanse em Paz',tags:['punk','br'],mission:'🎯 ALVO • punk / crossover BR',tier:'target',cover:'https://i.scdn.co/image/ab67616d0000b273962e9ac8243100b876e81699',prices:{LP:{low:200,avg:300,high:400},CD:{low:115,avg:150,high:220}}},
+{id:'curedisintegration',artist:'The Cure',album:'Disintegration',tags:['brit'],mission:'🎯 ALVO • pós-punk / gótico essencial',tier:'target',cover:'https://us.rarevinyl.com/cdn/shop/products/the-cure-disintegration-vg-uk-vinyl-lp-album-record-fixh14-755023_1024x1024.jpg?v=1764073393',prices:{LP:{low:300,avg:450,high:600},CD:{low:70,avg:150,high:240}}}
 ];
+
+const RESERVES=[
+{artist:'The Cure',album:'The Head on the Door',note:'pós-punk / new wave',prices:{LP:{low:150,avg:230,high:320},CD:{low:75,avg:100,high:130}}},
+{artist:'Plebe Rude',album:'Nunca Fomos Tão Brasileiros',note:'rock de Brasília',prices:{LP:{low:60,avg:120,high:200},CD:{low:90,avg:140,high:180}}},
+{artist:'Alice in Chains',album:'Dirt',note:'grunge / metal alternativo',prices:{LP:{low:290,avg:420,high:550},CD:{low:35,avg:60,high:100}}},
+{artist:'Budgie',album:'Squawk',note:'hard rock / proto-metal',prices:{LP:{low:220,avg:280,high:350},CD:{low:100,avg:150,high:220}}},
+{artist:'Vários Artistas',album:'Grito Suburbano',note:'punk brasileiro',prices:{LP:{low:290,avg:360,high:520},CD:{low:100,avg:160,high:240}}},
+{artist:'Steely Dan',album:'Aja',note:'jazz-rock / pop',prices:{LP:{low:150,avg:350,high:450},CD:{low:60,avg:150,high:250}}},
+{artist:'Accept',album:'Balls to the Wall',note:'heavy metal tradicional',prices:{LP:{low:160,avg:200,high:280},CD:{low:70,avg:110,high:160}}},
+{artist:'Sodom',album:'Agent Orange',note:'thrash metal',prices:{LP:{low:450,avg:650,high:900},CD:{low:100,avg:140,high:200}}},
+{artist:'Suede',album:'Suede',note:'britpop / alternativo',prices:{LP:{low:130,avg:190,high:280},CD:{low:70,avg:100,high:150}}},
+{artist:'Bad Religion',album:'Stranger Than Fiction',note:'punk melódico',prices:{LP:{low:250,avg:350,high:450},CD:{low:80,avg:120,high:160}}}
+];
+
+const WILDCARDS=[
+{artist:'Mountain',album:'Climbing!',note:'hard rock / 1970',prices:{LP:{low:180,avg:280,high:400},CD:{low:80,avg:130,high:200}}},
+{artist:'Redbone',album:'Wovoka',note:'rock / funk / 1973',prices:{LP:{low:120,avg:220,high:350},CD:{low:90,avg:130,high:180}}}
+];
+
 function setHuntFilter(f){huntFilter=f;renderHunt()}
-function huntVerdict(item,price){
+function huntBand(item,format){return item.prices[format]||item.prices.LP}
+function huntVerdict(item,price,format){
   price=Number(price||0);
+  const band=huntBand(item,format||'LP');
   if(!Number.isFinite(price)||price<=0)return ['none','DIGITE O PREÇO'];
-  if(price<=item.low)return ['attack','✓ VALE COMPRAR'];
-  if(price<=item.high)return ['fair','⚠ OLHE BEM'];
+  if(price<=band.low)return ['attack','✓ VALE COMPRAR'];
+  if(price<=band.high)return ['fair','⚠ OLHE BEM'];
   return ['abort','✕ PASSE LONGE'];
 }
 function huntPrice(id,v){data.hunt[id]=data.hunt[id]||{};data.hunt[id].price=Number(v||0);localStorage.setItem(KEY,JSON.stringify(data));renderHunt()}
 function huntPlace(id,v){data.hunt[id]=data.hunt[id]||{};data.hunt[id].place=v;localStorage.setItem(KEY,JSON.stringify(data))}
-function buyHunt(id){let item=HUNT.find(x=>x.id===id),h=data.hunt[id]||{},price=Number(h.price||0);if(!price){alert('Digite o preço encontrado primeiro.');return}let place=h.place||'Eric Discos';if(h.bought){alert('Este LP já foi marcado como comprado.');return}data.purchases.push({type:'Disco',price,artist:item.artist,title:item.album,place,edition:'LP',note:'Caçada de Vinil • '+item.mission});data.hunt[id]={...h,bought:true,place};save()}
-function renderHunt(){const huntGrid=$('huntGrid'),huntEric=$('huntEric'),huntBarao=$('huntBarao');if(!huntGrid)return;let visible=HUNT.filter(x=>huntFilter==='all'||x.tags.includes(huntFilter));huntGrid.innerHTML=visible.map((x,i)=>{let h=data.hunt[x.id]||{},v=huntVerdict(x,h.price),tilt=((i%5)-2)*.35;return `<div data-hunt-id="${x.id}" class="wanted ${h.bought?'huntbought':''} ${x.tier==='wildcard'?'wildcard':''}" style="--tilt:${tilt}deg"><h3>${x.artist}</h3><div class="album">${x.album}</div><div class="mission">${x.mission}</div><div class="prices"><div>MÍN / ATAQUE<b>${money(x.low)}</b></div><div>MÉDIO<b>${money(x.avg)}</b></div><div>TETO<b>${money(x.high)}</b></div></div><div class="huntprice"><input type="number" step="1" placeholder="Preço achado" value="${h.price||''}" onchange="huntPrice('${x.id}',this.value)"><select onchange="huntPlace('${x.id}',this.value)"><option ${!h.place||h.place==='Eric Discos'?'selected':''}>Eric Discos</option><option ${h.place==='Galeria Nova Barão'?'selected':''}>Galeria Nova Barão</option></select></div><div class="verdict ${v[0]}">${v[1]}</div><div class="huntactions">${h.bought?'<span class="purchase-stamp" role="status" aria-label="Disco comprado">COMPRADO</span>':`<button class="btn" onclick="buyHunt('${x.id}')">💿 COMPREI</button>`}</div></div>`}).join('');huntEric.textContent=money(Math.max(0,(data.limits['Eric Discos']||0)-limitSpent('Eric Discos')));huntBarao.textContent=money(Math.max(0,(data.limits['Galeria Nova Barão']||0)-limitSpent('Galeria Nova Barão')))}
+function huntFormat(id,v){data.hunt[id]=data.hunt[id]||{};data.hunt[id].format=v;localStorage.setItem(KEY,JSON.stringify(data));renderHunt()}
+function buyHunt(id){
+  const item=HUNT.find(x=>x.id===id),h=data.hunt[id]||{},price=Number(h.price||0);
+  if(!price){alert('Digite o preço encontrado primeiro.');return}
+  const place=h.place||'Eric Discos',format=h.format||'LP';
+  if(h.bought){alert('Este item já foi marcado como comprado.');return}
+  data.purchases.push({type:'Disco',format,price,artist:item.artist,title:item.album,place,edition:'',note:'Caçada • '+item.mission});
+  data.hunt[id]={...h,bought:true,place,format};
+  save()
+}
+function renderHunt(){
+  const huntGrid=$('huntGrid'),huntEric=$('huntEric'),huntBarao=$('huntBarao');
+  if(!huntGrid)return;
+  const visible=HUNT.filter(x=>huntFilter==='all'||x.tags.includes(huntFilter));
+  huntGrid.innerHTML=visible.map((x,i)=>{
+    const h=data.hunt[x.id]||{},format=h.format||'LP',band=huntBand(x,format),v=huntVerdict(x,h.price,format),tilt=((i%5)-2)*.35;
+    return \`<div data-hunt-id="\${x.id}" data-format="\${format}" class="wanted \${h.bought?'huntbought':''} \${x.tier==='wildcard'?'wildcard':''}" style="--tilt:\${tilt}deg"><div class="huntcoverwrap"><img class="huntcover" src="\${x.cover}" alt="Capa de \${esc(x.album)} — \${esc(x.artist)}" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.huntcoverwrap').style.display='none'"></div><h3>\${x.artist}</h3><div class="album">\${x.album}</div><div class="mission">\${x.mission}</div><div class="huntformat"><label>FORMATO</label><select onchange="huntFormat('\${x.id}',this.value)"><option value="LP" \${format==='LP'?'selected':''}>LP • VINIL</option><option value="CD" \${format==='CD'?'selected':''}>CD</option></select></div><div class="prices"><div>MÍN / ATAQUE<b>\${money(band.low)}</b></div><div>MÉDIO<b>\${money(band.avg)}</b></div><div>MÁX / TETO<b>\${money(band.high)}</b></div></div><div class="huntprice"><input type="number" step="1" placeholder="Preço achado" value="\${h.price||''}" onchange="huntPrice('\${x.id}',this.value)"><select onchange="huntPlace('\${x.id}',this.value)"><option \${!h.place||h.place==='Eric Discos'?'selected':''}>Eric Discos</option><option \${h.place==='Galeria Nova Barão'?'selected':''}>Galeria Nova Barão</option></select></div><div class="verdict \${v[0]}">\${v[1]}</div><div class="huntactions">\${h.bought?'<span class="purchase-stamp" role="status" aria-label="Disco comprado">COMPRADO</span>':\`<button class="btn" onclick="buyHunt('\${x.id}')">💿 COMPREI</button>\`}</div></div>\`
+  }).join('');
+  huntEric.textContent=money(Math.max(0,(data.limits['Eric Discos']||0)-limitSpent('Eric Discos')));
+  huntBarao.textContent=money(Math.max(0,(data.limits['Galeria Nova Barão']||0)-limitSpent('Galeria Nova Barão')));
+}
+function renderReserveGroup(list,targetId){
+  const box=$(targetId);if(!box)return;
+  box.innerHTML=list.map((x,i)=>\`<div class="reserveitem"><div class="rtitle">\${i+1}. \${esc(x.artist)} — <i>\${esc(x.album)}</i></div><div class="rmeta">\${esc(x.note)}</div><div class="rprice"><span>LP</span><b>\${money(x.prices.LP.low)} / \${money(x.prices.LP.avg)} / \${money(x.prices.LP.high)}</b><span>CD</span><b>\${money(x.prices.CD.low)} / \${money(x.prices.CD.avg)} / \${money(x.prices.CD.high)}</b></div></div>\`).join('')
+}
+function renderReserves(){renderReserveGroup(RESERVES,'reserveGrid');renderReserveGroup(WILDCARDS,'coringaGrid')}
 
-function renderAll(){
+function renderAll(){function renderAll(){
   checks.forEach((b,i)=>{b.checked=!!data.checks[i];b.closest('.item').classList.toggle('done',b.checked)});
   tchecks.forEach((b,i)=>b.checked=!!data.tickets[i]);
 
@@ -461,7 +530,7 @@ function renderAll(){
   $('fill').style.width=pct+'%';
   $('prog').textContent=pct+'% DA MISSÃO CUMPRIDA';
 
-  $('purchases').innerHTML=data.purchases.map((x,i)=>`<div class="purchase"><div><b>${esc(x.artist||x.title)}</b> ${x.title&&x.artist?'— '+esc(x.title):''}<br><small>${esc(x.type)} • ${esc(x.place)}${x.edition?' • '+esc(x.edition):''}${x.note?' • '+esc(x.note):''}</small></div><div><b>${money(x.price)}</b><button class="del" onclick="delPurchase(${i})" title="Excluir">×</button></div></div>`).join('')||'<small>Nenhuma compra registrada ainda.</small>';
+  $('purchases').innerHTML=data.purchases.map((x,i)=>`<div class="purchase"><div><b>${esc(x.artist||x.title)}</b> ${x.title&&x.artist?'— '+esc(x.title):''}<br><small>${esc(x.type)} • ${esc(x.place)}${x.format?' • '+esc(x.format):''}${x.edition?' • '+esc(x.edition):''}${x.note?' • '+esc(x.note):''}</small></div><div><b>${money(x.price)}</b><button class="del" onclick="delPurchase(${i})" title="Excluir">×</button></div></div>`).join('')||'<small>Nenhuma compra registrada ainda.</small>';
 
   $('expenses').innerHTML=data.expenses.map((x,i)=>`<div class="expense"><div><b>${esc(x.desc||x.cat)}</b><br><small>${esc(x.cat)}</small></div><div><b>${money(x.value)}</b><button class="del" onclick="delExpense(${i})" title="Excluir">×</button></div></div>`).join('')||'<small>Nenhuma outra despesa registrada ainda.</small>';
 
@@ -513,6 +582,7 @@ function renderAll(){
   $('merchStat').textContent=data.purchases.filter(x=>x.type==='Merchandise').length;
   $('moneyStat').textContent=money(t.total);
   renderHunt();
+  renderReserves();
   makeJournal()
 }
 

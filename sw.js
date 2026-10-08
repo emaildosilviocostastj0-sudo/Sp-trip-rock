@@ -1,5 +1,5 @@
-const CACHE='sp-rock-trip-v5';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icon.svg'];
+const CACHE='sp-rock-trip-v6';
+const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-v2.svg','./icon.svg'];
 const COVER_ASSETS=[
 "https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200",
 "https://is1-ssl.mzstatic.com/image/thumb/Music/d2/db/21/mzi.kihcrutv.jpg/1200x1200bb.jpg",

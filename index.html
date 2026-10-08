@@ -209,7 +209,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 </style>
 <link rel="manifest" href="manifest.webmanifest">
 <meta name="theme-color" content="#080808">
-<link rel="icon" href="icon.svg" type="image/svg+xml">
+<link rel="icon" href="icon-v2.svg" type="image/svg+xml">
 
 <style id="wishlist-final-2026">
 /* Ajustes factuais/funcionais da wishlist definitiva — identidade visual preservada */
@@ -319,30 +319,78 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="card"><div id="purchases"></div><div class="budgetline"><b>Total em compras</b><b id="purchaseTotal">R$ 0,00</b></div><div class="notice">Toda compra registrada aqui entra automaticamente no cálculo geral dos gastos.</div></div>
 </section>
 
-<div class="metal-divider">ϟ ☠ ϟ ☠ ϟ</div><section id="gastos" class="section"><h2 class="sectiontitle">💰 Caixa de guerra</h2>
-<div class="card">
-<div class="money" id="remaining">R$ 4.200,00</div><small>SALDO TOTAL DA VIAGEM</small>
-<div class="budgetline"><span>Orçamento total</span><b id="budgetLabel">R$ 4.200,00</b></div>
-<div class="budgetline"><span>💿 Discos — verba</span><b>R$ 2.980,00</b></div>
-<div class="budgetline"><span>💿 Discos — saldo</span><b id="discRemaining">R$ 2.980,00</b></div>
-<div class="budgetline"><span>👕 Merchandise — verba</span><b>R$ 300,00</b></div>
-<div class="budgetline"><span>👕 Merchandise — saldo</span><b id="merchRemaining">R$ 300,00</b></div>
-<div class="budgetline"><span>🤘 Loja do Iron Maiden — reserva</span><b>R$ 200,00</b></div>
-<div class="budgetline"><span>🤘 Loja do Iron Maiden — saldo</span><b id="maidenRemaining">R$ 200,00</b></div>
-<div class="budgetline"><span>🍔 Alimentação — verba</span><b>R$ 300,00</b></div>
-<div class="budgetline"><span>🍔 Alimentação — saldo</span><b id="foodRemaining">R$ 300,00</b></div>
-<div class="budgetline"><span>🚇 Transporte — verba</span><b>R$ 120,00</b></div>
-<div class="budgetline"><span>🚇 Transporte — saldo</span><b id="transportRemaining">R$ 120,00</b></div>
-<div class="budgetline"><span>🆘 Emergências / imprevistos — reserva</span><b>R$ 300,00</b></div>
-<div class="budgetline"><span>🆘 Emergências / imprevistos — saldo</span><b id="emergencyRemaining">R$ 300,00</b></div>
-<div class="budgetline"><span>Compras / Haul</span><b id="purchaseSpent">R$ 0,00</b></div>
-<div class="budgetline"><span>Outras despesas</span><b id="expenseSpent">R$ 0,00</b></div>
-<div class="budgetline"><span><strong>GASTO TOTAL</strong></span><b id="spent">R$ 0,00</b></div>
-<div class="moneygrid">
-<div class="moneybox"><small>Discos</small><b id="discMoney">R$ 0,00</b></div>
-<div class="moneybox"><small>Merchandise</small><b id="merchMoney">R$ 0,00</b></div>
-<div class="moneybox"><small>Alimentação</small><b id="foodMoney">R$ 0,00</b></div>
-<div class="moneybox"><small>Transporte</small><b id="transportMoney">R$ 0,00</b></div>
+<div class="metal-divider">ϟ ☠ ϟ ☠ ϟ</div><style id="war-chest-layout">
+#gastos .war-card{border-top:3px solid #8e0010}
+#gastos .war-total{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end;padding-bottom:12px;border-bottom:1px solid #3b3b3b}
+#gastos .war-total-meta{text-align:right}
+#gastos .war-total-meta small,#gastos .war-section-label{display:block;color:#aaa;text-transform:uppercase;letter-spacing:1px;font-size:10px}
+#gastos .war-total-meta b{display:block;color:var(--gold);font:900 18px/1.2 'Black Ops One','Arial Black',sans-serif;margin-top:4px}
+#gastos .war-section-label{margin:16px 0 7px;color:#d8d0c2;font-weight:900;border-left:4px solid #8e0010;padding-left:8px}
+#gastos .war-disc-total{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-bottom:8px}
+#gastos .war-disc-total>div,#gastos .war-envelope,#gastos .war-summary>div{background:linear-gradient(#181b1e,#090a0b);border:1px solid #444;box-shadow:inset 0 0 12px #000;padding:10px;min-width:0}
+#gastos .war-disc-total small,#gastos .war-envelope small,#gastos .war-summary small{display:block;color:#999;text-transform:uppercase;font-size:9px;letter-spacing:.5px}
+#gastos .war-disc-total b{display:block;margin-top:3px;font:900 16px/1.15 'Black Ops One','Arial Black',sans-serif;color:var(--gold)}
+#gastos .war-stores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#gastos .war-store{border-top:3px solid #9b0011}
+#gastos .war-store>strong{display:block;font:900 15px/1.1 'Black Ops One','Arial Black',sans-serif;color:#eee;margin-bottom:9px}
+#gastos .war-values{display:grid;grid-template-columns:1fr 1fr;gap:6px}
+#gastos .war-values>div{min-width:0}
+#gastos .war-values b{display:block;color:var(--gold);font:900 15px/1.2 'Black Ops One','Arial Black',sans-serif;margin-top:3px;word-break:normal}
+#gastos .war-spent{margin-top:9px!important;border-top:1px solid #333;padding-top:7px}
+#gastos .war-spent b{display:inline;color:#ddd;font-family:'Oswald',Arial,sans-serif;font-size:11px}
+#gastos .war-envelopes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#gastos .war-envelope>strong{display:block;font-size:12px;line-height:1.15;min-height:28px;margin-bottom:8px;color:#eee}
+#gastos .war-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:14px}
+#gastos .war-summary b{display:block;color:#eee;font:900 14px/1.2 'Black Ops One','Arial Black',sans-serif;margin-top:4px}
+#gastos .war-summary .war-grand b{color:var(--gold)}
+@media(max-width:520px){
+  #gastos .war-card{padding:12px}
+  #gastos .war-total{grid-template-columns:1fr auto}
+  #gastos .war-total .money{font-size:25px}
+  #gastos .war-total-meta b{font-size:14px}
+  #gastos .war-disc-total{gap:5px}
+  #gastos .war-disc-total>div{padding:8px 6px}
+  #gastos .war-disc-total b{font-size:13px}
+  #gastos .war-stores{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #gastos .war-store{padding:9px 7px}
+  #gastos .war-store>strong{font-size:12px}
+  #gastos .war-values{gap:4px}
+  #gastos .war-values b{font-size:12px}
+  #gastos .war-envelopes{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #gastos .war-envelope{padding:9px 7px}
+  #gastos .war-envelope>strong{font-size:11px;min-height:26px}
+  #gastos .war-summary{grid-template-columns:repeat(3,minmax(0,1fr));gap:5px}
+  #gastos .war-summary>div{padding:8px 5px}
+  #gastos .war-summary b{font-size:11px}
+}
+</style><section id="gastos" class="section"><h2 class="sectiontitle">💰 Caixa de guerra</h2>
+<div class="card war-card">
+<div class="war-total"><div><small>SALDO TOTAL DA VIAGEM</small><div class="money" id="remaining">R$ 4.200,00</div></div><div class="war-total-meta"><small>ORÇAMENTO TOTAL</small><b id="budgetLabel">R$ 4.200,00</b></div></div>
+
+<div class="war-section-label">💿 GARIMPO DE DISCOS</div>
+<div class="war-disc-total">
+<div><small>Verba total</small><b id="discBudgetLabel">R$ 2.980,00</b></div>
+<div><small>Gasto</small><b id="discMoney">R$ 0,00</b></div>
+<div><small>Saldo</small><b id="discRemaining">R$ 2.980,00</b></div>
+</div>
+<div class="war-stores">
+<div class="war-envelope war-store"><strong>ERIC DISCOS</strong><div class="war-values"><div><small>Verba</small><b id="warEricBudget">R$ 1.800,00</b></div><div><small>Saldo</small><b id="warEricRemaining">R$ 1.800,00</b></div></div><small class="war-spent">Gasto no local: <b id="warEricSpent">R$ 0,00</b></small></div>
+<div class="war-envelope war-store"><strong>NOVA BARÃO</strong><div class="war-values"><div><small>Verba</small><b id="warBaraoBudget">R$ 1.180,00</b></div><div><small>Saldo</small><b id="warBaraoRemaining">R$ 1.180,00</b></div></div><small class="war-spent">Gasto no local: <b id="warBaraoSpent">R$ 0,00</b></small></div>
+</div>
+
+<div class="war-section-label">OUTROS ENVELOPES</div>
+<div class="war-envelopes">
+<div class="war-envelope"><strong>👕 MERCHANDISE</strong><div class="war-values"><div><small>Verba</small><b>R$ 300,00</b></div><div><small>Saldo</small><b id="merchRemaining">R$ 300,00</b></div></div><small class="war-spent">Gasto: <b id="merchMoney">R$ 0,00</b></small></div>
+<div class="war-envelope"><strong>🤘 IRON MAIDEN</strong><div class="war-values"><div><small>Reserva</small><b>R$ 200,00</b></div><div><small>Saldo</small><b id="maidenRemaining">R$ 200,00</b></div></div><small class="war-spent">Gasto: <b id="maidenMoney">R$ 0,00</b></small></div>
+<div class="war-envelope"><strong>🍔 ALIMENTAÇÃO</strong><div class="war-values"><div><small>Verba</small><b>R$ 300,00</b></div><div><small>Saldo</small><b id="foodRemaining">R$ 300,00</b></div></div><small class="war-spent">Gasto: <b id="foodMoney">R$ 0,00</b></small></div>
+<div class="war-envelope"><strong>🚇 TRANSPORTE</strong><div class="war-values"><div><small>Verba</small><b>R$ 120,00</b></div><div><small>Saldo</small><b id="transportRemaining">R$ 120,00</b></div></div><small class="war-spent">Gasto: <b id="transportMoney">R$ 0,00</b></small></div>
+<div class="war-envelope"><strong>🆘 EMERGÊNCIAS</strong><div class="war-values"><div><small>Reserva</small><b>R$ 300,00</b></div><div><small>Saldo</small><b id="emergencyRemaining">R$ 300,00</b></div></div><small class="war-spent">Gasto: <b id="emergencyMoney">R$ 0,00</b></small></div>
+</div>
+
+<div class="war-summary">
+<div><small>Compras / Haul</small><b id="purchaseSpent">R$ 0,00</b></div>
+<div><small>Outras despesas</small><b id="expenseSpent">R$ 0,00</b></div>
+<div class="war-grand"><small>Gasto total</small><b id="spent">R$ 0,00</b></div>
 </div>
 </div>
 
@@ -376,7 +424,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <dialog id="resetDialog" aria-labelledby="resetTitle" aria-describedby="resetDescription" style="max-width:440px;width:calc(100% - 48px);background:var(--panel,#151515);color:var(--text,#eee);border:2px solid var(--gold,#c8b98e);padding:22px">
 <h2 id="resetTitle">ZERAR TUDO?</h2>
-<p id="resetDescription">Apagar checklist, marcações de ingressos, compras, gastos, diário, resumo e registros do garimpo? Os limites por loja voltam a R$ 750 e R$ 400. Esta ação não pode ser desfeita sem um backup.</p>
+<p id="resetDescription">Apagar checklist, marcações de ingressos, compras, gastos, diário, resumo e registros do garimpo? Os limites por loja voltam a R$ 1.800 e R$ 1.180. Esta ação não pode ser desfeita sem um backup.</p>
 <p>O roteiro, a lista de discos e o orçamento geral permanecem.</p>
 <p id="resetError" role="alert"></p>
 <div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn alt" autofocus onclick="document.getElementById('resetDialog').close()">CANCELAR</button><button type="button" class="btn" onclick="confirmReset()">SIM, ZERAR TUDO</button></div>
@@ -555,6 +603,7 @@ function renderAll(){
   $('remaining').textContent=money(BUDGET-t.total);
   $('remaining').style.color=(BUDGET-t.total)<0?'#ff5b5b':'var(--gold)';
   $('budgetLabel').textContent=money(BUDGET);
+  $('discBudgetLabel').textContent=money(DISC_BUDGET);
 
   const purchaseByType=type=>data.purchases.filter(x=>x.type===type).reduce((a,x)=>a+num(x.price),0);
   const expenseByCat=cat=>data.expenses.filter(x=>x.cat===cat).reduce((a,x)=>a+num(x.value),0);
@@ -562,12 +611,24 @@ function renderAll(){
   $('merchMoney').textContent=money(purchaseByType('Merchandise'));
   $('foodMoney').textContent=money(expenseByCat('Alimentação'));
   $('transportMoney').textContent=money(expenseByCat('Transporte'));
+  const ericBudget=num(data.limits['Eric Discos']);
+  const baraoBudget=num(data.limits['Galeria Nova Barão']);
+  const ericSpent=limitSpent('Eric Discos');
+  const baraoSpent=limitSpent('Galeria Nova Barão');
+  $('warEricBudget').textContent=money(ericBudget);
+  $('warBaraoBudget').textContent=money(baraoBudget);
+  $('warEricSpent').textContent=money(ericSpent);
+  $('warBaraoSpent').textContent=money(baraoSpent);
+  $('warEricRemaining').textContent=money(ericBudget-ericSpent);
+  $('warBaraoRemaining').textContent=money(baraoBudget-baraoSpent);
   const maidenSpent=data.purchases.filter(x=>x.place==="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
   const discSpent=data.purchases.filter(x=>x.type==='Disco' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
   const merchSpent=data.purchases.filter(x=>x.type==='Merchandise' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
   const foodSpent=expenseByCat('Alimentação');
   const transportSpent=expenseByCat('Transporte');
   const emergencySpent=expenseByCat('Emergência / imprevisto');
+  $('maidenMoney').textContent=money(maidenSpent);
+  $('emergencyMoney').textContent=money(emergencySpent);
 
   const discRemaining=DISC_BUDGET-discSpent;
   const merchRemaining=MERCH_BUDGET-merchSpent;
@@ -589,6 +650,8 @@ function renderAll(){
   $('foodRemaining').style.color=foodRemaining<0?'#ff5b5b':'var(--gold)';
   $('transportRemaining').style.color=transportRemaining<0?'#ff5b5b':'var(--gold)';
   $('emergencyRemaining').style.color=emergencyRemaining<0?'#ff5b5b':'var(--gold)';
+  $('warEricRemaining').style.color=(ericBudget-ericSpent)<0?'#ff5b5b':'var(--gold)';
+  $('warBaraoRemaining').style.color=(baraoBudget-baraoSpent)<0?'#ff5b5b':'var(--gold)';
 
   $('doneStat').textContent=done;
   $('discStat').textContent=data.purchases.filter(x=>x.type==='Disco').length;

@@ -1,8 +1,29 @@
-<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512">
-<rect width="512" height="512" rx="72" fill="#080808"/>
-<path d="M68 118h376L386 394H126z" fill="none" stroke="#e5e5e5" stroke-width="18"/>
-<path d="M126 182h260M110 250h292M96 318h320" stroke="#777" stroke-width="10"/>
-<text x="256" y="238" text-anchor="middle" font-family="Impact,Arial Black,sans-serif" font-size="88" fill="#fff">SP</text>
-<text x="256" y="326" text-anchor="middle" font-family="Impact,Arial Black,sans-serif" font-size="55" fill="#fff">ROCK</text>
-<path d="M182 86l28 48 46-72 46 72 28-48" fill="none" stroke="#fff" stroke-width="14"/>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="São Paulo Rock Trip — devil horns, ponte e skyline">
+<title>São Paulo Rock Trip</title>
+<rect width="512" height="512" rx="72" fill="#060607"/>
+<circle cx="256" cy="256" r="218" fill="none" stroke="#760008" stroke-width="7" opacity=".78"/>
+<g fill="#c4000d" opacity=".9">
+  <path d="M58 348L192 87l18 8L84 361z"/><path d="M231 378L326 93l21 7-87 286z"/><path d="M310 385L439 120l18 9-123 269z"/>
+  <circle cx="75" cy="135" r="10"/><circle cx="101" cy="151" r="6"/><circle cx="433" cy="157" r="9"/><circle cx="450" cy="183" r="5"/><circle cx="91" cy="203" r="5"/>
+</g>
+<g stroke="#ddd3c1" stroke-width="3" fill="#2a2a2d">
+  <path d="M18 362l195-22 8 17L13 382z"/><path d="M49 366l36-169 11 1-20 166z"/><path d="M102 361l39-181 12 3-31 175z"/>
+</g>
+<g stroke="#d9d0bf" stroke-width="2.2" opacity=".95"><path d="M88 205L30 357M89 205l17 153M89 205l61 146M145 185L94 356M145 185l31 159M145 185l62 151"/></g>
+<g fill="#18181b" stroke="#625d56" stroke-width="2">
+  <rect x="352" y="248" width="35" height="133"/><rect x="382" y="220" width="33" height="161"/><rect x="410" y="268" width="30" height="113"/><rect x="437" y="201" width="38" height="180"/><rect x="469" y="288" width="31" height="93"/>
+</g>
+<g fill="#d8caa7" opacity=".75"><path d="M361 270h5v8h-5zM374 290h5v8h-5zM391 242h5v9h-5zM403 266h5v9h-5zM419 289h5v9h-5zM447 225h5v9h-5zM459 253h5v9h-5zM477 309h5v9h-5z"/></g>
+<path d="M456 201v-45" stroke="#eee5d0" stroke-width="3"/><circle cx="456" cy="153" r="4" fill="#d60812"/>
+<g fill="#eee5d0" stroke="#111" stroke-width="7" stroke-linejoin="round">
+  <path d="M159 412l-13-46 17-58 30-27 32-3 28 20 15 29-2 67-25 58h-61z"/>
+  <path d="M171 308l-18-65-7-107 16-67 23 8 10 68-2 132z"/>
+  <path d="M248 304l15-61 29-118 25-49 23 9-7 72-30 138-16 42z"/>
+  <rect x="196" y="186" width="41" height="115" rx="14"/><rect x="235" y="197" width="39" height="112" rx="14"/>
+  <path d="M163 329l32-29 66-13 17 18-18 28-50 10-24 35z"/>
+</g>
+<g stroke="#111" stroke-width="10"><path d="M153 164l39 4M151 208l41 4M155 253l37 3M305 164l29 9M296 211l30 8M286 259l29 8"/><path d="M200 226h36M240 239h33M177 342l27 25"/></g>
+<g stroke="#d60812" stroke-width="5"><path d="M162 80l-10 63 6 73"/><path d="M317 87l13 57-9 67"/></g>
+<g fill="#111" opacity=".95"><circle cx="179" cy="111" r="5"/><circle cx="174" cy="196" r="4"/><circle cx="184" cy="273" r="5"/><circle cx="305" cy="132" r="5"/><circle cx="299" cy="190" r="4"/><circle cx="286" cy="282" r="5"/><circle cx="210" cy="322" r="5"/><circle cx="225" cy="352" r="4"/><circle cx="195" cy="389" r="5"/></g>
+<text x="256" y="486" text-anchor="middle" font-family="Arial Black,Impact,sans-serif" font-size="50" fill="#eee5d0" stroke="#111" stroke-width="2">SP</text>
 </svg>

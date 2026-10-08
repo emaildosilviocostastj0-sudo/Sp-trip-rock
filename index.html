@@ -226,7 +226,8 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 .reserveitem .rprice{display:grid;grid-template-columns:34px 1fr;gap:6px;font-size:11px;line-height:1.55}
 .reserveitem .rprice b{color:var(--gold)}
 .reserveitem .rquick{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;margin-top:9px;padding-top:8px;border-top:1px solid #40382b}
-.reserveitem .rquick input{min-width:0;width:100%;background:#15120f;color:#fff1d9;border:1px solid #8c7857;border-radius:3px;padding:8px;font:inherit;font-size:12px}
+.reserveitem .rquick input,.reserveitem .rquick select{min-width:0;width:100%;background:#15120f;color:#fff1d9;border:1px solid #8c7857;border-radius:3px;padding:8px;font:inherit;font-size:12px}
+.reserveitem .rquick select{grid-column:1/-1}
 .reserveitem .rquick .btn{padding:8px 10px;font-size:10px;white-space:nowrap}
 .reserveitem.reservebought{border-color:#775147}
 .reserveitem .reserve-stamp{display:inline-block;border:3px double #d05a50;color:#e16b60;padding:3px 9px;font:900 18px/1 Impact,'Arial Black',sans-serif;letter-spacing:2px;transform:rotate(-5deg)}
@@ -483,7 +484,15 @@ function addPurchase(){
   $('pformat').value='LP';
   save()
 }
-function delPurchase(i){data.purchases.splice(i,1);save()}
+function delPurchase(i){
+  if(i<data.purchases.length){data.purchases.splice(i,1)}
+  else{
+    const reserve=reservePurchases()[i-data.purchases.length];
+    if(!reserve)return;
+    data.reserves[reserveKey(reserve._reserveIndex)].bought=false;
+  }
+  save()
+}
 
 function addExpense(){
   const v=num($('evalue').value);
@@ -512,7 +521,7 @@ function noteJournal(p,v){data.journal[p]=data.journal[p]||{};data.journal[p].te
 });
 
 function totals(){
-  const purchaseTotal=data.purchases.reduce((a,x)=>a+num(x.price),0);
+  const purchaseTotal=allPurchases().reduce((a,x)=>a+num(x.price),0);
   const expenseTotal=data.expenses.reduce((a,x)=>a+num(x.value),0);
   return {purchaseTotal,expenseTotal,total:purchaseTotal+expenseTotal}
 }
@@ -524,7 +533,7 @@ if((data.limits['Eric Discos']===750 && data.limits['Galeria Nova Barão']===400
   data.limits['Galeria Nova Barão']=1180;
   localStorage.setItem(KEY,JSON.stringify(data));
 }let huntFilter='all';
-function limitSpent(place){return data.purchases.filter(x=>x.place===place).reduce((a,x)=>a+num(x.price),0)}
+function limitSpent(place){return allPurchases().filter(x=>x.place===place).reduce((a,x)=>a+num(x.price),0)}
 const HUNT=[
 {id:'funkadelic',artist:'Funkadelic',album:'Maggot Brain',tags:['hard70'],mission:'🦄 QUESTÃO DE HONRA • prioridade máxima',tier:'wildcard',cover:'https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200',prices:{LP:{low:250,avg:400,high:550},CD:{low:90,avg:140,high:225}}},
 {id:'stoneroses',artist:'The Stone Roses',album:'The Stone Roses',tags:['brit'],mission:'🎯 ALVO • britânico / prioridade alta',tier:'target',cover:'https://is1-ssl.mzstatic.com/image/thumb/Music/d2/db/21/mzi.kihcrutv.jpg/1200x1200bb.jpg',prices:{LP:{low:250,avg:300,high:350},CD:{low:90,avg:150,high:260}}},
@@ -585,25 +594,50 @@ function renderHunt(){
   huntBarao.textContent=money(Math.max(0,(data.limits['Galeria Nova Barão']||0)-limitSpent('Galeria Nova Barão')));
 }
 function reserveKey(i){return 'reserve_'+i}
+function reservePurchases(){
+  return RESERVES.flatMap((x,i)=>{
+    const r=data.reserves[reserveKey(i)];
+    if(!r?.bought||num(r.price)<=0)return [];
+    return [{type:'Disco',format:r.format||'',price:num(r.price),artist:x.artist,title:x.album,
+      place:r.place||'Local não informado',edition:'',note:'Caçada • Suplente',_reserveIndex:i}];
+  });
+}
+function allPurchases(){return [...data.purchases,...reservePurchases()]}
 function reservePrice(i,v){
   const k=reserveKey(i);
   data.reserves[k]=data.reserves[k]||{};
   data.reserves[k].price=Number(v||0);
   localStorage.setItem(KEY,JSON.stringify(data));
 }
+function reservePlace(i,place){
+  if(place==='__other__'){
+    const current=data.reserves[reserveKey(i)]?.place||'';
+    const custom=prompt('Em qual loja ou local você comprou?',current);
+    if(!custom||!custom.trim()){renderReserves();return}
+    place=custom.trim().slice(0,120);
+  }
+  const k=reserveKey(i);
+  data.reserves[k]={...(data.reserves[k]||{}),place};
+  save()
+}
 function buyReserve(i){
   const k=reserveKey(i),r=data.reserves[k]||{},price=Number(r.price||0);
-  if(!price||price<=0){alert('Informe o preço pago primeiro.');return}
+  if(!Number.isFinite(price)||price<=0){alert('Informe o preço pago primeiro.');return}
+  if(!r.place){alert('Informe o local da compra.');return}
   if(r.bought){return}
   data.reserves[k]={...r,bought:true,price};
-  localStorage.setItem(KEY,JSON.stringify(data));
-  renderReserves()
+  save()
 }
 function renderReserveGroup(list,targetId){
   const box=$(targetId);if(!box)return;
   box.innerHTML=list.map((x,i)=>{
     const r=data.reserves[reserveKey(i)]||{};
-    return `<div class="reserveitem ${r.bought?'reservebought':''}"><div class="rtitle">${i+1}. ${esc(x.artist)} — <i>${esc(x.album)}</i></div><div class="rmeta">${esc(x.note)}</div><div class="rprice"><span>LP</span><b>${money(x.prices.LP.low)} / ${money(x.prices.LP.avg)} / ${money(x.prices.LP.high)}</b><span>CD</span><b>${money(x.prices.CD.low)} / ${money(x.prices.CD.avg)} / ${money(x.prices.CD.high)}</b></div><div class="rquick"><input type="number" min="0" step="1" inputmode="decimal" placeholder="Preço pago" value="${r.price||''}" onchange="reservePrice(${i},this.value)" ${r.bought?'disabled':''}>${r.bought?'<span class="reserve-stamp" role="status">COMPRADO</span>':`<button class="btn" onclick="buyReserve(${i})">💿 COMPREI</button>`}</div>${r.bought?`<div class="rpaid">Preço pago: <b>${money(r.price)}</b></div>`:''}</div>`
+    const places=['Eric Discos','Galeria Nova Barão'];
+    const options='<option value="" disabled '+(!r.place?'selected':'')+'>LOCAL DA COMPRA</option>'+
+      places.map(p=>'<option value="'+p+'" '+(r.place===p?'selected':'')+'>'+p+'</option>').join('')+
+      (r.place&&!places.includes(r.place)?'<option value="'+esc(r.place)+'" selected>'+esc(r.place)+'</option>':'')+
+      '<option value="__other__">Outra loja…</option>';
+    return `<div class="reserveitem ${r.bought?'reservebought':''}"><div class="rtitle">${i+1}. ${esc(x.artist)} — <i>${esc(x.album)}</i></div><div class="rmeta">${esc(x.note)}</div><div class="rprice"><span>LP</span><b>${money(x.prices.LP.low)} / ${money(x.prices.LP.avg)} / ${money(x.prices.LP.high)}</b><span>CD</span><b>${money(x.prices.CD.low)} / ${money(x.prices.CD.avg)} / ${money(x.prices.CD.high)}</b></div><div class="rquick"><select aria-label="Local da compra" onchange="reservePlace(${i},this.value)">${options}</select><input type="number" min="0" step="1" inputmode="decimal" placeholder="Preço pago" value="${r.price||''}" onchange="reservePrice(${i},this.value)" ${r.bought?'disabled':''}>${r.bought?'<span class="reserve-stamp" role="status">COMPRADO</span>':`<button class="btn" onclick="buyReserve(${i})">💿 COMPREI</button>`}</div>${r.bought?`<div class="rpaid">Preço pago: <b>${money(r.price)}</b> • ${esc(r.place||'Local não informado')}</div>`:''}</div>`
   }).join('')
 }
 function renderReserves(){renderReserveGroup(RESERVES,'reserveGrid')}
@@ -617,7 +651,8 @@ function renderAll(){
   $('fill').style.width=pct+'%';
   $('prog').textContent=pct+'% DA MISSÃO CUMPRIDA';
 
-  $('purchases').innerHTML=data.purchases.map((x,i)=>`<div class="purchase"><div><b>${esc(x.artist||x.title)}</b> ${x.title&&x.artist?'— '+esc(x.title):''}<br><small>${esc(x.type)} • ${esc(x.place)}${x.format?' • '+esc(x.format):''}${x.edition?' • '+esc(x.edition):''}${x.note?' • '+esc(x.note):''}</small></div><div><b>${money(x.price)}</b><button class="del" onclick="delPurchase(${i})" title="Excluir">×</button></div></div>`).join('')||'<small>Nenhuma compra registrada ainda.</small>';
+  const purchases=allPurchases();
+  $('purchases').innerHTML=purchases.map((x,i)=>`<div class="purchase"><div><b>${esc(x.artist||x.title)}</b> ${x.title&&x.artist?'— '+esc(x.title):''}<br><small>${esc(x.type)} • ${esc(x.place)}${x.format?' • '+esc(x.format):''}${x.edition?' • '+esc(x.edition):''}${x.note?' • '+esc(x.note):''}</small></div><div><b>${money(x.price)}</b><button class="del" onclick="delPurchase(${i})" title="Excluir">×</button></div></div>`).join('')||'<small>Nenhuma compra registrada ainda.</small>';
 
   $('expenses').innerHTML=data.expenses.map((x,i)=>`<div class="expense"><div><b>${esc(x.desc||x.cat)}</b><br><small>${esc(x.cat)}</small></div><div><b>${money(x.value)}</b><button class="del" onclick="delExpense(${i})" title="Excluir">×</button></div></div>`).join('')||'<small>Nenhuma outra despesa registrada ainda.</small>';
 
@@ -631,7 +666,7 @@ function renderAll(){
   $('budgetLabel').textContent=money(BUDGET);
   $('discBudgetLabel').textContent=money(DISC_BUDGET);
 
-  const purchaseByType=type=>data.purchases.filter(x=>x.type===type).reduce((a,x)=>a+num(x.price),0);
+  const purchaseByType=type=>purchases.filter(x=>x.type===type).reduce((a,x)=>a+num(x.price),0);
   const expenseByCat=cat=>data.expenses.filter(x=>x.cat===cat).reduce((a,x)=>a+num(x.value),0);
   $('discMoney').textContent=money(purchaseByType('Disco'));
   $('merchMoney').textContent=money(purchaseByType('Merchandise'));
@@ -647,9 +682,9 @@ function renderAll(){
   $('warBaraoSpent').textContent=money(baraoSpent);
   $('warEricRemaining').textContent=money(ericBudget-ericSpent);
   $('warBaraoRemaining').textContent=money(baraoBudget-baraoSpent);
-  const maidenSpent=data.purchases.filter(x=>x.place==="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
-  const discSpent=data.purchases.filter(x=>x.type==='Disco' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
-  const merchSpent=data.purchases.filter(x=>x.type==='Merchandise' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
+  const maidenSpent=purchases.filter(x=>x.place==="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
+  const discSpent=purchases.filter(x=>x.type==='Disco' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
+  const merchSpent=purchases.filter(x=>x.type==='Merchandise' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
   const foodSpent=expenseByCat('Alimentação');
   const transportSpent=expenseByCat('Transporte');
   const emergencySpent=expenseByCat('Emergência / imprevisto');
@@ -680,8 +715,8 @@ function renderAll(){
   $('warBaraoRemaining').style.color=(baraoBudget-baraoSpent)<0?'#ff5b5b':'var(--gold)';
 
   $('doneStat').textContent=done;
-  $('discStat').textContent=data.purchases.filter(x=>x.type==='Disco').length;
-  $('merchStat').textContent=data.purchases.filter(x=>x.type==='Merchandise').length;
+  $('discStat').textContent=purchases.filter(x=>x.type==='Disco').length;
+  $('merchStat').textContent=purchases.filter(x=>x.type==='Merchandise').length;
   $('moneyStat').textContent=money(t.total);
   renderHunt();
   renderReserves();

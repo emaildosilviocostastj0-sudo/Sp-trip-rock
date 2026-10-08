@@ -225,6 +225,13 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 .reserveitem .rmeta{font-size:10px;opacity:.72;margin:3px 0 7px;text-transform:uppercase;letter-spacing:.7px}
 .reserveitem .rprice{display:grid;grid-template-columns:34px 1fr;gap:6px;font-size:11px;line-height:1.55}
 .reserveitem .rprice b{color:var(--gold)}
+.reserveitem .rquick{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:7px;align-items:center;margin-top:9px;padding-top:8px;border-top:1px solid #40382b}
+.reserveitem .rquick input{min-width:0;width:100%;background:#15120f;color:#fff1d9;border:1px solid #8c7857;border-radius:3px;padding:8px;font:inherit;font-size:12px}
+.reserveitem .rquick .btn{padding:8px 10px;font-size:10px;white-space:nowrap}
+.reserveitem.reservebought{border-color:#775147}
+.reserveitem .reserve-stamp{display:inline-block;border:3px double #d05a50;color:#e16b60;padding:3px 9px;font:900 18px/1 Impact,'Arial Black',sans-serif;letter-spacing:2px;transform:rotate(-5deg)}
+.reserveitem .rpaid{margin-top:7px;font-size:10px;color:#bbb}
+.reserveitem .rpaid b{color:var(--gold)}
 .reservelegend{font-size:11px;opacity:.78;margin-top:7px}
 .format-priority{display:inline-block;margin-left:4px;padding:2px 6px;border:1px solid #8c8066;font-size:10px;font-weight:900;letter-spacing:1px}
 @media(max-width:600px){.reservegrid{grid-template-columns:1fr}.huntcoverwrap{max-height:none}}
@@ -300,7 +307,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="notice" style="margin-top:10px"><b>Semáforo de preço — referência 07/10/2026.</b> Valores em <b>mínimo/ataque • médio • máximo/teto</b>, separados por formato e pensados para cópia comum em bom estado (aprox. VG+/NM) ou reedição decente. Primeiras prensagens, edições japonesas, promos, boxes, variantes raras e exemplares excepcionalmente conservados exigem avaliação própria.</div>
 <div id="huntGrid" class="huntgrid"></div>
 <div class="card" style="margin-top:14px"><b>🛞 10 RESERVAS — BANCO DE SUPLENTES</b>
-<div class="reservelegend">Cada linha mostra <b>mínimo/ataque • médio • máximo/teto</b>. LP continua sendo a preferência; CD é alternativa válida.</div>
+<div class="reservelegend">Cada linha mostra <b>mínimo/ataque • médio • máximo/teto</b>. LP continua sendo a preferência; CD é alternativa válida. Achou um suplente? Anote apenas o <b>preço pago</b> e marque <b>COMPREI</b>.</div>
 <div id="reserveGrid" class="reservegrid"></div>
 </div>
 </section>
@@ -440,7 +447,7 @@ const TRANSPORT_BUDGET=120;
 const EMERGENCY_BUDGET=300;
 const BUDGET=DISC_BUDGET+MERCH_BUDGET+MAIDEN_BUDGET+FOOD_BUDGET+TRANSPORT_BUDGET+EMERGENCY_BUDGET;
 
-function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},limits:{'Eric Discos':1800,'Galeria Nova Barão':1180}}}
+function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},limits:{'Eric Discos':1800,'Galeria Nova Barão':1180}}}
 let data;
 try{
   data=JSON.parse(localStorage.getItem(KEY)||'null');
@@ -452,6 +459,7 @@ try{
 data={...blankData(),...data};
 data.purchases=Array.isArray(data.purchases)?data.purchases:[];
 data.expenses=Array.isArray(data.expenses)?data.expenses:[];
+data.reserves=data.reserves&&typeof data.reserves==='object'&&!Array.isArray(data.reserves)?data.reserves:{};
 
 const $=id=>document.getElementById(id);
 const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -576,9 +584,27 @@ function renderHunt(){
   huntEric.textContent=money(Math.max(0,(data.limits['Eric Discos']||0)-limitSpent('Eric Discos')));
   huntBarao.textContent=money(Math.max(0,(data.limits['Galeria Nova Barão']||0)-limitSpent('Galeria Nova Barão')));
 }
+function reserveKey(i){return 'reserve_'+i}
+function reservePrice(i,v){
+  const k=reserveKey(i);
+  data.reserves[k]=data.reserves[k]||{};
+  data.reserves[k].price=Number(v||0);
+  localStorage.setItem(KEY,JSON.stringify(data));
+}
+function buyReserve(i){
+  const k=reserveKey(i),r=data.reserves[k]||{},price=Number(r.price||0);
+  if(!price||price<=0){alert('Informe o preço pago primeiro.');return}
+  if(r.bought){return}
+  data.reserves[k]={...r,bought:true,price};
+  localStorage.setItem(KEY,JSON.stringify(data));
+  renderReserves()
+}
 function renderReserveGroup(list,targetId){
   const box=$(targetId);if(!box)return;
-  box.innerHTML=list.map((x,i)=>`<div class="reserveitem"><div class="rtitle">${i+1}. ${esc(x.artist)} — <i>${esc(x.album)}</i></div><div class="rmeta">${esc(x.note)}</div><div class="rprice"><span>LP</span><b>${money(x.prices.LP.low)} / ${money(x.prices.LP.avg)} / ${money(x.prices.LP.high)}</b><span>CD</span><b>${money(x.prices.CD.low)} / ${money(x.prices.CD.avg)} / ${money(x.prices.CD.high)}</b></div></div>`).join('')
+  box.innerHTML=list.map((x,i)=>{
+    const r=data.reserves[reserveKey(i)]||{};
+    return `<div class="reserveitem ${r.bought?'reservebought':''}"><div class="rtitle">${i+1}. ${esc(x.artist)} — <i>${esc(x.album)}</i></div><div class="rmeta">${esc(x.note)}</div><div class="rprice"><span>LP</span><b>${money(x.prices.LP.low)} / ${money(x.prices.LP.avg)} / ${money(x.prices.LP.high)}</b><span>CD</span><b>${money(x.prices.CD.low)} / ${money(x.prices.CD.avg)} / ${money(x.prices.CD.high)}</b></div><div class="rquick"><input type="number" min="0" step="1" inputmode="decimal" placeholder="Preço pago" value="${r.price||''}" onchange="reservePrice(${i},this.value)" ${r.bought?'disabled':''}>${r.bought?'<span class="reserve-stamp" role="status">COMPRADO</span>':`<button class="btn" onclick="buyReserve(${i})">💿 COMPREI</button>`}</div>${r.bought?`<div class="rpaid">Preço pago: <b>${money(r.price)}</b></div>`:''}</div>`
+  }).join('')
 }
 function renderReserves(){renderReserveGroup(RESERVES,'reserveGrid')}
 
@@ -696,7 +722,7 @@ function validateBackup(imported){
 
   const arrays=['purchases','expenses'];
   arrays.forEach(k=>{if(candidate[k]!==undefined&&!Array.isArray(candidate[k]))throw new Error('Campo '+k+' inválido')});
-  const objects=['checks','tickets','journal','summary','hunt','limits'];
+  const objects=['checks','tickets','journal','summary','hunt','reserves','limits'];
   objects.forEach(k=>{if(candidate[k]!==undefined&&(!candidate[k]||typeof candidate[k]!=='object'||Array.isArray(candidate[k])))throw new Error('Campo '+k+' inválido')});
 
   return {...blankData(),...candidate,

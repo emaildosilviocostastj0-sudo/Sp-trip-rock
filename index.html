@@ -233,6 +233,11 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 .reserveitem .reserve-stamp{display:inline-block;border:3px double #d05a50;color:#e16b60;padding:3px 9px;font:900 18px/1 Impact,'Arial Black',sans-serif;letter-spacing:2px;transform:rotate(-5deg)}
 .reserveitem .rpaid{margin-top:7px;font-size:10px;color:#bbb}
 .reserveitem .rpaid b{color:var(--gold)}
+/* Ajustes opcionais de roteiro: intervenção pontual, sem modificar os cartões */
+.route-flex{margin-top:8px;padding-top:6px;border-top:1px dashed #7775;font-size:11px;line-height:1.4}
+.route-flex select{max-width:100%;width:100%;background:#111318;color:#e8ddcb;border:1px solid #76674c;border-radius:3px;padding:6px;font-size:11px}
+.route-flex small{display:block;color:#d4c6b0;margin-top:5px;font-size:11px}
+.route-flex button{border:0;background:transparent;color:var(--gold);padding:0 0 0 6px;text-decoration:underline;font:inherit;cursor:pointer}
 .reservelegend{font-size:11px;opacity:.78;margin-top:7px}
 .format-priority{display:inline-block;margin-left:4px;padding:2px 6px;border:1px solid #8c8066;font-size:10px;font-weight:900;letter-spacing:1px}
 @media(max-width:600px){.reservegrid{grid-template-columns:1fr}.huntcoverwrap{max-height:none}}
@@ -448,7 +453,7 @@ const TRANSPORT_BUDGET=220;
 const EMERGENCY_BUDGET=300;
 const BUDGET=DISC_BUDGET+MERCH_BUDGET+MAIDEN_BUDGET+FOOD_BUDGET+TRANSPORT_BUDGET+EMERGENCY_BUDGET;
 
-function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},limits:{'Eric Discos':1800,'Galeria Nova Barão':1180}}}
+function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},routeChanges:{},limits:{'Eric Discos':1800,'Galeria Nova Barão':1180}}}
 let data;
 try{
   data=JSON.parse(localStorage.getItem(KEY)||'null');
@@ -461,6 +466,7 @@ data={...blankData(),...data};
 data.purchases=Array.isArray(data.purchases)?data.purchases:[];
 data.expenses=Array.isArray(data.expenses)?data.expenses:[];
 data.reserves=data.reserves&&typeof data.reserves==='object'&&!Array.isArray(data.reserves)?data.reserves:{};
+data.routeChanges=data.routeChanges&&typeof data.routeChanges==='object'&&!Array.isArray(data.routeChanges)?data.routeChanges:{};
 
 const $=id=>document.getElementById(id);
 const money=n=>Number(n||0).toLocaleString('pt-BR',{style:'currency',currency:'BRL'});
@@ -471,6 +477,55 @@ function go(id){$(id).scrollIntoView()}
 
 const checks=[...document.querySelectorAll('.check')];
 checks.forEach((b,i)=>{b.checked=!!data.checks[i];b.onchange=()=>{data.checks[i]=b.checked;save()}});
+/* Somente passeios negociáveis. Shows, Horror Expo, voos e check-out permanecem fixos. */
+const FLEXIBLE_STOPS=[1,3,4,5,9,10];
+const flexibleNodes=new Map();
+FLEXIBLE_STOPS.forEach(i=>{
+  const place=checks[i]?.closest('.item')?.querySelector('.row > div:nth-child(2)');
+  if(!place)return;
+  const tool=document.createElement('div');
+  tool.className='route-flex';
+  place.appendChild(tool);
+  flexibleNodes.set(i,tool);
+});
+function changeRoute(i,mode){
+  if(!FLEXIBLE_STOPS.includes(i))return;
+  const prior=data.routeChanges[i]||{};
+  if(mode==='replace'){
+    const input=prompt('O que entrou no lugar desta atividade?',prior.alternative||'');
+    if(input===null){renderRouteChanges();return}
+    const alternative=input.trim().slice(0,220);
+    if(!alternative){alert('Escreva a atividade substituta para registrar a troca.');renderRouteChanges();return}
+    const changed=prior.mode!=='replace'||prior.alternative!==alternative;
+    data.routeChanges[i]={mode:'replace',alternative};
+    if(changed)data.checks[i]=false; // trocar não significa realizar
+  }else if(mode==='skip'){
+    data.routeChanges[i]={mode:'skip'};
+    data.checks[i]=false;
+  }else{
+    data.routeChanges[i]={mode:'planned'};
+  }
+  save()
+}
+function renderRouteChanges(){
+  for(const [i,tool] of flexibleNodes){
+    const change=data.routeChanges[i]||{};
+    const mode=change.mode==='skip'?'skip':change.mode==='replace'?'replace':'planned';
+    const alt=String(change.alternative||'');
+    tool.innerHTML=`<select aria-label="Ajustar passeio do roteiro">
+      <option value="planned" ${mode==='planned'?'selected':''}>NO ROTEIRO • realizar como previsto</option>
+      <option value="skip" ${mode==='skip'?'selected':''}>DISPENSADO • não contar no progresso</option>
+      <option value="replace" ${mode==='replace'?'selected':''}>SUBSTITUÍDO • registrar outro passeio</option>
+    </select>${mode==='replace'
+      ?`<small>↳ No lugar: <b>${esc(alt)}</b><button type="button">editar</button><br>Marque o ✓ quando a atividade substituta for realizada.</small>`
+      :mode==='skip'?'<small>Fora do roteiro. Esta parada não reduz a porcentagem da viagem.</small>':''}`;
+    tool.querySelector('select').onchange=e=>changeRoute(i,e.target.value);
+    const edit=tool.querySelector('button');
+    if(edit)edit.onclick=()=>changeRoute(i,'replace');
+    checks[i].disabled=mode==='skip';
+  }
+}
+
 const tchecks=[...document.querySelectorAll('.ticketcheck')];
 tchecks.forEach((b,i)=>{b.checked=!!data.tickets[i];b.onchange=()=>{data.tickets[i]=b.checked;save()}});
 
@@ -646,8 +701,9 @@ function renderAll(){
   checks.forEach((b,i)=>{b.checked=!!data.checks[i];b.closest('.item').classList.toggle('done',b.checked)});
   tchecks.forEach((b,i)=>b.checked=!!data.tickets[i]);
 
-  const done=checks.filter(x=>x.checked).length;
-  const pct=checks.length?Math.round(done/checks.length*100):0;
+  const eligibleChecks=checks.filter((b,i)=>data.routeChanges[i]?.mode!=='skip');
+  const done=eligibleChecks.filter(x=>x.checked).length;
+  const pct=eligibleChecks.length?Math.round(done/eligibleChecks.length*100):100;
   $('fill').style.width=pct+'%';
   $('prog').textContent=pct+'% DA MISSÃO CUMPRIDA';
 
@@ -720,6 +776,7 @@ function renderAll(){
   $('moneyStat').textContent=money(t.total);
   renderHunt();
   renderReserves();
+  renderRouteChanges();
   makeJournal()
 }
 
@@ -757,7 +814,7 @@ function validateBackup(imported){
 
   const arrays=['purchases','expenses'];
   arrays.forEach(k=>{if(candidate[k]!==undefined&&!Array.isArray(candidate[k]))throw new Error('Campo '+k+' inválido')});
-  const objects=['checks','tickets','journal','summary','hunt','reserves','limits'];
+  const objects=['checks','tickets','journal','summary','hunt','reserves','routeChanges','limits'];
   objects.forEach(k=>{if(candidate[k]!==undefined&&(!candidate[k]||typeof candidate[k]!=='object'||Array.isArray(candidate[k])))throw new Error('Campo '+k+' inválido')});
 
   return {...blankData(),...candidate,

@@ -244,10 +244,16 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 #cacada .hunt-research label{display:block;font-size:10px;font-weight:900;letter-spacing:.65px;color:#e8dcc7;margin:0 0 5px}
 #cacada .hunt-research select,#cacada .hunt-research input{width:100%;min-width:0;background:#15120fe8;border:1px solid #8c7857;color:#fff1d9;border-radius:3px;padding:8px;font-size:12px}
 #cacada .hunt-research .hunt-reason{margin-top:7px}
+#cacada .hunt-research .hunt-quality-row{display:grid;grid-template-columns:minmax(0,1fr) minmax(0,1fr);gap:6px;margin-top:7px}
+#cacada .hunt-research .hunt-quality-row .hunt-reason{margin-top:0}
 #cacada .hunt-research .hunt-note{margin-top:7px}
 #cacada .hunt-observations{border-top:1px dashed #a28a6155;margin-top:9px;padding-top:6px;font:11px/1.45 Arial,sans-serif;color:#e3d5bb}
 #cacada .hunt-observations div{margin:3px 0;overflow-wrap:anywhere}
 #cacada .hunt-observations strong{color:#f4d7a2}
+#cacada .hunt-observations .hunt-compare-head{font-weight:900;font-size:10px;letter-spacing:.5px;color:#e5c484;margin-bottom:5px}
+#cacada .hunt-observations .hunt-price-flag{display:inline-block;margin-left:3px;padding:1px 4px;border:1px solid #7e7149;border-radius:2px;color:#f6d995;font-weight:900;font-size:9px}
+#cacada .hunt-observations .hunt-offer-row{border-bottom:1px solid #5f513a42;padding:5px 0;line-height:1.4}
+#cacada .hunt-observations .hunt-offer-row:last-child{border-bottom:0}
 .reservelegend{font-size:11px;opacity:.78;margin-top:7px}
 .format-priority{display:inline-block;margin-left:4px;padding:2px 6px;border:1px solid #8c8066;font-size:10px;font-weight:900;letter-spacing:1px}
 @media(max-width:600px){.reservegrid{grid-template-columns:1fr}.huntcoverwrap{max-height:none}}
@@ -323,7 +329,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <section id="cacada" class="section"><h2 class="sectiontitle">🎯 Caçada de Vinil</h2>
 <div class="card huntintro"><b>OPERAÇÃO GARIMPO PAULISTA — WISHLIST DEFINITIVA</b>
 <p style="font-size:12px"><b>10 alvos principais</b> e <b>10 reservas</b>. Todos podem entrar na coleção em <b>LP ou CD</b>; a prioridade geral continua sendo o <b>preto com buraco no meio</b>. <span class="format-priority">LP &gt; CD</span></p>
-<p style="font-size:12px">Nos alvos principais, escolha o formato antes de avaliar a oferta: o semáforo muda automaticamente entre as faixas de LP e CD. Depois, registre se encontrou ou não o disco em cada loja; se encontrou e não levou, anote o preço e o motivo. As três lojas compartilham <b>um único caixa de discos</b>, sem limite individual: cada compra abate do saldo comum e fica registrada por loja. Achados excepcionais podem furar a fila — e <b>Maggot Brain</b> continua sendo questão de honra.</p>
+<p style="font-size:12px">Nos alvos principais, escolha o formato antes de avaliar a oferta: o semáforo muda automaticamente entre as faixas de LP e CD. Depois, registre se encontrou ou não o disco em cada loja; se encontrou e não levou, anote preço, <b>estado de conservação da mídia</b> e motivo. Os achados ficam comparáveis no próprio cartão; use a observação para descrever a capa, a edição ou defeitos. As três lojas compartilham <b>um único caixa de discos</b>, sem limite individual: cada compra abate do saldo comum e fica registrada por loja. Achados excepcionais podem furar a fila — e <b>Maggot Brain</b> continua sendo questão de honra.</p>
 <div class="huntbudget"><div>CAIXA ÚNICO • ERIC / NOVA BARÃO / GALERIA DO ROCK<br><b id="huntPoolRemaining">R$ 3.600,00</b><br><small>saldo disponível para as três lojas</small></div><div>COMPRAS DE DISCOS REGISTRADAS<br><b id="huntPoolSpent">R$ 0,00</b><br><small>total abatido do mesmo caixa, em qualquer loja</small></div></div>
 <div class="huntfilters"><button class="btn alt" onclick="setHuntFilter('all')">TODOS</button><button class="btn alt" onclick="setHuntFilter('brit')">BRITÂNICO</button><button class="btn alt" onclick="setHuntFilter('metal')">METAL</button><button class="btn alt" onclick="setHuntFilter('punk')">PUNK</button><button class="btn alt" onclick="setHuntFilter('br')">BRASIL</button><button class="btn alt" onclick="setHuntFilter('hard70')">70s / HARD</button></div></div>
 <div class="notice" style="margin-top:10px"><b>Semáforo de preço — referência 07/10/2026.</b> Valores em <b>mínimo/ataque • médio • máximo/teto</b>, separados por formato e pensados para cópia comum em bom estado (aprox. VG+/NM) ou reedição decente. Primeiras prensagens, edições japonesas, promos, boxes, variantes raras e exemplares excepcionalmente conservados exigem avaliação própria.</div>
@@ -640,13 +646,15 @@ function huntVerdict(item,price,format){
   return ['abort','✕ PASSE LONGE'];
 }
 const HUNT_REASONS=[["","MOTIVO — SELECIONE"],["caro","Preço alto"],["estado","Conservação ruim"],["edicao","Edição não interessou"],["verba","Verba insuficiente"],["prioridade","Preferi outro disco"],["outro","Outro motivo"]];
+const HUNT_GRADES=[["","ESTADO DO DISCO"],["LACRADO","LACRADO"],["NM","NM • QUASE NOVO"],["VG+","VG+ • MUITO BOM"],["VG","VG • BOM"],["G","G • GASTO"],["F/P","F/P • RUIM"]];
+function huntGradeLabel(value){return HUNT_GRADES.find(g=>g[0]===value)?.[1]||"NÃO AVALIADO"}
 function huntRecord(id){
   const h=data.hunt[id]||(data.hunt[id]={});
   const place=h.place||"Eric Discos",format=h.format||"LP",key=place+"::"+format;
   if(!h.sightings||typeof h.sightings!=="object"||Array.isArray(h.sightings))h.sightings={};
   if(!h.sightings[key]){
     const first=Object.keys(h.sightings).length===0;
-    h.sightings[key]={status:"",price:first?Math.max(0,Number(h.price)||0):0,reason:"",note:""};
+    h.sightings[key]={status:"",price:first?Math.max(0,Number(h.price)||0):0,condition:"",reason:"",note:""};
   }
   return {h,s:h.sightings[key],place,format};
 }
@@ -678,8 +686,13 @@ function huntFormat(id,v){
 function huntOutcome(id,status){
   const {h,s}=huntRecord(id);
   s.status=["","found","notfound"].includes(status)?status:"";
-  if(s.status==="notfound"){s.price=0;h.price=0;s.reason="";}
+  if(s.status==="notfound"){s.price=0;h.price=0;s.condition="";s.reason="";}
   if(s.status===""){s.reason="";}
+  huntPersist();
+}
+function huntCondition(id,grade){
+  const {s}=huntRecord(id);
+  s.condition=HUNT_GRADES.some(x=>x[0]===grade)?grade:"";
   huntPersist();
 }
 function huntReason(id,reason){
@@ -715,15 +728,23 @@ function renderHunt(){
     const outcomeOptions=[["","AINDA NÃO PROCUREI"],["notfound","NÃO ACHEI"],["found","ACHEI • NÃO COMPREI"]]
       .map(([value,label])=>`<option value="${value}" ${s.status===value?"selected":""}>${label}</option>`).join("");
     const reasonOptions=HUNT_REASONS.map(([value,label])=>`<option value="${value}" ${s.reason===value?"selected":""}>${label}</option>`).join("");
-    const observations=Object.entries(h.sightings||{}).filter(([key,rec])=>rec&&["found","notfound"].includes(rec.status)).map(([key,rec])=>{
-      const [store,media]=key.split("::");
-      const label=rec.status==="notfound"?"NÃO ACHEI":("ACHEI"+(Number(rec.price)>0?" por "+money(rec.price):" • preço não registrado"));
-      const reason=HUNT_REASONS.find(o=>o[0]===rec.reason)?.[1]||"";
-      const why=rec.status==="found"&&rec.reason?(" • "+reason):"";
-      return `<div><strong>${esc(store)} / ${esc(media||"LP")}:</strong> ${esc(label+why)}${rec.note?" • "+esc(rec.note):""}</div>`;
+    const sightings=Object.entries(h.sightings||{}).filter(([key,rec])=>rec&&["found","notfound"].includes(rec.status));
+    const offers=sightings.filter(([key,rec])=>rec.status==="found"&&Number(rec.price)>0);
+    const byMedia=media=>offers.filter(([key])=>(key.split("::")[1]||"LP")===media);
+    const observations=sightings.map(([key,rec])=>{
+      const [store,media="LP"]=key.split("::");
+      if(rec.status==="notfound")return `<div class="hunt-offer-row"><strong>${esc(store)} / ${esc(media)}:</strong> NÃO ENCONTREI${rec.note?" • "+esc(rec.note):""}</div>`;
+      const price=Number(rec.price)>0?money(rec.price):"PREÇO NÃO ANOTADO";
+      const grade=huntGradeLabel(rec.condition);
+      const sameFormat=byMedia(media);
+      const lowest=Number(rec.price)>0&&sameFormat.length>1&&Number(rec.price)===Math.min(...sameFormat.map(([,v])=>Number(v.price)));
+      const flag=lowest?'<span class="hunt-price-flag" title="Menor preço anotado nesse formato; confira a conservação antes de decidir">MENOR PREÇO</span>':"";
+      const why=HUNT_REASONS.find(o=>o[0]===rec.reason)?.[1]||"";
+      return `<div class="hunt-offer-row"><strong>${esc(store)} / ${esc(media)}</strong> • ${esc(price)} • ${esc(grade)}${flag}${why?" • "+esc(why):""}${rec.note?" • "+esc(rec.note):""}</div>`;
     }).join("");
-    const research=h.bought?"":`<div class="hunt-research"><label for="hunt-status-${x.id}">RESULTADO DA PROCURA • ${esc(place)} / ${format}</label><select id="hunt-status-${x.id}" aria-label="Resultado da procura" onchange="huntOutcome('${x.id}',this.value)">${outcomeOptions}</select>${s.status==="found"?`<select class="hunt-reason" aria-label="Por que não comprou" onchange="huntReason('${x.id}',this.value)">${reasonOptions}</select>`:""}${s.status?`<input class="hunt-note" type="text" maxlength="180" aria-label="Observação da procura" placeholder="Observação opcional (edição, estado…)" value="${esc(s.note||"")}" oninput="huntNote('${x.id}',this.value)">`:""}</div>`;
-    return `<div data-hunt-id="${x.id}" data-format="${format}" class="wanted ${h.bought?"huntbought":""} ${x.tier==="wildcard"?"wildcard":""}" style="--tilt:${tilt}deg"><div class="huntcoverwrap"><img class="huntcover" src="${x.cover}" alt="Capa de ${esc(x.album)} — ${esc(x.artist)}" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.huntcoverwrap').style.display='none'"></div><h3>${x.artist}</h3><div class="album">${x.album}</div><div class="mission">${x.mission}</div><div class="huntformat"><label>FORMATO</label><select onchange="huntFormat('${x.id}',this.value)" ${h.bought?"disabled":""}><option value="LP" ${format==="LP"?"selected":""}>LP • VINIL</option><option value="CD" ${format==="CD"?"selected":""}>CD</option></select></div><div class="prices"><div>MÍN / ATAQUE<b>${money(band.low)}</b></div><div>MÉDIO<b>${money(band.avg)}</b></div><div>MÁX / TETO<b>${money(band.high)}</b></div></div><div class="huntprice"><input type="number" step="0.01" min="0" inputmode="decimal" placeholder="Preço achado" aria-label="Preço achado" value="${Number(s.price)>0?s.price:""}" onchange="huntPrice('${x.id}',this.value)" ${h.bought?"disabled":""}><select aria-label="Local da procura" onchange="huntPlace('${x.id}',this.value)" ${h.bought?"disabled":""}><option ${place==="Eric Discos"?"selected":""}>Eric Discos</option><option ${place==="Galeria Nova Barão"?"selected":""}>Galeria Nova Barão</option><option ${place==="Galeria do Rock"?"selected":""}>Galeria do Rock</option></select></div><div class="verdict ${v[0]}">${v[1]}</div>${research}<div class="huntactions">${h.bought?'<span class="purchase-stamp" role="status" aria-label="Disco comprado">COMPRADO</span>':`<button class="btn" onclick="buyHunt('${x.id}')">💿 COMPREI</button>`}</div>${observations?`<div class="hunt-observations" aria-label="Histórico da procura">${observations}</div>`:""}</div>`;
+    const gradeOptions=HUNT_GRADES.map(([value,label])=>`<option value="${value}" ${(s.condition||"")===value?"selected":""}>${label}</option>`).join("");
+    const research=h.bought?"":`<div class="hunt-research"><label for="hunt-status-${x.id}">RESULTADO DA PROCURA • ${esc(place)} / ${format}</label><select id="hunt-status-${x.id}" aria-label="Resultado da procura" onchange="huntOutcome('${x.id}',this.value)">${outcomeOptions}</select>${s.status==="found"?`<div class="hunt-quality-row"><select class="hunt-condition" title="Conservação da mídia. Use observações para o estado da capa." aria-label="Conservação do disco" onchange="huntCondition('${x.id}',this.value)">${gradeOptions}</select><select class="hunt-reason" aria-label="Por que não comprou" onchange="huntReason('${x.id}',this.value)">${reasonOptions}</select></div>`:""}${s.status?`<input class="hunt-note" type="text" maxlength="180" aria-label="Observação da procura" placeholder="Capa, prensagem, riscos, encarte..." value="${esc(s.note||"")}" oninput="huntNote('${x.id}',this.value)">`:""}</div>`;
+    return `<div data-hunt-id="${x.id}" data-format="${format}" class="wanted ${h.bought?"huntbought":""} ${x.tier==="wildcard"?"wildcard":""}" style="--tilt:${tilt}deg"><div class="huntcoverwrap"><img class="huntcover" src="${x.cover}" alt="Capa de ${esc(x.album)} — ${esc(x.artist)}" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.huntcoverwrap').style.display='none'"></div><h3>${x.artist}</h3><div class="album">${x.album}</div><div class="mission">${x.mission}</div><div class="huntformat"><label>FORMATO</label><select onchange="huntFormat('${x.id}',this.value)" ${h.bought?"disabled":""}><option value="LP" ${format==="LP"?"selected":""}>LP • VINIL</option><option value="CD" ${format==="CD"?"selected":""}>CD</option></select></div><div class="prices"><div>MÍN / ATAQUE<b>${money(band.low)}</b></div><div>MÉDIO<b>${money(band.avg)}</b></div><div>MÁX / TETO<b>${money(band.high)}</b></div></div><div class="huntprice"><input type="number" step="0.01" min="0" inputmode="decimal" placeholder="Preço achado" aria-label="Preço achado" value="${Number(s.price)>0?s.price:""}" onchange="huntPrice('${x.id}',this.value)" ${h.bought?"disabled":""}><select aria-label="Local da procura" onchange="huntPlace('${x.id}',this.value)" ${h.bought?"disabled":""}><option ${place==="Eric Discos"?"selected":""}>Eric Discos</option><option ${place==="Galeria Nova Barão"?"selected":""}>Galeria Nova Barão</option><option ${place==="Galeria do Rock"?"selected":""}>Galeria do Rock</option></select></div><div class="verdict ${v[0]}">${v[1]}</div>${research}<div class="huntactions">${h.bought?'<span class="purchase-stamp" role="status" aria-label="Disco comprado">COMPRADO</span>':`<button class="btn" onclick="buyHunt('${x.id}')">💿 COMPREI</button>`}</div>${observations?`<div class="hunt-observations" aria-label="Histórico da procura"><div class="hunt-compare-head">💿 HISTÓRICO DE OFERTAS • ${offers.length} ENCONTRADA(S) • PREÇO × ESTADO</div>${observations}</div>`:""}</div>`;
   }).join("");
   const spent=pooledDiscSpent(),left=DISC_BUDGET-spent;
   huntPoolRemaining.textContent=money(left);

@@ -325,8 +325,8 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <section id="cacada" class="section"><h2 class="sectiontitle">🎯 Caçada de Vinil</h2>
 <div class="card huntintro"><b>OPERAÇÃO GARIMPO PAULISTA — WISHLIST DEFINITIVA</b>
 <p style="font-size:12px"><b>10 alvos principais</b> e <b>10 reservas</b>. Todos podem entrar na coleção em <b>LP ou CD</b>; a prioridade geral continua sendo o <b>preto com buraco no meio</b>. <span class="format-priority">LP &gt; CD</span></p>
-<p style="font-size:12px">Nos alvos principais, escolha o formato antes de avaliar a oferta: o semáforo muda automaticamente entre as faixas de LP e CD. Depois, registre se encontrou ou não o disco em cada loja; se encontrou e não levou, anote o preço e o motivo. Os limites por loja continuam como <b>limites operacionais iniciais</b>, não como teto da verba total de discos. Achados excepcionais podem furar a fila — e <b>Maggot Brain</b> continua sendo questão de honra.</p>
-<div class="huntbudget"><div>ERIC DISCOS<br><b id="huntEric">R$ 1.800</b><br><small>saldo da verba do local</small></div><div>NOVA BARÃO<br><b id="huntBarao">R$ 1.180</b><br><small>saldo da verba do local</small></div></div>
+<p style="font-size:12px">Nos alvos principais, escolha o formato antes de avaliar a oferta: o semáforo muda automaticamente entre as faixas de LP e CD. Depois, registre se encontrou ou não o disco em cada loja; se encontrou e não levou, anote o preço e o motivo. As três lojas compartilham <b>um único caixa de discos</b>, sem limite individual: cada compra abate do saldo comum e fica registrada por loja. Achados excepcionais podem furar a fila — e <b>Maggot Brain</b> continua sendo questão de honra.</p>
+<div class="huntbudget"><div>CAIXA ÚNICO • ERIC / NOVA BARÃO / GALERIA DO ROCK<br><b id="huntPoolRemaining">R$ 3.580,00</b><br><small>saldo disponível para as três lojas</small></div><div>COMPRAS DE DISCOS REGISTRADAS<br><b id="huntPoolSpent">R$ 0,00</b><br><small>total abatido do mesmo caixa, em qualquer loja</small></div></div>
 <div class="huntfilters"><button class="btn alt" onclick="setHuntFilter('all')">TODOS</button><button class="btn alt" onclick="setHuntFilter('brit')">BRITÂNICO</button><button class="btn alt" onclick="setHuntFilter('metal')">METAL</button><button class="btn alt" onclick="setHuntFilter('punk')">PUNK</button><button class="btn alt" onclick="setHuntFilter('br')">BRASIL</button><button class="btn alt" onclick="setHuntFilter('hard70')">70s / HARD</button></div></div>
 <div class="notice" style="margin-top:10px"><b>Semáforo de preço — referência 07/10/2026.</b> Valores em <b>mínimo/ataque • médio • máximo/teto</b>, separados por formato e pensados para cópia comum em bom estado (aprox. VG+/NM) ou reedição decente. Primeiras prensagens, edições japonesas, promos, boxes, variantes raras e exemplares excepcionalmente conservados exigem avaliação própria.</div>
 <div id="huntGrid" class="huntgrid"></div>
@@ -342,7 +342,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="field"><label>Preço (R$)</label><input id="pprice" type="number" min="0" step="0.01" placeholder="0,00"></div>
 <div class="field"><label>Artista / item</label><input id="partist" placeholder="Artista ou produto"></div>
 <div class="field"><label>Título / descrição</label><input id="ptitle" placeholder="Álbum, camiseta..."></div>
-<div class="field"><label>Local</label><select id="pplace"><option>Eric Discos</option><option>Galeria Nova Barão</option><option>The Gathering</option><option>Apocalyptica</option><option>Vulcano/Hellbutcher</option><option>Amorphis</option><option>Galeria do Rock</option><option>Horror Expo</option><option>Outro</option></select></div>
+<div class="field"><label>Local</label><select id="pplace"><option>Eric Discos</option><option>Galeria Nova Barão</option><option>Galeria do Rock</option><option>The Gathering</option><option>Apocalyptica</option><option>Vulcano/Hellbutcher</option><option>Amorphis</option><option>Horror Expo</option><option>Outro</option></select></div>
 <div class="field"><label>Edição / país</label><input id="pedition" placeholder="1989 BR, reedição 180g, remaster..."></div>
 <div class="field wide"><label>Observação</label><input id="pnote" placeholder="Achado, estado, raridade..."></div>
 <button class="btn wide" onclick="addPurchase()">+ ADICIONAR À SACOLA</button>
@@ -361,7 +361,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 #gastos .war-disc-total>div,#gastos .war-envelope,#gastos .war-summary>div{background:linear-gradient(#181b1e,#090a0b);border:1px solid #444;box-shadow:inset 0 0 12px #000;padding:10px;min-width:0}
 #gastos .war-disc-total small,#gastos .war-envelope small,#gastos .war-summary small{display:block;color:#999;text-transform:uppercase;font-size:9px;letter-spacing:.5px}
 #gastos .war-disc-total b{display:block;margin-top:3px;font:900 16px/1.15 'Black Ops One','Arial Black',sans-serif;color:var(--gold)}
-#gastos .war-stores{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+#gastos .war-stores{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
 #gastos .war-store{border-top:3px solid #9b0011}
 #gastos .war-store>strong{display:block;font:900 15px/1.1 'Black Ops One','Arial Black',sans-serif;color:#eee;margin-bottom:9px}
 #gastos .war-values{display:grid;grid-template-columns:1fr 1fr;gap:6px}
@@ -383,6 +383,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
   #gastos .war-disc-total>div{padding:8px 6px}
   #gastos .war-disc-total b{font-size:13px}
   #gastos .war-stores{grid-template-columns:repeat(2,minmax(0,1fr));gap:6px}
+  #gastos .war-store:last-child{grid-column:1/-1}
   #gastos .war-store{padding:9px 7px}
   #gastos .war-store>strong{font-size:12px}
   #gastos .war-values{gap:4px}
@@ -396,17 +397,18 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 }
 </style><section id="gastos" class="section"><h2 class="sectiontitle">💰 Caixa de guerra</h2>
 <div class="card war-card">
-<div class="war-total"><div><small>SALDO TOTAL DA VIAGEM</small><div class="money" id="remaining">R$ 4.500,00</div></div><div class="war-total-meta"><small>ORÇAMENTO TOTAL</small><b id="budgetLabel">R$ 4.500,00</b></div></div>
+<div class="war-total"><div><small>SALDO TOTAL DA VIAGEM</small><div class="money" id="remaining">R$ 5.000,00</div></div><div class="war-total-meta"><small>ORÇAMENTO TOTAL</small><b id="budgetLabel">R$ 5.000,00</b></div></div>
 
 <div class="war-section-label">💿 GARIMPO DE DISCOS</div>
 <div class="war-disc-total">
-<div><small>Verba total</small><b id="discBudgetLabel">R$ 3.080,00</b></div>
+<div><small>Verba única • 3 lojas</small><b id="discBudgetLabel">R$ 3.580,00</b></div>
 <div><small>Gasto</small><b id="discMoney">R$ 0,00</b></div>
-<div><small>Saldo</small><b id="discRemaining">R$ 3.080,00</b></div>
+<div><small>Saldo compartilhado</small><b id="discRemaining">R$ 3.580,00</b></div>
 </div>
 <div class="war-stores">
-<div class="war-envelope war-store"><strong>ERIC DISCOS</strong><div class="war-values"><div><small>Verba</small><b id="warEricBudget">R$ 1.800,00</b></div><div><small>Saldo</small><b id="warEricRemaining">R$ 1.800,00</b></div></div><small class="war-spent">Gasto no local: <b id="warEricSpent">R$ 0,00</b></small></div>
-<div class="war-envelope war-store"><strong>NOVA BARÃO</strong><div class="war-values"><div><small>Verba</small><b id="warBaraoBudget">R$ 1.180,00</b></div><div><small>Saldo</small><b id="warBaraoRemaining">R$ 1.180,00</b></div></div><small class="war-spent">Gasto no local: <b id="warBaraoSpent">R$ 0,00</b></small></div>
+<div class="war-envelope war-store"><strong>ERIC DISCOS</strong><div class="war-values"><div><small>Gasto em discos</small><b id="warEricSpent">R$ 0,00</b></div><div><small>Itens</small><b id="warEricCount">0</b></div></div><small class="war-spent">Abate do caixa único de discos</small></div>
+<div class="war-envelope war-store"><strong>NOVA BARÃO</strong><div class="war-values"><div><small>Gasto em discos</small><b id="warBaraoSpent">R$ 0,00</b></div><div><small>Itens</small><b id="warBaraoCount">0</b></div></div><small class="war-spent">Abate do caixa único de discos</small></div>
+<div class="war-envelope war-store"><strong>GALERIA DO ROCK</strong><div class="war-values"><div><small>Gasto em discos</small><b id="warRockSpent">R$ 0,00</b></div><div><small>Itens</small><b id="warRockCount">0</b></div></div><small class="war-spent">Abate do caixa único de discos</small></div>
 </div>
 
 <div class="war-section-label">OUTROS ENVELOPES</div>
@@ -455,7 +457,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <dialog id="resetDialog" aria-labelledby="resetTitle" aria-describedby="resetDescription" style="max-width:440px;width:calc(100% - 48px);background:var(--panel,#151515);color:var(--text,#eee);border:2px solid var(--gold,#c8b98e);padding:22px">
 <h2 id="resetTitle">ZERAR TUDO?</h2>
-<p id="resetDescription">Apagar checklist, marcações de ingressos, compras, gastos, diário, resumo e registros do garimpo? Os limites por loja voltam a R$ 1.800 e R$ 1.180. Esta ação não pode ser desfeita sem um backup.</p>
+<p id="resetDescription">Apagar checklist, marcações de ingressos, compras, gastos, diário, resumo e registros do garimpo? O orçamento geral permanece em R$ 5.000 e o caixa de discos em R$ 3.580. Esta ação não pode ser desfeita sem um backup.</p>
 <p>O roteiro, a lista de discos e o orçamento geral permanecem.</p>
 <p id="resetError" role="alert"></p>
 <div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn alt" autofocus onclick="document.getElementById('resetDialog').close()">CANCELAR</button><button type="button" class="btn" onclick="confirmReset()">SIM, ZERAR TUDO</button></div>
@@ -463,7 +465,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <script>
 const KEY='spRockCompanionV3';
 const OLDKEY='spRockCompanionV2';
-const DISC_BUDGET=3080;
+const DISC_BUDGET=3580;
 const MERCH_BUDGET=400;
 const MAIDEN_BUDGET=200;
 const FOOD_BUDGET=300;
@@ -471,7 +473,7 @@ const TRANSPORT_BUDGET=220;
 const EMERGENCY_BUDGET=300;
 const BUDGET=DISC_BUDGET+MERCH_BUDGET+MAIDEN_BUDGET+FOOD_BUDGET+TRANSPORT_BUDGET+EMERGENCY_BUDGET;
 
-function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},routeChanges:{},limits:{'Eric Discos':1800,'Galeria Nova Barão':1180}}}
+function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},routeChanges:{},limits:{}}}
 let data;
 try{
   data=JSON.parse(localStorage.getItem(KEY)||'null');
@@ -599,14 +601,12 @@ function totals(){
   return {purchaseTotal,expenseTotal,total:purchaseTotal+expenseTotal}
 }
 
-data.hunt=data.hunt||{};data.limits={...{'Eric Discos':1800,'Galeria Nova Barão':1180},...(data.limits||{})};
-if((data.limits['Eric Discos']===750 && data.limits['Galeria Nova Barão']===400) ||
-   (data.limits['Eric Discos']===undefined && data.limits['Galeria Nova Barão']===undefined)){
-  data.limits['Eric Discos']=1800;
-  data.limits['Galeria Nova Barão']=1180;
-  localStorage.setItem(KEY,JSON.stringify(data));
-}let huntFilter='all';
-function limitSpent(place){return allPurchases().filter(x=>x.place===place).reduce((a,x)=>a+num(x.price),0)}
+data.hunt=data.hunt||{};
+// Limites antigos de backups são preservados nos dados, mas não têm efeito no caixa único.
+let huntFilter='all';
+function discSpentAt(place){return allPurchases().filter(x=>x.type==='Disco'&&x.place===place).reduce((a,x)=>a+num(x.price),0)}
+function discCountAt(place){return allPurchases().filter(x=>x.type==='Disco'&&x.place===place).length}
+function pooledDiscSpent(){return allPurchases().filter(x=>x.type==='Disco'&&x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0)}
 const HUNT=[
 {id:'funkadelic',artist:'Funkadelic',album:'Maggot Brain',tags:['hard70'],mission:'🦄 QUESTÃO DE HONRA • prioridade máxima',tier:'wildcard',cover:'https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200',prices:{LP:{low:250,avg:400,high:550},CD:{low:90,avg:140,high:225}}},
 {id:'stoneroses',artist:'The Stone Roses',album:'The Stone Roses',tags:['brit'],mission:'🎯 ALVO • britânico / prioridade alta',tier:'target',cover:'https://is1-ssl.mzstatic.com/image/thumb/Music/d2/db/21/mzi.kihcrutv.jpg/1200x1200bb.jpg',prices:{LP:{low:250,avg:300,high:350},CD:{low:90,avg:150,high:260}}},
@@ -709,7 +709,7 @@ function buyHunt(id){
   save();
 }
 function renderHunt(){
-  const huntGrid=$("huntGrid"),huntEric=$("huntEric"),huntBarao=$("huntBarao");
+  const huntGrid=$("huntGrid"),huntPoolRemaining=$("huntPoolRemaining"),huntPoolSpent=$("huntPoolSpent");
   if(!huntGrid)return;
   const visible=HUNT.filter(x=>huntFilter==="all"||x.tags.includes(huntFilter));
   huntGrid.innerHTML=visible.map((x,i)=>{
@@ -727,10 +727,12 @@ function renderHunt(){
       return `<div><strong>${esc(store)} / ${esc(media||"LP")}:</strong> ${esc(label+why)}${rec.note?" • "+esc(rec.note):""}</div>`;
     }).join("");
     const research=h.bought?"":`<div class="hunt-research"><label for="hunt-status-${x.id}">RESULTADO DA PROCURA • ${esc(place)} / ${format}</label><select id="hunt-status-${x.id}" aria-label="Resultado da procura" onchange="huntOutcome('${x.id}',this.value)">${outcomeOptions}</select>${s.status==="found"?`<select class="hunt-reason" aria-label="Por que não comprou" onchange="huntReason('${x.id}',this.value)">${reasonOptions}</select>`:""}${s.status?`<input class="hunt-note" type="text" maxlength="180" aria-label="Observação da procura" placeholder="Observação opcional (edição, estado…)" value="${esc(s.note||"")}" oninput="huntNote('${x.id}',this.value)">`:""}</div>`;
-    return `<div data-hunt-id="${x.id}" data-format="${format}" class="wanted ${h.bought?"huntbought":""} ${x.tier==="wildcard"?"wildcard":""}" style="--tilt:${tilt}deg"><div class="huntcoverwrap"><img class="huntcover" src="${x.cover}" alt="Capa de ${esc(x.album)} — ${esc(x.artist)}" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.huntcoverwrap').style.display='none'"></div><h3>${x.artist}</h3><div class="album">${x.album}</div><div class="mission">${x.mission}</div><div class="huntformat"><label>FORMATO</label><select onchange="huntFormat('${x.id}',this.value)" ${h.bought?"disabled":""}><option value="LP" ${format==="LP"?"selected":""}>LP • VINIL</option><option value="CD" ${format==="CD"?"selected":""}>CD</option></select></div><div class="prices"><div>MÍN / ATAQUE<b>${money(band.low)}</b></div><div>MÉDIO<b>${money(band.avg)}</b></div><div>MÁX / TETO<b>${money(band.high)}</b></div></div><div class="huntprice"><input type="number" step="0.01" min="0" inputmode="decimal" placeholder="Preço achado" aria-label="Preço achado" value="${Number(s.price)>0?s.price:""}" onchange="huntPrice('${x.id}',this.value)" ${h.bought?"disabled":""}><select aria-label="Local da procura" onchange="huntPlace('${x.id}',this.value)" ${h.bought?"disabled":""}><option ${place==="Eric Discos"?"selected":""}>Eric Discos</option><option ${place==="Galeria Nova Barão"?"selected":""}>Galeria Nova Barão</option></select></div><div class="verdict ${v[0]}">${v[1]}</div>${research}<div class="huntactions">${h.bought?'<span class="purchase-stamp" role="status" aria-label="Disco comprado">COMPRADO</span>':`<button class="btn" onclick="buyHunt('${x.id}')">💿 COMPREI</button>`}</div>${observations?`<div class="hunt-observations" aria-label="Histórico da procura">${observations}</div>`:""}</div>`;
+    return `<div data-hunt-id="${x.id}" data-format="${format}" class="wanted ${h.bought?"huntbought":""} ${x.tier==="wildcard"?"wildcard":""}" style="--tilt:${tilt}deg"><div class="huntcoverwrap"><img class="huntcover" src="${x.cover}" alt="Capa de ${esc(x.album)} — ${esc(x.artist)}" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.huntcoverwrap').style.display='none'"></div><h3>${x.artist}</h3><div class="album">${x.album}</div><div class="mission">${x.mission}</div><div class="huntformat"><label>FORMATO</label><select onchange="huntFormat('${x.id}',this.value)" ${h.bought?"disabled":""}><option value="LP" ${format==="LP"?"selected":""}>LP • VINIL</option><option value="CD" ${format==="CD"?"selected":""}>CD</option></select></div><div class="prices"><div>MÍN / ATAQUE<b>${money(band.low)}</b></div><div>MÉDIO<b>${money(band.avg)}</b></div><div>MÁX / TETO<b>${money(band.high)}</b></div></div><div class="huntprice"><input type="number" step="0.01" min="0" inputmode="decimal" placeholder="Preço achado" aria-label="Preço achado" value="${Number(s.price)>0?s.price:""}" onchange="huntPrice('${x.id}',this.value)" ${h.bought?"disabled":""}><select aria-label="Local da procura" onchange="huntPlace('${x.id}',this.value)" ${h.bought?"disabled":""}><option ${place==="Eric Discos"?"selected":""}>Eric Discos</option><option ${place==="Galeria Nova Barão"?"selected":""}>Galeria Nova Barão</option><option ${place==="Galeria do Rock"?"selected":""}>Galeria do Rock</option></select></div><div class="verdict ${v[0]}">${v[1]}</div>${research}<div class="huntactions">${h.bought?'<span class="purchase-stamp" role="status" aria-label="Disco comprado">COMPRADO</span>':`<button class="btn" onclick="buyHunt('${x.id}')">💿 COMPREI</button>`}</div>${observations?`<div class="hunt-observations" aria-label="Histórico da procura">${observations}</div>`:""}</div>`;
   }).join("");
-  huntEric.textContent=money(Math.max(0,(data.limits["Eric Discos"]||0)-limitSpent("Eric Discos")));
-  huntBarao.textContent=money(Math.max(0,(data.limits["Galeria Nova Barão"]||0)-limitSpent("Galeria Nova Barão")));
+  const spent=pooledDiscSpent(),left=DISC_BUDGET-spent;
+  huntPoolRemaining.textContent=money(left);
+  huntPoolRemaining.style.color=left<0?"#ff5b5b":"var(--gold)";
+  huntPoolSpent.textContent=money(spent);
 }
 function reserveKey(i){return 'reserve_'+i}
 function reservePurchases(){
@@ -771,7 +773,7 @@ function renderReserveGroup(list,targetId){
   const box=$(targetId);if(!box)return;
   box.innerHTML=list.map((x,i)=>{
     const r=data.reserves[reserveKey(i)]||{};
-    const places=['Eric Discos','Galeria Nova Barão'];
+    const places=['Eric Discos','Galeria Nova Barão','Galeria do Rock'];
     const options='<option value="" disabled '+(!r.place?'selected':'')+'>LOCAL DA COMPRA</option>'+
       places.map(p=>'<option value="'+p+'" '+(r.place===p?'selected':'')+'>'+p+'</option>').join('')+
       (r.place&&!places.includes(r.place)?'<option value="'+esc(r.place)+'" selected>'+esc(r.place)+'</option>':'')+
@@ -808,23 +810,19 @@ function renderAll(){
 
   const purchaseByType=type=>purchases.filter(x=>x.type===type).reduce((a,x)=>a+num(x.price),0);
   const expenseByCat=cat=>data.expenses.filter(x=>x.cat===cat).reduce((a,x)=>a+num(x.value),0);
-  $('discMoney').textContent=money(purchaseByType('Disco'));
-  $('merchMoney').textContent=money(purchaseByType('Merchandise'));
   $('foodMoney').textContent=money(expenseByCat('Alimentação'));
   $('transportMoney').textContent=money(expenseByCat('Transporte'));
-  const ericBudget=num(data.limits['Eric Discos']);
-  const baraoBudget=num(data.limits['Galeria Nova Barão']);
-  const ericSpent=limitSpent('Eric Discos');
-  const baraoSpent=limitSpent('Galeria Nova Barão');
-  $('warEricBudget').textContent=money(ericBudget);
-  $('warBaraoBudget').textContent=money(baraoBudget);
-  $('warEricSpent').textContent=money(ericSpent);
-  $('warBaraoSpent').textContent=money(baraoSpent);
-  $('warEricRemaining').textContent=money(ericBudget-ericSpent);
-  $('warBaraoRemaining').textContent=money(baraoBudget-baraoSpent);
+  $('warEricSpent').textContent=money(discSpentAt('Eric Discos'));
+  $('warBaraoSpent').textContent=money(discSpentAt('Galeria Nova Barão'));
+  $('warRockSpent').textContent=money(discSpentAt('Galeria do Rock'));
+  $('warEricCount').textContent=discCountAt('Eric Discos');
+  $('warBaraoCount').textContent=discCountAt('Galeria Nova Barão');
+  $('warRockCount').textContent=discCountAt('Galeria do Rock');
   const maidenSpent=purchases.filter(x=>x.place==="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
-  const discSpent=purchases.filter(x=>x.type==='Disco' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
+  const discSpent=pooledDiscSpent();
   const merchSpent=purchases.filter(x=>x.type==='Merchandise' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
+  $('discMoney').textContent=money(discSpent);
+  $('merchMoney').textContent=money(merchSpent);
   const foodSpent=expenseByCat('Alimentação');
   const transportSpent=expenseByCat('Transporte');
   const emergencySpent=expenseByCat('Emergência / imprevisto');
@@ -851,8 +849,6 @@ function renderAll(){
   $('foodRemaining').style.color=foodRemaining<0?'#ff5b5b':'var(--gold)';
   $('transportRemaining').style.color=transportRemaining<0?'#ff5b5b':'var(--gold)';
   $('emergencyRemaining').style.color=emergencyRemaining<0?'#ff5b5b':'var(--gold)';
-  $('warEricRemaining').style.color=(ericBudget-ericSpent)<0?'#ff5b5b':'var(--gold)';
-  $('warBaraoRemaining').style.color=(baraoBudget-baraoSpent)<0?'#ff5b5b':'var(--gold)';
 
   $('doneStat').textContent=done;
   $('discStat').textContent=purchases.filter(x=>x.type==='Disco').length;

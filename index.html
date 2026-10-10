@@ -326,7 +326,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="card huntintro"><b>OPERAÇÃO GARIMPO PAULISTA — WISHLIST DEFINITIVA</b>
 <p style="font-size:12px"><b>10 alvos principais</b> e <b>10 reservas</b>. Todos podem entrar na coleção em <b>LP ou CD</b>; a prioridade geral continua sendo o <b>preto com buraco no meio</b>. <span class="format-priority">LP &gt; CD</span></p>
 <p style="font-size:12px">Nos alvos principais, escolha o formato antes de avaliar a oferta: o semáforo muda automaticamente entre as faixas de LP e CD. Depois, registre se encontrou ou não o disco em cada loja; se encontrou e não levou, anote o preço e o motivo. As três lojas compartilham <b>um único caixa de discos</b>, sem limite individual: cada compra abate do saldo comum e fica registrada por loja. Achados excepcionais podem furar a fila — e <b>Maggot Brain</b> continua sendo questão de honra.</p>
-<div class="huntbudget"><div>CAIXA ÚNICO • ERIC / NOVA BARÃO / GALERIA DO ROCK<br><b id="huntPoolRemaining">R$ 3.580,00</b><br><small>saldo disponível para as três lojas</small></div><div>COMPRAS DE DISCOS REGISTRADAS<br><b id="huntPoolSpent">R$ 0,00</b><br><small>total abatido do mesmo caixa, em qualquer loja</small></div></div>
+<div class="huntbudget"><div>CAIXA ÚNICO • ERIC / NOVA BARÃO / GALERIA DO ROCK<br><b id="huntPoolRemaining">R$ 3.600,00</b><br><small>saldo disponível para as três lojas</small></div><div>COMPRAS DE DISCOS REGISTRADAS<br><b id="huntPoolSpent">R$ 0,00</b><br><small>total abatido do mesmo caixa, em qualquer loja</small></div></div>
 <div class="huntfilters"><button class="btn alt" onclick="setHuntFilter('all')">TODOS</button><button class="btn alt" onclick="setHuntFilter('brit')">BRITÂNICO</button><button class="btn alt" onclick="setHuntFilter('metal')">METAL</button><button class="btn alt" onclick="setHuntFilter('punk')">PUNK</button><button class="btn alt" onclick="setHuntFilter('br')">BRASIL</button><button class="btn alt" onclick="setHuntFilter('hard70')">70s / HARD</button></div></div>
 <div class="notice" style="margin-top:10px"><b>Semáforo de preço — referência 07/10/2026.</b> Valores em <b>mínimo/ataque • médio • máximo/teto</b>, separados por formato e pensados para cópia comum em bom estado (aprox. VG+/NM) ou reedição decente. Primeiras prensagens, edições japonesas, promos, boxes, variantes raras e exemplares excepcionalmente conservados exigem avaliação própria.</div>
 <div id="huntGrid" class="huntgrid"></div>
@@ -369,7 +369,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 #gastos .war-values b{display:block;color:var(--gold);font:900 15px/1.2 'Black Ops One','Arial Black',sans-serif;margin-top:3px;word-break:normal}
 #gastos .war-spent{margin-top:9px!important;border-top:1px solid #333;padding-top:7px}
 #gastos .war-spent b{display:inline;color:#ddd;font-family:'Oswald',Arial,sans-serif;font-size:11px}
-#gastos .war-envelopes{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+#gastos .war-envelopes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
 #gastos .war-envelope>strong{display:block;font-size:12px;line-height:1.15;min-height:28px;margin-bottom:8px;color:#eee}
 #gastos .war-summary{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:7px;margin-top:14px}
 #gastos .war-summary b{display:block;color:#eee;font:900 14px/1.2 'Black Ops One','Arial Black',sans-serif;margin-top:4px}
@@ -401,9 +401,9 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <div class="war-section-label">💿 GARIMPO DE DISCOS</div>
 <div class="war-disc-total">
-<div><small>Verba única • 3 lojas</small><b id="discBudgetLabel">R$ 3.580,00</b></div>
+<div><small>Verba única • 3 lojas</small><b id="discBudgetLabel">R$ 3.600,00</b></div>
 <div><small>Gasto</small><b id="discMoney">R$ 0,00</b></div>
-<div><small>Saldo compartilhado</small><b id="discRemaining">R$ 3.580,00</b></div>
+<div><small>Saldo compartilhado</small><b id="discRemaining">R$ 3.600,00</b></div>
 </div>
 <div class="war-stores">
 <div class="war-envelope war-store"><strong>ERIC DISCOS</strong><div class="war-values"><div><small>Gasto em discos</small><b id="warEricSpent">R$ 0,00</b></div><div><small>Itens</small><b id="warEricCount">0</b></div></div><small class="war-spent">Abate do caixa único de discos</small></div>
@@ -413,8 +413,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <div class="war-section-label">OUTROS ENVELOPES</div>
 <div class="war-envelopes">
-<div class="war-envelope"><strong>👕 MERCHANDISE</strong><div class="war-values"><div><small>Verba</small><b>R$ 400,00</b></div><div><small>Saldo</small><b id="merchRemaining">R$ 400,00</b></div></div><small class="war-spent">Gasto: <b id="merchMoney">R$ 0,00</b></small></div>
-<div class="war-envelope"><strong>🤘 IRON MAIDEN</strong><div class="war-values"><div><small>Reserva</small><b>R$ 200,00</b></div><div><small>Saldo</small><b id="maidenRemaining">R$ 200,00</b></div></div><small class="war-spent">Gasto: <b id="maidenMoney">R$ 0,00</b></small></div>
+<div class="war-envelope"><strong>👕 MERCHANDISE</strong><div class="war-values"><div><small>Verba</small><b>R$ 580,00</b></div><div><small>Saldo</small><b id="merchRemaining">R$ 580,00</b></div></div><small class="war-spent">Gasto: <b id="merchMoney">R$ 0,00</b></small></div>
 <div class="war-envelope"><strong>🍔 ALIMENTAÇÃO</strong><div class="war-values"><div><small>Verba</small><b>R$ 300,00</b></div><div><small>Saldo</small><b id="foodRemaining">R$ 300,00</b></div></div><small class="war-spent">Gasto: <b id="foodMoney">R$ 0,00</b></small></div>
 <div class="war-envelope"><strong>🚇 TRANSPORTE</strong><div class="war-values"><div><small>Verba</small><b>R$ 220,00</b></div><div><small>Saldo</small><b id="transportRemaining">R$ 220,00</b></div></div><small class="war-spent">Gasto: <b id="transportMoney">R$ 0,00</b></small></div>
 <div class="war-envelope"><strong>🆘 EMERGÊNCIAS</strong><div class="war-values"><div><small>Reserva</small><b>R$ 300,00</b></div><div><small>Saldo</small><b id="emergencyRemaining">R$ 300,00</b></div></div><small class="war-spent">Gasto: <b id="emergencyMoney">R$ 0,00</b></small></div>
@@ -457,7 +456,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <dialog id="resetDialog" aria-labelledby="resetTitle" aria-describedby="resetDescription" style="max-width:440px;width:calc(100% - 48px);background:var(--panel,#151515);color:var(--text,#eee);border:2px solid var(--gold,#c8b98e);padding:22px">
 <h2 id="resetTitle">ZERAR TUDO?</h2>
-<p id="resetDescription">Apagar checklist, marcações de ingressos, compras, gastos, diário, resumo e registros do garimpo? O orçamento geral permanece em R$ 5.000 e o caixa de discos em R$ 3.580. Esta ação não pode ser desfeita sem um backup.</p>
+<p id="resetDescription">Apagar checklist, marcações de ingressos, compras, gastos, diário, resumo e registros do garimpo? O orçamento geral permanece em R$ 5.000 e o caixa de discos em R$ 3.600. Esta ação não pode ser desfeita sem um backup.</p>
 <p>O roteiro, a lista de discos e o orçamento geral permanecem.</p>
 <p id="resetError" role="alert"></p>
 <div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn alt" autofocus onclick="document.getElementById('resetDialog').close()">CANCELAR</button><button type="button" class="btn" onclick="confirmReset()">SIM, ZERAR TUDO</button></div>
@@ -465,13 +464,12 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <script>
 const KEY='spRockCompanionV3';
 const OLDKEY='spRockCompanionV2';
-const DISC_BUDGET=3580;
-const MERCH_BUDGET=400;
-const MAIDEN_BUDGET=200;
+const DISC_BUDGET=3600;
+const MERCH_BUDGET=580;
 const FOOD_BUDGET=300;
 const TRANSPORT_BUDGET=220;
 const EMERGENCY_BUDGET=300;
-const BUDGET=DISC_BUDGET+MERCH_BUDGET+MAIDEN_BUDGET+FOOD_BUDGET+TRANSPORT_BUDGET+EMERGENCY_BUDGET;
+const BUDGET=DISC_BUDGET+MERCH_BUDGET+FOOD_BUDGET+TRANSPORT_BUDGET+EMERGENCY_BUDGET;
 
 function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},routeChanges:{},limits:{}}}
 let data;
@@ -606,7 +604,7 @@ data.hunt=data.hunt||{};
 let huntFilter='all';
 function discSpentAt(place){return allPurchases().filter(x=>x.type==='Disco'&&x.place===place).reduce((a,x)=>a+num(x.price),0)}
 function discCountAt(place){return allPurchases().filter(x=>x.type==='Disco'&&x.place===place).length}
-function pooledDiscSpent(){return allPurchases().filter(x=>x.type==='Disco'&&x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0)}
+function pooledDiscSpent(){return allPurchases().filter(x=>x.type==='Disco').reduce((a,x)=>a+num(x.price),0)}
 const HUNT=[
 {id:'funkadelic',artist:'Funkadelic',album:'Maggot Brain',tags:['hard70'],mission:'🦄 QUESTÃO DE HONRA • prioridade máxima',tier:'wildcard',cover:'https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200',prices:{LP:{low:250,avg:400,high:550},CD:{low:90,avg:140,high:225}}},
 {id:'stoneroses',artist:'The Stone Roses',album:'The Stone Roses',tags:['brit'],mission:'🎯 ALVO • britânico / prioridade alta',tier:'target',cover:'https://is1-ssl.mzstatic.com/image/thumb/Music/d2/db/21/mzi.kihcrutv.jpg/1200x1200bb.jpg',prices:{LP:{low:250,avg:300,high:350},CD:{low:90,avg:150,high:260}}},
@@ -818,34 +816,29 @@ function renderAll(){
   $('warEricCount').textContent=discCountAt('Eric Discos');
   $('warBaraoCount').textContent=discCountAt('Galeria Nova Barão');
   $('warRockCount').textContent=discCountAt('Galeria do Rock');
-  const maidenSpent=purchases.filter(x=>x.place==="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
   const discSpent=pooledDiscSpent();
-  const merchSpent=purchases.filter(x=>x.type==='Merchandise' && x.place!=="Eddie's Emporium").reduce((a,x)=>a+num(x.price),0);
+  const merchSpent=purchases.filter(x=>x.type==='Merchandise').reduce((a,x)=>a+num(x.price),0);
   $('discMoney').textContent=money(discSpent);
   $('merchMoney').textContent=money(merchSpent);
   const foodSpent=expenseByCat('Alimentação');
   const transportSpent=expenseByCat('Transporte');
   const emergencySpent=expenseByCat('Emergência / imprevisto');
-  $('maidenMoney').textContent=money(maidenSpent);
   $('emergencyMoney').textContent=money(emergencySpent);
 
   const discRemaining=DISC_BUDGET-discSpent;
   const merchRemaining=MERCH_BUDGET-merchSpent;
-  const maidenRemaining=MAIDEN_BUDGET-maidenSpent;
   const foodRemaining=FOOD_BUDGET-foodSpent;
   const transportRemaining=TRANSPORT_BUDGET-transportSpent;
   const emergencyRemaining=EMERGENCY_BUDGET-emergencySpent;
 
   $('discRemaining').textContent=money(discRemaining);
   $('merchRemaining').textContent=money(merchRemaining);
-  $('maidenRemaining').textContent=money(maidenRemaining);
   $('foodRemaining').textContent=money(foodRemaining);
   $('transportRemaining').textContent=money(transportRemaining);
   $('emergencyRemaining').textContent=money(emergencyRemaining);
 
   $('discRemaining').style.color=discRemaining<0?'#ff5b5b':'var(--gold)';
   $('merchRemaining').style.color=merchRemaining<0?'#ff5b5b':'var(--gold)';
-  $('maidenRemaining').style.color=maidenRemaining<0?'#ff5b5b':'var(--gold)';
   $('foodRemaining').style.color=foodRemaining<0?'#ff5b5b':'var(--gold)';
   $('transportRemaining').style.color=transportRemaining<0?'#ff5b5b':'var(--gold)';
   $('emergencyRemaining').style.color=emergencyRemaining<0?'#ff5b5b':'var(--gold)';

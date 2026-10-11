@@ -1,5 +1,5 @@
-const CACHE='sp-rock-trip-v10';
-const ASSETS=['./','./index.html','./manifest.webmanifest','./icon-v2.svg','./icon.svg'];
+const CACHE='sp-rock-trip-v11';
+const ASSETS=['./','./index.html','./mapa.html','./avatar-rock.svg','./manifest.webmanifest','./icon-v2.svg','./icon.svg'];
 const COVER_ASSETS=[
 "https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200",
 "https://is1-ssl.mzstatic.com/image/thumb/Music/d2/db/21/mzi.kihcrutv.jpg/1200x1200bb.jpg",
@@ -41,13 +41,14 @@ self.addEventListener('fetch',e=>{
   const url=new URL(req.url);
   if(req.mode==='navigate'||(url.origin===self.location.origin&&url.pathname.endsWith('/index.html'))){
     e.respondWith((async()=>{
+      const pageKey=url.pathname.endsWith('/mapa.html')?'./mapa.html':'./index.html';
       try{
         const fresh=await fetch(req,{cache:'no-store'});
         const cache=await caches.open(CACHE);
-        await putIfPossible(cache,'./index.html',fresh);
+        await putIfPossible(cache,pageKey,fresh);
         return fresh;
       }catch(err){
-        return (await caches.match(req))||(await caches.match('./index.html'));
+        return (await caches.match(req))||(await caches.match(pageKey))||(await caches.match('./index.html'));
       }
     })());
     return;

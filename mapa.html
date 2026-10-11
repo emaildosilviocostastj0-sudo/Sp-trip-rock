@@ -1,0 +1,201 @@
+<!doctype html>
+<html lang="pt-BR"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<meta name="theme-color" content="#090b0e"><title>Mapa da Missão | São Paulo Rock Trip 2026</title>
+<link rel="icon" href="./icon-v2.svg"><link rel="preconnect" href="https://unpkg.com">
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css">
+<style>
+:root{--bg:#090b0e;--panel:#15191e;--edge:#464b4e;--blood:#c31327;--gold:#e5b76b;--text:#f2eee7;--muted:#b0b1b4}
+*{box-sizing:border-box}html{scroll-behavior:smooth}body{margin:0;color:var(--text);background:radial-gradient(ellipse at 30% 0%,#31111b,#090b0e 56%);font:14px/1.5 Arial,Helvetica,sans-serif}
+button,a{touch-action:manipulation}button{cursor:pointer}a{color:inherit}
+.shell{max-width:1100px;margin:auto;padding:16px 15px 65px}
+.eyebrow{letter-spacing:2px;font-size:11px;color:var(--gold);font-weight:800}
+.topline{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap}
+.back{display:inline-flex;align-items:center;gap:7px;text-decoration:none;font-size:12px;font-weight:800;padding:10px 13px;border:1px solid #685c55;background:#202023;border-radius:4px}
+.header{margin:14px 0 12px;display:flex;gap:14px;align-items:center}
+.portrait{height:83px;width:83px;border:3px solid var(--gold);border-radius:50%;object-fit:cover;box-shadow:0 0 0 5px #251a18,0 0 25px #9e242960}
+h1{font-family:Impact,"Arial Black",sans-serif;letter-spacing:1.1px;font-size:clamp(31px,6vw,59px);line-height:1.0;margin:5px 0 6px;text-transform:uppercase;text-shadow:2px 3px #650815}
+.sub{color:var(--muted);margin:6px 0;font-size:13px}
+.panel{background:linear-gradient(150deg,#171c21,#0e1115);border:1px solid var(--edge);box-shadow:4px 4px #000;padding:14px;margin:14px 0}
+.modes{display:flex;flex-wrap:wrap;gap:8px;margin:18px 0 10px}
+.btn,.tab{background:#242b30;border:1px solid #5d6264;color:#f8f3eb;padding:10px 14px;font-size:12px;font-weight:800;border-radius:3px;letter-spacing:.35px;min-height:41px}
+.btn:hover,.tab:hover{border-color:var(--gold)}.btn.primary,.tab.active{background:#9b0920;border-color:#e44a5a}.btn:disabled{opacity:.4;cursor:default}
+.days{display:flex;gap:7px;flex-wrap:wrap;margin:10px 0 14px}
+.day{flex:1 1 115px;min-width:100px}.day.active{background:#4d3415;border-color:var(--gold);color:#ffe4b2}
+.summary{display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.summary h2{margin:3px 0;font-size:19px;letter-spacing:.4px}
+.counter{font:800 13px/1.35 Arial,sans-serif;color:var(--gold)}
+.controls{display:flex;gap:7px;flex-wrap:wrap;margin-top:14px}
+.controls .btn{flex:1;min-width:91px}
+.boardwrap{overflow-x:auto;border:2px solid #60544b;margin-top:12px;border-radius:4px;box-shadow:inset 0 0 28px #0007;scrollbar-color:#8f2330 #141414}
+.board{position:relative;min-width:580px;width:100%;height:360px;overflow:hidden;
+background:radial-gradient(circle at 70% 30%,#3d2722 0,transparent 28%),linear-gradient(165deg,#1d2830 0,#15222b 42%,#0b1116 100%)}
+.board:before{content:"";position:absolute;inset:0;opacity:.14;background:repeating-linear-gradient(0deg,transparent 0 34px,#fff3 35px 36px),repeating-linear-gradient(90deg,transparent 0 34px,#fff3 35px 36px)}
+.board:after{content:"SÃO PAULO ROCK WORLD";position:absolute;right:14px;bottom:9px;color:#c0a17a55;letter-spacing:3px;font:900 14px Impact,Arial,sans-serif;pointer-events:none}
+.worldsvg{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+.track-shadow{stroke:#060505;stroke-width:13;stroke-linecap:round;fill:none;stroke-linejoin:round}
+.track{stroke:#e8be78;stroke-width:4;stroke-dasharray:10 12;stroke-linecap:round;fill:none;opacity:.6}
+.track-done{stroke:#f75055;stroke-width:6;stroke-linecap:round;stroke-linejoin:round;fill:none;filter:drop-shadow(0 0 6px #f33)}
+.node{border:3px solid #a89167;position:absolute;width:48px;height:48px;border-radius:50%;transform:translate(-50%,-50%);background:#15191a;color:#f0ddbc;box-shadow:0 4px 0 #000,0 0 0 6px #101319;display:grid;place-items:center;font-size:23px;z-index:3}
+.node.current{border-color:#ffe3a7;background:#862b19;box-shadow:0 0 0 6px #161312,0 0 18px 5px #eeac3b;animation:shine 1.2s ease-in-out infinite alternate}
+.node.done{background:#2c543f;border-color:#7bd9a4}.node.optional{border-style:dashed}
+@keyframes shine{to{filter:brightness(1.35)}}
+.hero{position:absolute;z-index:6;width:53px;height:53px;border-radius:50%;border:3px solid #ffdf9f;background:#080b0c;box-shadow:0 0 14px #ec4922,0 3px 5px #000;transform:translate(-50%,-115%);transition:left 1.15s ease-in-out,top 1.15s ease-in-out;pointer-events:none}
+.marker-label{position:absolute;z-index:4;font:800 11px/1.2 Arial,sans-serif;text-align:center;color:#f2ebe3;text-shadow:1px 2px 2px #000,0 0 5px #000;transform:translate(-50%,0);width:120px;pointer-events:none}
+.stopdetail{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-top:13px}
+.bigicon{width:48px;height:48px;background:#2a2321;border:1px solid #5d5049;display:grid;place-items:center;font-size:27px}
+.stopdetail .detail-text{flex:1;min-width:190px}.detail-text strong{display:block;font-size:16px}.detail-text small{color:#bfc3c8}
+.stopdetail a{white-space:nowrap;text-decoration:none}
+.quest-list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px;margin-top:15px}
+.quest{display:flex;align-items:center;gap:9px;text-align:left;min-width:0;padding:10px;border:1px solid #444a4e;color:#ddd;background:#151b20}
+.quest.active{border-color:var(--gold);background:#392a1f}
+.quest.checked:after{content:"✓";margin-left:auto;color:#8cf0b1;font-weight:900}
+.quest .num{display:grid;place-items:center;flex:none;width:27px;height:27px;background:#32383b;color:var(--gold);font-weight:900}
+.quest .quest-title{min-width:0}.quest b{display:block;font-size:12px}.quest small{display:block;color:#aaafb3;font-size:11px}
+.footer-note{font-size:11px;color:#aeb2b4;margin:12px 0}
+#street{display:none}
+#streetmap{height:460px;border:1px solid #5a5452;background:#192129}
+.streettools{display:flex;gap:9px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:12px}
+label{cursor:pointer;font-size:12px}
+.gmaps{display:inline-block;text-decoration:none;border:1px solid #80735c;color:#efd3a0;padding:7px 9px;margin-top:8px;font-size:12px;font-weight:bold}
+.legend{display:flex;flex-wrap:wrap;gap:10px;color:#d9d1c5;font-size:12px}
+.leaflet-popup-content{color:#232323}.leaflet-popup-content strong{font-size:14px}
+.fallback{display:none;place-items:center;height:100%;padding:26px;text-align:center;color:#dddbd8}
+@media(max-width:620px){
+.shell{padding:11px 10px 50px}.header{gap:12px}.portrait{width:67px;height:67px}h1{font-size:34px}.board{height:310px;min-width:580px}
+.controls .btn{flex:1 1 90px;padding:9px 7px;font-size:11px}.quest-list{grid-template-columns:1fr}.marker-label{font-size:10px;width:105px}
+#streetmap{height:410px}.panel{padding:12px}
+}
+@media(prefers-reduced-motion:reduce){.hero,.node.current{transition:none;animation:none}}
+</style></head><body><main class="shell">
+<div class="topline"><span class="eyebrow">⚡ MISSÃO 15—19 OUT • 2026</span><a class="back" href="./index.html#walking">← VOLTAR AO COMPANION</a></div>
+<header class="header"><img class="portrait" src="./avatar-rock.svg" alt="Avatar original do viajante, com óculos escuros e camiseta do Slayer">
+<div><div class="eyebrow">SIDEQUEST • PÁGINA 2</div><h1>MAPA DA MISSÃO</h1><p class="sub">Cinco dias. Quatro shows. Um colecionador contra a própria carteira.</p></div></header>
+<div class="modes" role="tablist" aria-label="Modo de mapa"><button class="tab active" id="mode-world" type="button">🎮 MAPA DE PROGRESSO</button><button class="tab" id="mode-street" type="button">🗺 MAPA REAL DE SÃO PAULO</button></div>
+<div class="days" id="days" aria-label="Escolha o dia"></div>
+<section id="campaign" class="panel" aria-label="Mapa animado de progresso">
+<div class="summary"><div><div class="eyebrow" id="day-sub">STAGE 1/5</div><h2 id="day-title">15/10 • CHEGADA</h2></div><div class="counter" id="counter"></div></div>
+<div class="boardwrap" id="boardwrap"><div class="board" id="board"><svg class="worldsvg" viewBox="0 0 1000 520" preserveAspectRatio="none"><polyline class="track-shadow" id="shadow"/><polyline class="track" id="track"/><polyline class="track-done" id="trackDone"/></svg><div id="nodes"></div><img class="hero" id="hero" src="./avatar-rock.svg" alt="Viajante no ponto atual"></div></div>
+<div class="controls"><button class="btn" type="button" id="prev">◀ ANTERIOR</button><button class="btn primary" type="button" id="play">▶ ANIMAR</button><button class="btn" type="button" id="next">PRÓXIMA ▶</button><button class="btn" type="button" id="reset">↻ RECOMEÇAR</button></div>
+<div class="stopdetail" id="detail" aria-live="polite"></div>
+<div class="controls"><button class="btn" type="button" id="visited">✓ MARCAR COMO VISITADO</button><button class="btn" type="button" id="skip" style="display:none">PULAR PARADA OPCIONAL</button></div>
+<div class="quest-list" id="questlist" aria-label="Etapas deste dia"></div>
+<p class="footer-note">A trilha é uma animação ilustrativa (estilo seleção de fases), não uma rota pelas ruas. O progresso fica salvo neste aparelho, separado dos registros do Companion. Toque nas fases para saltar entre paradas.</p>
+</section>
+<section id="street" class="panel" aria-label="Mapa real">
+<div class="streettools"><strong>📍 TODOS OS PONTOS DA TURNÊ</strong><label><input type="checkbox" id="allpins"> Mostrar os cinco dias</label></div>
+<div id="streetmap"><div class="fallback" id="fallback">Mapa real indisponível sem conexão. O mapa de progresso acima funciona offline. Você também pode usar os botões de rota do Google Maps nas etapas.</div></div>
+<p class="footer-note">Mapa de ruas: © OpenStreetMap contributors. Linhas pontilhadas entre paradas são ligações ilustrativas, não instruções de navegação. Alguns marcadores são aproximados: use o botão “Abrir rota” para navegar ao endereço exato.</p>
+<div class="legend">🔴 Shows e eventos　🟡 Discos　🔵 Hotel e aeroporto　🟢 Cultura e alimentação</div>
+</section>
+<p class="footer-note" style="text-align:center;margin-top:24px">SÃO PAULO ROCK TRIP • POSTER TOUR EDITION • SUPPORT THE UNDERGROUND 🤘</p>
+</main>
+<script>
+"use strict";
+const P={
+cgh:{name:"Aeroporto de Congonhas",addr:"Aeroporto de Congonhas, São Paulo, SP",icon:"✈️",type:"base",p:[-23.62745,-46.65753]},
+hotel:{name:"Bê Hotel",addr:"Rua Monte Alegre, 45, São Paulo, SP",icon:"🏨",type:"base",p:[-23.53116,-46.66564]},
+eric:{name:"Eric Discos",addr:"Rua Artur de Azevedo, 1874, Pinheiros, São Paulo, SP",icon:"💿",type:"disc",p:[-23.5588,-46.6875],approx:true},
+audio:{name:"Audio / The Gathering",addr:"Av. Francisco Matarazzo, 694, São Paulo, SP",icon:"🎸",type:"event",p:[-23.5269,-46.6729]},
+monalisa:{name:"Restaurante Monalisa",addr:"Rua Bento Freitas, 290, São Paulo, SP",icon:"🍽️",type:"other",p:[-23.5433,-46.649],approx:true},
+barao:{name:"Galeria Nova Barão",addr:"Rua Sete de Abril, 154, São Paulo, SP",icon:"💿",type:"disc",p:[-23.547,-46.641],approx:true},
+galeria:{name:"Galeria do Rock",addr:"Rua 24 de Maio, 62, São Paulo, SP",icon:"💿",type:"disc",p:[-23.54421,-46.63907]},
+carioca:{name:"Carioca Club",addr:"Rua Cardeal Arcoverde, 2899, São Paulo, SP",icon:"🎸",type:"event",p:[-23.5603,-46.6861]},
+museu:{name:"Museu da Língua Portuguesa",addr:"Praça da Luz, s/n, São Paulo, SP",icon:"🏛️",type:"other",p:[-23.53483,-46.63502]},
+expo:{name:"Horror Expo / Expo Barra Funda",addr:"Rua Tagipuru, 1001, São Paulo, SP",icon:"👻",type:"event",p:[-23.52702,-46.67012]},
+fabrique:{name:"Fabrique Club / Vulcano",addr:"Rua Barra Funda, 1071, São Paulo, SP",icon:"🤘",type:"event",p:[-23.5303,-46.6599],approx:true},
+casarao:{name:"Casarão do Vinil",addr:"Rua dos Trilhos, 1212, Mooca, São Paulo, SP",icon:"💿",type:"disc",p:[-23.5523,-46.5969],approx:true}
+};
+const D=[
+{id:"15",date:"15/10",name:"CHEGADA + THE GATHERING",stops:[["cgh","10h30 • Pouso em SP"],["hotel","Deixar malas e almoçar"],["eric","13h15 • Garimpo"],["hotel","Check-in, banho e descanso"],["audio","19h • The Gathering"]]},
+{id:"16",date:"16/10",name:"GARIMPO + APOCALYPTICA",stops:[["hotel","Manhã sem pressa"],["monalisa","13h • Almoço"],["barao","14h30 • Garimpo"],["galeria","16h15 • Garimpo"],["hotel","Descanso antes do show"],["carioca","21h • Apocalyptica"]]},
+{id:"17",date:"17/10",name:"MUSEU + HORROR + VULCANO",stops:[["hotel","Saída cedo"],["museu","9h–10h45 • Museu"],["expo","12h • Horror Expo"],["fabrique","18h portas • 19h shows"]]},
+{id:"18",date:"18/10",name:"DESCANSO + AMORPHIS",stops:[["hotel","Manhã livre"],["casarao","13h–15h • Opcional",true],["hotel","Descanso"],["carioca","19h • Amorphis"]]},
+{id:"19",date:"19/10",name:"VOLTA PARA BRASÍLIA",stops:[["hotel","Café e check-out"],["cgh","13h40 • Voo G3 1410"]]}
+];
+const $=id=>document.getElementById(id);
+let saved={};
+try{saved=JSON.parse(localStorage.getItem("sp-rock-world-v1")||"{}")||{}}catch(e){}
+if(!saved.steps)saved.steps={};if(!saved.visited)saved.visited={};
+let dayIndex=0,playing=false,timer=null,leafletMap=null,markers=[];
+const persist=()=>{try{localStorage.setItem("sp-rock-world-v1",JSON.stringify(saved))}catch(e){}};
+const day=()=>D[dayIndex],steps=()=>day().stops,cur=()=>Math.min(steps().length-1,Math.max(0,Number(saved.steps[day().id]||0)));
+const pos=(i,n)=>({x:80+i*(840/Math.max(1,n-1)),y:[290,152,335,170,282,124,322][i%7]});
+const url=p=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(p.addr);
+function pathStr(n,k){let list=[];for(let i=0;i<=k;i++){const p=pos(i,n);list.push(p.x+","+p.y)}return list.join(" ")}
+function stopPlay(){playing=false;clearInterval(timer);timer=null;$("play").textContent="▶ ANIMAR"}
+function setDay(i){stopPlay();dayIndex=i;draw();if(leafletMap)paintMap()}
+function setStep(i){saved.steps[day().id]=Math.max(0,Math.min(i,steps().length-1));persist();draw()}
+function step(delta){let next=cur()+delta;if(next>=steps().length){stopPlay();return false}setStep(next);return true}
+function draw(){
+ const d=day(),a=steps(),ix=cur();
+ $("days").innerHTML=D.map((x,i)=>'<button type="button" class="tab day '+(i===dayIndex?"active":"")+'" data-day="'+i+'">'+x.date+'<br><small>'+["QUI","SEX","SÁB","DOM","SEG"][i]+'</small></button>').join("");
+ $("day-sub").textContent="STAGE "+(dayIndex+1)+" / 5";
+ $("day-title").textContent=d.date+" • "+d.name;
+ $("counter").textContent="PARADA "+(ix+1)+" / "+a.length;
+ $("shadow").setAttribute("points",pathStr(a.length,a.length-1));
+ $("track").setAttribute("points",pathStr(a.length,a.length-1));
+ $("trackDone").setAttribute("points",pathStr(a.length,ix));
+ $("nodes").innerHTML=a.map((x,i)=>{const p=pos(i,a.length),item=P[x[0]],visited=!!saved.visited[d.id+":"+i];
+ return '<button type="button" class="node '+(ix===i?"current ":"")+(visited?"done ":"")+(x[2]?"optional":"")+'" style="left:'+(p.x/10)+'%;top:'+(p.y/5.2)+'%" data-step="'+i+'" title="'+item.name+'" aria-label="Parada '+(i+1)+': '+item.name+'">'+(visited?"✓":item.icon)+'</button><span class="marker-label" style="left:'+(p.x/10)+'%;top:'+((p.y+37)/5.2)+'%">'+item.name+'</span>'}).join("");
+ const p=pos(ix,a.length);$("hero").style.left=p.x/10+"%";$("hero").style.top=p.y/5.2+"%";
+ const aNow=a[ix],s=P[aNow[0]],done=!!saved.visited[d.id+":"+ix];
+ $("detail").innerHTML='<span class="bigicon">'+s.icon+'</span><div class="detail-text"><strong>'+s.name+'</strong><small>'+aNow[1]+(aNow[2]?" • sidequest opcional":"")+'</small></div><a class="btn primary" target="_blank" rel="noopener" href="'+url(s)+'">📍 ABRIR ROTA ↗</a>';
+ $("visited").textContent=done?"✓ VISITADO • DESMARCAR":"✓ MARCAR COMO VISITADO";
+ $("skip").style.display=aNow[2]?"":"none";
+ $("prev").disabled=ix===0;
+ $("next").disabled=ix===a.length-1;
+ $("questlist").innerHTML=a.map((x,i)=>{const p=P[x[0]],yes=!!saved.visited[d.id+":"+i];
+ return '<button class="quest '+(ix===i?"active ":"")+(yes?"checked":"")+'" data-step="'+i+'"><span class="num">'+(i+1)+'</span><span class="quest-title"><b>'+p.icon+" "+p.name+'</b><small>'+x[1]+(x[2]?" • opcional":"")+'</small></span></button>'}).join("");
+}
+$("days").addEventListener("click",e=>{const b=e.target.closest("[data-day]");if(b)setDay(Number(b.dataset.day))});
+for(const id of ["nodes","questlist"])$(id).addEventListener("click",e=>{const b=e.target.closest("[data-step]");if(b){stopPlay();setStep(Number(b.dataset.step))}});
+$("next").onclick=()=>{stopPlay();step(1)};
+$("prev").onclick=()=>{stopPlay();step(-1)};
+$("reset").onclick=()=>{stopPlay();setStep(0)};
+$("play").onclick=()=>{if(playing){stopPlay();return}if(cur()===steps().length-1)setStep(0);playing=true;$("play").textContent="⏸ PAUSAR";timer=setInterval(()=>{if(!step(1))stopPlay()},1650)};
+$("visited").onclick=()=>{const k=day().id+":"+cur();saved.visited[k]=!saved.visited[k];persist();draw()};
+$("skip").onclick=()=>{stopPlay();step(1)};
+const script=document.createElement("script");
+script.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";script.async=true;
+script.onerror=()=>{$("fallback").style.display="grid"};
+document.head.appendChild(script);
+let mode="world",allpins=false;
+function color(type){return type==="disc"?"#dba94c":type==="event"?"#cb263e":type==="base"?"#5a9aca":"#70ac7e"}
+function paintMap(){
+ if(!leafletMap)return;
+ markers.forEach(m=>leafletMap.removeLayer(m));markers=[];
+ const ids=allpins?Object.keys(P):[...new Set(steps().map(x=>x[0]))];
+ const bounds=[];
+ ids.forEach(id=>{
+  const p=P[id],mk=window.L.circleMarker(p.p,{radius:9,color:"#17191a",weight:2,fillColor:color(p.type),fillOpacity:.95});
+  mk.addTo(leafletMap).bindPopup('<strong>'+p.icon+" "+p.name+'</strong><br>'+p.addr+(p.approx?'<br><em>Marcador aproximado; confira a rota.</em>':"")+'<br><a class="gmaps" href="'+url(p)+'" target="_blank" rel="noopener">Abrir rota ↗</a>');
+  markers.push(mk);bounds.push(p.p);
+ });
+ if(!allpins){
+  const lines=steps().map(x=>P[x[0]].p);
+  const line=window.L.polyline(lines,{color:"#c54650",weight:3,dashArray:"6 10",opacity:.72}).addTo(leafletMap);
+  markers.push(line);
+ }
+ if(bounds.length)leafletMap.fitBounds(bounds,{padding:[28,28],maxZoom:15});
+}
+function setupStreet(){
+ if(leafletMap)return;
+ if(!window.L){$("fallback").style.display="grid";return}
+ $("fallback").style.display="none";
+ leafletMap=window.L.map("streetmap",{zoomControl:true}).setView([-23.55,-46.65],12);
+ window.L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{maxZoom:19,attribution:"© OpenStreetMap contributors"}).addTo(leafletMap);
+ paintMap();
+}
+function setMode(next){
+ mode=next;stopPlay();
+ $("campaign").style.display=next==="world"?"block":"none";
+ $("street").style.display=next==="street"?"block":"none";
+ $("mode-world").classList.toggle("active",next==="world");
+ $("mode-street").classList.toggle("active",next==="street");
+ if(next==="street"){setupStreet();setTimeout(()=>{leafletMap?.invalidateSize();paintMap()},200)}
+}
+$("mode-world").onclick=()=>setMode("world");
+$("mode-street").onclick=()=>setMode("street");
+$("allpins").onchange=e=>{allpins=e.target.checked;paintMap()};
+draw();
+</script></body></html>

@@ -1195,7 +1195,7 @@ function initRoadieVoice(){
     }
     select.appendChild(group);
   }
-  let activeUtterance=null;
+  let activeUtterance=null, pauseTimer=null, narrationId=0;
   const supported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
   function current(){
     const route=routes[Number(select.value)];
@@ -1207,21 +1207,28 @@ function initRoadieVoice(){
     maps.href=route.url;
   }
   function stopVoice(){
+    narrationId++;
+    if(pauseTimer!==null){clearTimeout(pauseTimer);pauseTimer=null;}
     activeUtterance=null;
     if(supported)window.speechSynthesis.cancel();
     status.textContent='Narração interrompida. Se quiser, toque em OUVIR ROTA para repetir.';
   }
-  function spokenText(route){
-    const name=route.title.replace(/^\d{2}(?: e \d{2})?\/10\s*•\s*/,'');
+  function spokenSteps(route){
+    const name=route.title.replace(/^\\d{2}(?: e \\d{2})?\\/10\\s*•\\s*/,'');
     const details=route.details
-      .replace(/→/g,' até ')
+      .replace(/→/g,'. Depois, siga até ')
       .replace(/•/g,'. ')
-      .replace(/\bL3\b/g,'linha três')
-      .replace(/\bL4\b/g,'linha quatro')
-      .replace(/\bL1\b/g,'linha um')
-      .replace(/\bkm\b/g,'quilômetros')
-      .replace(/\s+/g,' ');
-    return 'Roadie de voz. Próximo deslocamento: '+name+'. '+details+'. Boa viagem.';
+      .replace(/\\bL3\\b/gi,'linha três')
+      .replace(/\\bL4\\b/gi,'linha quatro')
+      .replace(/\\bL1\\b/gi,'linha um')
+      .replace(/\\bL2\\b/gi,'linha dois')
+      .replace(/\\bL5\\b/gi,'linha cinco')
+      .replace(/\\bkm\\b/gi,'quilômetros')
+      .replace(/\\s+/g,' ').trim();
+    const text='Próximo deslocamento: '+name+'. '+details;
+    return text.split(/(?<=[.!?;])\\s+|\\s+[—–]\\s+/)
+      .flatMap(part=>part.split(/,\\s+(?=(?:depois|siga|pegue|desembarque|entre|saia|vire|caminhe|faça|troque)\\b)/i))
+      .map(part=>part.trim()).filter(Boolean);
   }
   function playVoice(){
     if(!supported){
@@ -1229,26 +1236,43 @@ function initRoadieVoice(){
       return;
     }
     stopVoice();
-    const route=current();
-    const utterance=new SpeechSynthesisUtterance(spokenText(route));
-    utterance.lang='pt-BR';
-    utterance.rate=0.92;
-    utterance.pitch=1;
-    utterance.volume=1;
+    const route=current(),steps=spokenSteps(route);
+    const id=narrationId;
     const voices=window.speechSynthesis.getVoices();
-    const voice=voices.find(v=>v.lang.toLowerCase()==='pt-br')||voices.find(v=>v.lang.toLowerCase().startsWith('pt'));
-    if(voice)utterance.voice=voice;
-    activeUtterance=utterance;
-    utterance.onstart=()=>{if(activeUtterance===utterance)status.textContent='🔊 Lendo: '+route.title;};
-    utterance.onend=()=>{if(activeUtterance===utterance){activeUtterance=null;status.textContent='Rota lida. Para ouvir outra vez, toque em OUVIR ROTA.';}};
-    utterance.onerror=e=>{
-      if(activeUtterance!==utterance)return;
-      activeUtterance=null;
-      status.textContent=e.error==='canceled'?'Narração interrompida.':'Não foi possível reproduzir a voz. Confira a voz em português do celular ou abra o Maps.';
-    };
-    status.textContent='Iniciando a leitura de '+route.title+'…';
-    try{window.speechSynthesis.speak(utterance)}
-    catch(e){activeUtterance=null;status.textContent='Voz indisponível neste navegador. Use o botão ABRIR MAPS.';}
+    const ptVoices=voices.filter(v=>/^pt(-|$)/i.test(v.lang));
+    const voice=ptVoices.find(v=>/^pt-BR$/i.test(v.lang) && /google|microsoft|natural/i.test(v.name))
+      ||ptVoices.find(v=>/^pt-BR$/i.test(v.lang))||ptVoices[0];
+    let index=0;
+    function next(){
+      if(id!==narrationId)return;
+      if(index>=steps.length){
+        activeUtterance=null;
+        status.textContent='Rota lida. Para ouvir outra vez, toque em OUVIR ROTA.';
+        return;
+      }
+      const utterance=new SpeechSynthesisUtterance(steps[index++]);
+      utterance.lang='pt-BR';
+      utterance.rate=0.76;
+      utterance.pitch=1;
+      utterance.volume=0.72;
+      if(voice)utterance.voice=voice;
+      activeUtterance=utterance;
+      utterance.onstart=()=>{if(id===narrationId)status.textContent='🔊 Lendo passo '+index+' de '+steps.length+': '+route.title;};
+      utterance.onend=()=>{
+        if(id!==narrationId)return;
+        activeUtterance=null;
+        pauseTimer=setTimeout(()=>{pauseTimer=null;next();},650);
+      };
+      utterance.onerror=e=>{
+        if(id!==narrationId)return;
+        activeUtterance=null;
+        status.textContent=e.error==='canceled'?'Narração interrompida.':'Não foi possível reproduzir a voz. Confira a voz em português do celular ou abra o Maps.';
+      };
+      try{window.speechSynthesis.speak(utterance);}
+      catch(e){activeUtterance=null;status.textContent='Voz indisponível neste navegador. Use o botão ABRIR MAPS.';}
+    }
+    status.textContent='Preparando instruções faladas de '+route.title+'…';
+    next();
   }
   select.addEventListener('change',()=>{if(activeUtterance)stopVoice();refresh()});
   play.addEventListener('click',playVoice);

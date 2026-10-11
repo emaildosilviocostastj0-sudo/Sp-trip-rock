@@ -279,6 +279,89 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 @media(max-width:600px){.reservegrid{grid-template-columns:1fr}.huntcoverwrap{max-height:none}}
 </style>
 
+
+<style id="walking-readability-20261011">
+/* Correção restrita a Mapas & Metrô: leitura em celular, sem redesenhar o Companion. */
+#walking .card > b {
+  display:block;
+  margin-bottom:10px;
+  font:700 16px/1.35 'Oswald',Arial,sans-serif;
+  letter-spacing:.4px;
+  color:#f1ece2;
+}
+#walking .card > p {line-height:1.65;margin:8px 0 12px}
+#walking .schematic {
+  margin-top:8px;
+  padding:12px 14px;
+  background:#0b0f12;
+  border:1px solid #4a4540;
+  border-left:3px solid #a50817;
+  color:#e9e5dc;
+  font:600 13px/2 Arial,Helvetica,sans-serif;
+  letter-spacing:.25px;
+  text-align:left;
+  overflow-wrap:break-word;
+}
+#walking .schematic .arr {
+  display:inline-block;
+  padding:0 5px;
+  color:#eab65e;
+  font-weight:900;
+}
+#walking .walkgrid {
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:12px;
+  margin:14px 0 22px;
+}
+#walking .walkcard {
+  min-width:0;
+  display:flex;
+  flex-direction:column;
+  align-items:stretch;
+  gap:10px;
+  padding:14px;
+  background:linear-gradient(155deg,#151b1e,#090c0e);
+  color:#e6e2dc;
+  border:1px solid #474b4d;
+  border-left:3px solid #a50817;
+  border-radius:5px;
+  overflow-wrap:break-word;
+  word-break:normal;
+}
+#walking .walkcard > b {
+  display:block;
+  font:700 16px/1.4 'Oswald',Arial,sans-serif;
+  letter-spacing:.15px;
+  color:#f1e9dc;
+}
+#walking .walkcard > small {
+  display:block;
+  font:400 14px/1.65 Arial,Helvetica,sans-serif;
+  color:#d3d6d8;
+}
+#walking .walkcard > small strong {
+  color:#f1c77b;
+  font-weight:700;
+}
+#walking .walkcard .btn {
+  align-self:flex-start;
+  margin-top:auto;
+  line-height:1.4;
+  white-space:normal;
+  max-width:100%;
+  text-align:center;
+}
+@media(max-width:640px){
+  #walking .walkgrid {grid-template-columns:minmax(0,1fr);gap:11px}
+  #walking .walkcard {padding:14px 13px;gap:11px}
+  #walking .walkcard > b {font-size:16px;line-height:1.45}
+  #walking .walkcard > small {font-size:14px;line-height:1.7}
+  #walking .schematic {font-size:12px;line-height:2.1;padding:12px;letter-spacing:0}
+  #walking .walkcard .btn {width:100%;justify-content:center}
+}
+</style>
+
 </head>
 <body>
 <div class="top"><div class="bar"><div class="fill" id="fill"></div></div><div class="prog" id="prog">0% DA MISSÃO CUMPRIDA</div></div>
@@ -338,7 +421,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="card"><b>🚶 ROTAS A PÉ</b><p style="font-size:12px;color:#aaa">Trechos curtos e complementos das rotas de metrô. Os botões abrem o Google Maps já em modo caminhada.</p><div class="schematic">BÊ HOTEL <span class="arr">→</span> AUDIO<br>↓<br>EXPO BARRA FUNDA <span class="arr">→</span> FABRIQUE CLUB</div></div>
 <div class="walkgrid">
 <div class="walkcard"><b>15/10 • Bê Hotel → Audio</b><small>Saída do hotel para o The Gathering. Trajeto curto pela região.</small><a class="btn" target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Rua+Monte+Alegre+45,+Sao+Paulo,+SP&destination=Av+Francisco+Matarazzo+694,+Sao+Paulo,+SP&travelmode=walking">🗺 ROTA A PÉ</a></div>
-<div class="walkcard"><b>16/10 • Fradique Coutinho → Eric Discos</b><small>Trecho final depois do metrô até Rua Artur de Azevedo, 1874.</small><a class="btn" target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Estacao+Fradique+Coutinho,+Sao+Paulo,+SP&destination=Rua+Artur+de+Azevedo+1874,+Sao+Paulo,+SP&travelmode=walking">🗺 ROTA A PÉ</a></div>
+<div class="walkcard"><b>15/10 • Fradique Coutinho → Eric Discos</b><small>Trecho final depois do metrô até Rua Artur de Azevedo, 1874.</small><a class="btn" target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Estacao+Fradique+Coutinho,+Sao+Paulo,+SP&destination=Rua+Artur+de+Azevedo+1874,+Sao+Paulo,+SP&travelmode=walking">🗺 ROTA A PÉ</a></div>
 <div class="walkcard"><b>16/10 • Monalisa → Galeria Nova Barão</b><small>Depois do almoço, caminhada pelo Centro até Rua Sete de Abril, 154 (ou Rua Barão de Itapetininga, 37).</small><a class="btn" target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Rua+Bento+Freitas+290,+Sao+Paulo,+SP&destination=Rua+Sete+de+Abril+154,+Sao+Paulo,+SP&travelmode=walking">🗺 ROTA A PÉ</a></div>
 <div class="walkcard"><b>16/10 • Nova Barão → Galeria do Rock</b><small>Caminhada curta entre as galerias, sem necessidade de metrô. Da Rua Sete de Abril, 154 até Rua 24 de Maio, 62.</small><a class="btn" target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Rua+Sete+de+Abril+154,+Sao+Paulo,+SP&destination=Rua+24+de+Maio+62,+Sao+Paulo,+SP&travelmode=walking">🗺 ROTA A PÉ ENTRE GALERIAS</a></div>
 <div class="walkcard"><b>16/10 • Galeria do Rock → República</b><small>Caminhada da Galeria do Rock até a estação República para retornar ao Bê Hotel.</small><a class="btn" target="_blank" href="https://www.google.com/maps/dir/?api=1&origin=Rua+24+de+Maio+62,+Sao+Paulo,+SP&destination=Estacao+Republica,+Sao+Paulo,+SP&travelmode=walking">🗺 ROTA A PÉ</a></div>

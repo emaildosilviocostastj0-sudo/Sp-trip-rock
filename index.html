@@ -513,7 +513,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 </div>
 <small>Médio = referência • LP e CD têm faixas distintas • conservação e edições raras exigem avaliação própria.</small></div>
 <div id="huntGrid" class="huntgrid"></div>
-<div class="card" style="margin-top:14px"><b>🛞 10 RESERVAS — BANCO DE SUPLENTES</b>
+<div class="card" style="margin-top:14px"><b>🛞 16 RESERVAS — BANCO DE SUPLENTES</b>
 <div id="reserveGrid" class="reservegrid"></div>
 </div>
 </section>
@@ -746,6 +746,10 @@ function addPurchase(){
   const type=$('ptype').value;
   if(!$('partist').value.trim()&&!$('ptitle').value.trim())return alert('Informe o item ou o título da compra.');
   if(price<0)return alert('Informe um valor válido.');
+  if(type==='Disco'){
+    const cap=lpHardCap({artist:$('partist').value,title:$('ptitle').value},$('pformat').value);
+    if(cap!==null&&price>cap)return alert('COMPRA BLOQUEADA: teto rígido de '+money(cap)+' para este LP.');
+  }
   data.purchases.push({type,format:type==='Disco'?$('pformat').value:'',price,artist:$('partist').value.trim(),title:$('ptitle').value.trim(),place:$('pplace').value,edition:$('pedition').value.trim(),note:$('pnote').value.trim()});
   ['pprice','partist','ptitle','pedition','pnote'].forEach(id=>$(id).value='');
   $('pformat').value='LP';
@@ -802,9 +806,9 @@ function pooledDiscSpent(){return allPurchases().filter(x=>x.type==='Disco').red
 const HUNT=[
 {id:'funkadelic',artist:'Funkadelic',album:'Maggot Brain',tags:['hard70'],mission:'🦄 QUESTÃO DE HONRA • prioridade máxima',tier:'wildcard',cover:'https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200',prices:{LP:{low:250,avg:400,high:550},CD:{low:90,avg:140,high:225}}},
 {id:'stoneroses',artist:'The Stone Roses',album:'The Stone Roses',tags:['brit'],mission:'🎯 ALVO • britânico / prioridade alta',tier:'target',cover:'https://is1-ssl.mzstatic.com/image/thumb/Music/d2/db/21/mzi.kihcrutv.jpg/1200x1200bb.jpg',prices:{LP:{low:250,avg:300,high:350},CD:{low:90,avg:150,high:260}}},
-{id:'badbrains',artist:'Bad Brains',album:'Bad Brains',tags:['punk'],mission:'🎯 ALVO • hardcore essencial',tier:'target',cover:'https://i5.walmartimages.com/seo/Bad-Brains-Bad-Brains-Music-Performance-Vinyl_0b313c3d-09bd-4c85-a1b1-9a8537c12c5f.82986cf6c2aba83b0f21757a5dd7b34b.jpeg',prices:{LP:{low:250,avg:350,high:450},CD:{low:80,avg:130,high:180}}},
+{id:'badreligion',artist:'Bad Religion',album:'Stranger Than Fiction',tags:['punk'],mission:'🎯 ALVO • punk rock / clássico de 1994',tier:'target',cover:'https://www.thebadreligionpage.net/img/discography/Variations/1369_stranger_than_fiction_front.jpg',prices:{LP:{low:150,avg:225,high:320},CD:{low:50,avg:100,high:160}}},
 {id:'satan',artist:'Satan',album:'Court in the Act',tags:['metal'],mission:'🎯 ALVO DIFÍCIL • NWOBHM',tier:'target',cover:'https://f4.bcbits.com/img/0023513162_10.jpg',prices:{LP:{low:200,avg:350,high:500},CD:{low:110,avg:160,high:220}}},
-{id:'comeco',artist:'Vários Artistas',album:'O Começo do Fim do Mundo',tags:['punk','br'],mission:'🎯 ALVO • documento do punk brasileiro',tier:'target',cover:'https://i.scdn.co/image/ab67616d0000b273edefe7d1e022703293c382ac',prices:{LP:{low:350,avg:500,high:650},CD:{low:100,avg:125,high:150}}},
+{id:'minorthreat',artist:'Minor Threat',album:'Out of Step',tags:['punk'],mission:'🎯 ALVO • hardcore / Dischord 1983',tier:'target',cover:'https://i.scdn.co/image/dafffa369de6b87fc5bf2d669fe5333fa9c25f47',prices:{LP:{low:220,avg:280,high:350},CD:{low:70,avg:115,high:180}}},
 {id:'cazuza',artist:'Cazuza',album:'Ideologia',tags:['br'],mission:'🎯 ALVO • clássico brasileiro',tier:'target',cover:'https://coverartarchive.org/release/55ddf8e9-aa31-4a43-a1a0-8a6c9641a61e/front-1200',prices:{LP:{low:100,avg:160,high:220},CD:{low:30,avg:80,high:150}}},
 {id:'saxon',artist:'Saxon',album:'Wheels of Steel',tags:['metal'],mission:'🎯 ALVO • metal tradicional',tier:'target',cover:'https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/80/a8/9a/80a89a18-88bd-4d3a-34cb-5c1748d24f0c/5099969444555.jpg/1200x1200bf-60.jpg',prices:{LP:{low:125,avg:200,high:300},CD:{low:70,avg:100,high:150}}},
 {id:'loureed',artist:'Lou Reed',album:'Transformer',tags:['hard70'],mission:'🎯 ALVO • clássico 70s',tier:'target',cover:'https://muzikercdn.com/uploads/products/3728/372882/thumb_large_d_gallery_99118693.jpg',prices:{LP:{low:125,avg:180,high:260},CD:{low:50,avg:80,high:130}}},
@@ -822,15 +826,51 @@ const RESERVES=[
 {artist:'Accept',album:'Balls to the Wall',note:'heavy metal tradicional',prices:{LP:{low:160,avg:200,high:280},CD:{low:70,avg:110,high:160}}},
 {artist:'Sodom',album:'Agent Orange',note:'thrash metal',prices:{LP:{low:450,avg:650,high:900},CD:{low:100,avg:140,high:200}}},
 {artist:'Mountain',album:'Climbing!',note:'hard rock / 1970',prices:{LP:{low:180,avg:280,high:400},CD:{low:80,avg:130,high:200}}},
-{artist:'Redbone',album:'Wovoka',note:'rock / funk / 1973',prices:{LP:{low:120,avg:220,high:350},CD:{low:90,avg:130,high:180}}}
+{artist:'Redbone',album:'Wovoka',note:'rock / funk / 1973',prices:{LP:{low:120,avg:220,high:350},CD:{low:90,avg:130,high:180}}},
+{artist:'Immortal',album:'Battles in the North',note:'black metal / 1995',prices:{LP:{low:280,avg:380,high:500},CD:{low:45,avg:100,high:190}}},
+{artist:'Obituary',album:'Slowly We Rot',note:'death metal / estreia de 1989',prices:{LP:{low:220,avg:340,high:440},CD:{low:75,avg:130,high:200}}},
+{artist:'Happy Mondays',album:"Pills 'n' Thrills and Bellyaches",note:'Madchester / 1990',prices:{LP:{low:240,avg:370,high:480},CD:{low:75,avg:130,high:200}}},
+{artist:'Radiohead',album:'The Bends',note:'rock alternativo britânico / 1995',prices:{LP:{low:170,avg:238,high:320},CD:{low:60,avg:100,high:150}}},
+{artist:'Radiohead',album:'Kid A',note:'rock experimental / 2000 • alternativa ao The Bends',prices:{LP:{low:250,avg:316,high:440},CD:{low:60,avg:110,high:180}}},
+{artist:'Primal Scream',album:'Screamadelica',note:'psicodelia / Madchester / 1991',prices:{LP:{low:220,avg:295,high:400},CD:{low:60,avg:100,high:160}}}
 ];
+
+
+/* Tetos absolutos informados pelo colecionador: apenas para LP; faixas pesquisadas mantidas nos demais. */
+const LP_HARD_CAPS=new Map([
+['Bad Religion|Stranger Than Fiction',184],
+['Lou Reed|Transformer',187],
+['The Stone Roses|The Stone Roses',189],
+['The Cure|The Head on the Door',216],
+['Radiohead|The Bends',238],
+['Steely Dan|Aja',241],
+['Alice in Chains|Dirt',280],
+['Primal Scream|Screamadelica',295],
+['Radiohead|Kid A',316]
+].map(([key,cap])=>[key.toLocaleLowerCase('pt-BR'),cap]));
+function lpHardCap(item,format){
+  if(String(format||'LP').toUpperCase()!=='LP')return null;
+  const key=(String(item.artist||'').trim()+'|'+String(item.album||item.title||'').trim()).toLocaleLowerCase('pt-BR');
+  return LP_HARD_CAPS.get(key)??null;
+}
+function huntPriceMarkup(item,format){
+  const cap=lpHardCap(item,format),band=huntBand(item,format);
+  if(cap!==null)return `<div class="prices"><div>REFERÊNCIA ENCONTRADA<b>${money(cap)}</b></div><div>REGRA<b>TETO RÍGIDO</b></div><div>MÁX / TETO<b>${money(cap)}</b></div></div>`;
+  return `<div class="prices"><div>MÍN / ATAQUE<b>${money(band.low)}</b></div><div>MÉDIO<b>${money(band.avg)}</b></div><div>MÁX / TETO<b>${money(band.high)}</b></div></div>`;
+}
+function reserveLPPriceText(item){
+  const cap=lpHardCap(item,'LP');
+  return cap!==null?'TETO RÍGIDO: '+money(cap):money(item.prices.LP.low)+' / '+money(item.prices.LP.avg)+' / '+money(item.prices.LP.high);
+}
 
 function setHuntFilter(f){huntFilter=f;renderHunt()}
 function huntBand(item,format){return item.prices[format]||item.prices.LP}
 function huntVerdict(item,price,format){
   price=Number(price||0);
+  const cap=lpHardCap(item,format||'LP');
   const band=huntBand(item,format||'LP');
   if(!Number.isFinite(price)||price<=0)return ['none','DIGITE O PREÇO'];
+  if(cap!==null)return price>cap?['abort','✕ ACIMA DO TETO RÍGIDO • NÃO COMPRAR']:['attack','✓ DENTRO DO TETO • CONFIRA EDIÇÃO E ESTADO'];
   if(price<=band.low)return ['attack','✓ VALE COMPRAR'];
   if(price<=band.high)return ['fair','⚠ OLHE BEM'];
   return ['abort','✕ PASSE LONGE'];
@@ -936,6 +976,8 @@ function buyHunt(id){
   const {h,s,place,format}=huntRecord(id),price=Number(s.price||0);
   if(h.bought){alert("Este item já foi marcado como comprado.");return}
   if(!Number.isFinite(price)||price<=0){alert("Digite o preço encontrado primeiro.");return}
+  const cap=lpHardCap(item,format);
+  if(cap!==null&&price>cap){alert('COMPRA BLOQUEADA: teto rígido de '+money(cap)+' para este LP.');return}
   data.purchases.push({type:"Disco",format,price,artist:item.artist,title:item.album,place,edition:"",note:"Caçada • "+item.mission});
   s.status="found";
   h.price=price;
@@ -958,7 +1000,7 @@ function renderHunt(){
     const shopBoard=createShopBoard(x,h,place,format);
     const gradeOptions=HUNT_GRADES.map(([value,label])=>`<option value="${value}" ${(s.condition||"")===value?"selected":""}>${label}</option>`).join("");
     const research=h.bought?"":`<div class="hunt-research"><label for="hunt-status-${x.id}">RESULTADO DA PROCURA • ${esc(place)} / ${format}</label><select id="hunt-status-${x.id}" aria-label="Resultado da procura" onchange="huntOutcome('${x.id}',this.value)">${outcomeOptions}</select>${s.status==="found"?`<div class="hunt-quality-row"><select class="hunt-condition" title="Conservação da mídia. Use observações para o estado da capa." aria-label="Conservação do disco" onchange="huntCondition('${x.id}',this.value)">${gradeOptions}</select><select class="hunt-reason" aria-label="Por que não comprou" onchange="huntReason('${x.id}',this.value)">${reasonOptions}</select></div>`:""}${s.status?`<input class="hunt-note" type="text" maxlength="180" aria-label="Observação da procura" placeholder="Capa, prensagem, riscos, encarte..." value="${esc(s.note||"")}" oninput="huntNote('${x.id}',this.value)">`:""}</div>`;
-    return `<div data-hunt-id="${x.id}" data-format="${format}" class="wanted ${h.bought?"huntbought":""} ${x.tier==="wildcard"?"wildcard":""}" style="--tilt:${tilt}deg"><div class="huntcoverwrap"><img class="huntcover" src="${x.cover}" alt="Capa de ${esc(x.album)} — ${esc(x.artist)}" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.huntcoverwrap').style.display='none'"></div><h3>${x.artist}</h3><div class="album">${x.album}</div><div class="mission">${x.mission}</div><div class="huntformat"><label>FORMATO</label><select onchange="huntFormat('${x.id}',this.value)" ${h.bought?"disabled":""}><option value="LP" ${format==="LP"?"selected":""}>LP • VINIL</option><option value="CD" ${format==="CD"?"selected":""}>CD</option></select></div><div class="prices"><div>MÍN / ATAQUE<b>${money(band.low)}</b></div><div>MÉDIO<b>${money(band.avg)}</b></div><div>MÁX / TETO<b>${money(band.high)}</b></div></div>${shopBoard}<div class="huntprice"><input type="number" step="0.01" min="0" inputmode="decimal" placeholder="Preço achado" aria-label="Preço achado" value="${Number(s.price)>0?s.price:""}" onchange="huntPrice('${x.id}',this.value)" ${h.bought?"disabled":""}></div><div class="verdict ${v[0]}">${v[1]}</div>${research}<div class="huntactions">${h.bought?'<span class="purchase-stamp" role="status" aria-label="Disco comprado">COMPRADO</span>':`<button class="btn" onclick="buyHunt('${x.id}')">💿 COMPREI</button>`}</div></div>`;
+    return `<div data-hunt-id="${x.id}" data-format="${format}" class="wanted ${h.bought?"huntbought":""} ${x.tier==="wildcard"?"wildcard":""}" style="--tilt:${tilt}deg"><div class="huntcoverwrap"><img class="huntcover" src="${x.cover}" alt="Capa de ${esc(x.album)} — ${esc(x.artist)}" loading="eager" decoding="async" referrerpolicy="no-referrer" onerror="this.closest('.huntcoverwrap').style.display='none'"></div><h3>${x.artist}</h3><div class="album">${x.album}</div><div class="mission">${x.mission}</div><div class="huntformat"><label>FORMATO</label><select onchange="huntFormat('${x.id}',this.value)" ${h.bought?"disabled":""}><option value="LP" ${format==="LP"?"selected":""}>LP • VINIL</option><option value="CD" ${format==="CD"?"selected":""}>CD</option></select></div>${huntPriceMarkup(x,format)}${shopBoard}<div class="huntprice"><input type="number" step="0.01" min="0" inputmode="decimal" placeholder="Preço achado" aria-label="Preço achado" value="${Number(s.price)>0?s.price:""}" onchange="huntPrice('${x.id}',this.value)" ${h.bought?"disabled":""}></div><div class="verdict ${v[0]}">${v[1]}</div>${research}<div class="huntactions">${h.bought?'<span class="purchase-stamp" role="status" aria-label="Disco comprado">COMPRADO</span>':`<button class="btn" onclick="buyHunt('${x.id}')">💿 COMPREI</button>`}</div></div>`;
   }).join("");
   const spent=pooledDiscSpent(),left=DISC_BUDGET-spent;
   huntPoolRemaining.textContent=money(left);
@@ -997,6 +1039,8 @@ function buyReserve(i){
   if(!Number.isFinite(price)||price<=0){alert('Informe o preço pago primeiro.');return}
   if(!r.place){alert('Informe o local da compra.');return}
   if(r.bought){return}
+  const cap=lpHardCap(RESERVES[i],r.format||'LP');
+  if(cap!==null&&price>cap){alert('COMPRA BLOQUEADA: teto rígido de '+money(cap)+' para este LP.');return}
   data.reserves[k]={...r,bought:true,price};
   save()
 }
@@ -1009,7 +1053,7 @@ function renderReserveGroup(list,targetId){
       places.map(p=>'<option value="'+p+'" '+(r.place===p?'selected':'')+'>'+p+'</option>').join('')+
       (r.place&&!places.includes(r.place)?'<option value="'+esc(r.place)+'" selected>'+esc(r.place)+'</option>':'')+
       '<option value="__other__">Outra loja…</option>';
-    return `<div class="reserveitem ${r.bought?'reservebought':''}"><div class="rtitle">${i+1}. ${esc(x.artist)} — <i>${esc(x.album)}</i></div><div class="rmeta">${esc(x.note)}</div><div class="rprice"><span>LP</span><b>${money(x.prices.LP.low)} / ${money(x.prices.LP.avg)} / ${money(x.prices.LP.high)}</b><span>CD</span><b>${money(x.prices.CD.low)} / ${money(x.prices.CD.avg)} / ${money(x.prices.CD.high)}</b></div><div class="rquick"><select aria-label="Local da compra" onchange="reservePlace(${i},this.value)">${options}</select><input type="number" min="0" step="1" inputmode="decimal" placeholder="Preço pago" value="${r.price||''}" onchange="reservePrice(${i},this.value)" ${r.bought?'disabled':''}>${r.bought?'<span class="reserve-stamp" role="status">COMPRADO</span>':`<button class="btn" onclick="buyReserve(${i})">💿 COMPREI</button>`}</div>${r.bought?`<div class="rpaid">Preço pago: <b>${money(r.price)}</b> • ${esc(r.place||'Local não informado')}</div>`:''}</div>`
+    return `<div class="reserveitem ${r.bought?'reservebought':''}"><div class="rtitle">${i+1}. ${esc(x.artist)} — <i>${esc(x.album)}</i></div><div class="rmeta">${esc(x.note)}</div><div class="rprice"><span>LP</span><b>${reserveLPPriceText(x)}</b><span>CD</span><b>${money(x.prices.CD.low)} / ${money(x.prices.CD.avg)} / ${money(x.prices.CD.high)}</b></div><div class="rquick"><select aria-label="Local da compra" onchange="reservePlace(${i},this.value)">${options}</select><input type="number" min="0" step="1" inputmode="decimal" placeholder="Preço pago" value="${r.price||''}" onchange="reservePrice(${i},this.value)" ${r.bought?'disabled':''}>${r.bought?'<span class="reserve-stamp" role="status">COMPRADO</span>':`<button class="btn" onclick="buyReserve(${i})">💿 COMPREI</button>`}</div>${r.bought?`<div class="rpaid">Preço pago: <b>${money(r.price)}</b> • ${esc(r.place||'Local não informado')}</div>`:''}</div>`
   }).join('')
 }
 function renderReserves(){renderReserveGroup(RESERVES,'reserveGrid')}

@@ -403,6 +403,19 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 }
 </style>
 
+
+<style id="roadie-voice-20261011">
+#walking .roadie-voice{border-top:3px solid #9b0011;background:linear-gradient(135deg,#171b1e,#0b0d0f);padding:14px}
+#walking .roadie-voice>strong{display:block;font:900 16px/1.25 'Black Ops One','Arial Black',sans-serif;color:var(--gold);margin-bottom:9px}
+#walking .roadie-voice select{display:block;width:100%;min-height:44px;padding:9px;background:#0b0c0d;color:#f5ebda;border:1px solid #8c8066;border-radius:4px;font:600 13px/1.4 'Oswald',Arial,sans-serif}
+#walking .roadie-voice .roadie-actions{display:flex;gap:8px;flex-wrap:wrap;margin-top:9px;align-items:center}
+#walking .roadie-voice .roadie-actions .btn{display:inline-flex;align-items:center;justify-content:center;min-height:42px;flex:1 1 auto;white-space:normal;line-height:1.2}
+#walking .roadie-voice .roadie-actions .btn:first-child{flex:2 1 130px}
+#walking .roadie-voice .roadie-status{display:block;margin-top:9px;color:#d5c8b0;font-size:12px;line-height:1.6}
+#walking .roadie-voice .roadie-tip{display:block;margin-top:7px;color:#afafaf;font-size:11px;line-height:1.5}
+#walking .roadie-voice .roadie-text{display:block;margin-top:6px;font-size:12px;line-height:1.55;color:#ddd}
+@media(max-width:600px){#walking .roadie-voice .roadie-actions .btn{font-size:11px;padding:8px 7px}}
+</style>
 </head>
 <body>
 <div class="top"><div class="bar"><div class="fill" id="fill"></div></div><div class="prog" id="prog">0% DA MISSÃO CUMPRIDA</div></div>
@@ -447,6 +460,19 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 </section>
 
 <section id="walking" class="section"><h2 class="sectiontitle">🗺 Mapas & Metrô</h2>
+<div class="card roadie-voice" role="region" aria-label="Roadie de voz, instruções de deslocamento">
+<strong>🎧 ROADIE DE VOZ • ROTAS FALADAS</strong>
+<label for="roadieVoiceRoute" style="display:block;font-size:11px;color:#ccc;margin-bottom:6px">ESCOLHA O DESLOCAMENTO</label>
+<select id="roadieVoiceRoute" aria-label="Selecione a rota que deseja ouvir"></select>
+<div class="roadie-actions">
+<button class="btn" id="roadieVoicePlay" type="button">🔊 OUVIR ROTA</button>
+<button class="btn alt" id="roadieVoiceStop" type="button">■ PARAR</button>
+<a class="btn alt" id="roadieVoiceMaps" href="https://www.google.com/maps" target="_blank" rel="noopener noreferrer">🗺 ABRIR MAPS</a>
+</div>
+<small class="roadie-status" id="roadieVoiceStatus" role="status" aria-live="polite">Escolha o trecho e toque em OUVIR ROTA.</small>
+<small class="roadie-text" id="roadieVoiceDescription"></small>
+<small class="roadie-tip">A voz resume o roteiro; não acompanha sua posição. Com a tela bloqueada, a fala pode parar conforme o Android/navegador. Para orientação em tempo real, use o Maps com áudio habilitado. Teste com o celular no bolso ainda em local seguro.</small>
+</div>
 <div class="card"><b>🎮 NOVA PÁGINA • MAPA DA MISSÃO</b><p style="font-size:13px;line-height:1.7;color:#e2ddd4">Explore todos os pontos da viagem num mapa real ou acompanhe o percurso animado, fase por fase, com seu próprio avatar.</p><a class="btn" href="./mapa.html" aria-label="Abrir segunda página com mapa interativo">🗺 ABRIR MAPA INTERATIVO ↗</a></div>
 <div class="card"><b>🚇 METRÔ • ROTAS DA MISSÃO</b><div class="schematic">PALMEIRAS–BARRA FUNDA <span class="arr">→</span> REPÚBLICA <span class="arr">→</span> FRADIQUE COUTINHO / FARIA LIMA<br>PALMEIRAS–BARRA FUNDA <span class="arr">→</span> LUZ</div></div>
 <div class="walkgrid">
@@ -1135,8 +1161,108 @@ function confirmReset(){
   renderAll();$('resetDialog').close();$('resetError').textContent='';
 }
 
+
+/* Roadie de voz: narração pontual das rotas já presentes no mapa.
+   Não altera o roteiro, os checklists ou o diário salvo. */
+function initRoadieVoice(){
+  const section=$('walking'),select=$('roadieVoiceRoute'),play=$('roadieVoicePlay');
+  const stop=$('roadieVoiceStop'),maps=$('roadieVoiceMaps');
+  const status=$('roadieVoiceStatus'),description=$('roadieVoiceDescription');
+  if(!section||!select||!play||!stop||!maps||!status||!description)return;
+  const cards=Array.from(section.querySelectorAll('.walkcard'));
+  const routes=cards.map(card=>{
+    const title=card.querySelector('b')?.textContent?.trim()||'Deslocamento';
+    const details=card.querySelector('small')?.textContent?.trim().replace(/\s+/g,' ')||'';
+    const link=card.querySelector('a[href*="google.com/maps/dir/"]');
+    const day=(title.match(/^(\d{2})(?: e \d{2})?\/10/)||[])[1]||'';
+    return {title,details,url:link?.href||'',day};
+  }).filter(item=>item.url&&item.details);
+  if(!routes.length){
+    select.disabled=true;play.disabled=true;stop.disabled=true;
+    status.textContent='Nenhuma rota com instruções encontrada.';
+    return;
+  }
+  for(const day of ['15','16','17','18','19','']){
+    const entries=routes.map((route,index)=>({route,index})).filter(x=>x.route.day===day);
+    if(!entries.length)continue;
+    const group=document.createElement('optgroup');
+    group.label=day?day+'/10 • DESLOCAMENTOS':'OUTRAS ROTAS';
+    for(const item of entries){
+      const option=document.createElement('option');
+      option.value=String(item.index);
+      option.textContent=item.route.title;
+      group.appendChild(option);
+    }
+    select.appendChild(group);
+  }
+  let activeUtterance=null;
+  const supported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
+  function current(){
+    const route=routes[Number(select.value)];
+    return route||routes[0];
+  }
+  function refresh(){
+    const route=current();
+    description.textContent=route.details;
+    maps.href=route.url;
+  }
+  function stopVoice(){
+    activeUtterance=null;
+    if(supported)window.speechSynthesis.cancel();
+    status.textContent='Narração interrompida. Se quiser, toque em OUVIR ROTA para repetir.';
+  }
+  function spokenText(route){
+    const name=route.title.replace(/^\d{2}(?: e \d{2})?\/10\s*•\s*/,'');
+    const details=route.details
+      .replace(/→/g,' até ')
+      .replace(/•/g,'. ')
+      .replace(/\bL3\b/g,'linha três')
+      .replace(/\bL4\b/g,'linha quatro')
+      .replace(/\bL1\b/g,'linha um')
+      .replace(/\bkm\b/g,'quilômetros')
+      .replace(/\s+/g,' ');
+    return 'Roadie de voz. Próximo deslocamento: '+name+'. '+details+'. Boa viagem.';
+  }
+  function playVoice(){
+    if(!supported){
+      status.textContent='Este navegador não oferece leitura em voz alta. Você ainda pode abrir a rota no Maps.';
+      return;
+    }
+    stopVoice();
+    const route=current();
+    const utterance=new SpeechSynthesisUtterance(spokenText(route));
+    utterance.lang='pt-BR';
+    utterance.rate=0.92;
+    utterance.pitch=1;
+    utterance.volume=1;
+    const voices=window.speechSynthesis.getVoices();
+    const voice=voices.find(v=>v.lang.toLowerCase()==='pt-br')||voices.find(v=>v.lang.toLowerCase().startsWith('pt'));
+    if(voice)utterance.voice=voice;
+    activeUtterance=utterance;
+    utterance.onstart=()=>{if(activeUtterance===utterance)status.textContent='🔊 Lendo: '+route.title;};
+    utterance.onend=()=>{if(activeUtterance===utterance){activeUtterance=null;status.textContent='Rota lida. Para ouvir outra vez, toque em OUVIR ROTA.';}};
+    utterance.onerror=e=>{
+      if(activeUtterance!==utterance)return;
+      activeUtterance=null;
+      status.textContent=e.error==='canceled'?'Narração interrompida.':'Não foi possível reproduzir a voz. Confira a voz em português do celular ou abra o Maps.';
+    };
+    status.textContent='Iniciando a leitura de '+route.title+'…';
+    try{window.speechSynthesis.speak(utterance)}
+    catch(e){activeUtterance=null;status.textContent='Voz indisponível neste navegador. Use o botão ABRIR MAPS.';}
+  }
+  select.addEventListener('change',()=>{if(activeUtterance)stopVoice();refresh()});
+  play.addEventListener('click',playVoice);
+  stop.addEventListener('click',stopVoice);
+  refresh();
+  if(!supported){
+    play.disabled=true;stop.disabled=true;
+    status.textContent='A leitura em voz alta não é suportada neste navegador. Use ABRIR MAPS.';
+  }
+}
+
 renderAll();
 updateBackupHint();
+initRoadieVoice();
 </script>
 
 <script>if('serviceWorker' in navigator){window.addEventListener('load',()=>navigator.serviceWorker.register('./sw.js',{updateViaCache:'none'}).then(r=>r.update()).catch(()=>{}));}</script>

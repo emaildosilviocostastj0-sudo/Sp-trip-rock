@@ -362,6 +362,47 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 }
 </style>
 
+
+<style id="floating-map-shortcut-20261011">
+/* Apenas o acesso permanente à segunda página, sem mudanças no Companion. */
+#mapQuickAccess{
+  position:fixed;
+  right:14px;
+  bottom:calc(72px + env(safe-area-inset-bottom, 0px));
+  z-index:29;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  min-height:46px;
+  padding:11px 16px;
+  border:1px solid #e7b84b;
+  border-radius:99px;
+  background:#a60e23;
+  box-shadow:0 3px 14px #000b,0 0 0 2px #24090d;
+  color:#fff;
+  text-decoration:none;
+  font:900 13px/1.2 'Oswald',Arial,sans-serif;
+  letter-spacing:.7px;
+  text-transform:uppercase;
+  -webkit-tap-highlight-color:transparent;
+}
+#mapQuickAccess:hover,#mapQuickAccess:focus-visible{
+  background:#bf172e;
+  outline:2px solid #f1ce86;
+  outline-offset:3px;
+}
+@media(max-width:520px){
+  #mapQuickAccess{
+    right:11px;
+    bottom:calc(66px + env(safe-area-inset-bottom, 0px));
+    min-height:44px;
+    padding:10px 13px;
+    font-size:12px;
+  }
+}
+</style>
+
 </head>
 <body>
 <div class="top"><div class="bar"><div class="fill" id="fill"></div></div><div class="prog" id="prog">0% DA MISSÃO CUMPRIDA</div></div>
@@ -565,6 +606,8 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 </div></section>
 <div class="footer">♫ MORE MUSIC • MORE LIFE • SÃO PAULO 2026 ♫</div>
 </main>
+
+<a id="mapQuickAccess" href="./mapa.html" aria-label="Abrir mapa interativo da viagem">🗺 <span>MAPA</span></a>
 
 <nav class="bottomnav"><a href="#roteiro"><span>⚡</span>Roteiro</a><a href="#cacada"><span>🎯</span>Caçada</a><a href="#compras"><span>💿</span>Compras</a><a href="#gastos"><span>💰</span>Gastos</a><a href="#diario"><span>✎</span>Diário</a><a href="#resumo"><span>☠</span>Resumo</a></nav>
 

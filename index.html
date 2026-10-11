@@ -463,7 +463,8 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="card roadie-voice" role="region" aria-label="Roadie de voz, instruções de deslocamento">
 <strong>🎧 ROADIE DE VOZ • ROTAS FALADAS</strong>
 <label for="roadieVoiceRoute" style="display:block;font-size:11px;color:#ccc;margin-bottom:6px">ESCOLHA O DESLOCAMENTO</label>
-<select id="roadieVoiceRoute" aria-label="Selecione a rota que deseja ouvir"></select>
+<select id="roadieVoiceRoute" aria-label="Selecione a rota que deseja ouvir"><option value="">Carregando deslocamentos…</option></select>
+<div class="roadie-route-switch" style="display:flex;gap:8px;margin-top:8px"><button class="btn alt" type="button" id="roadieRoutePrev" style="flex:1">◀ ANTERIOR</button><button class="btn alt" type="button" id="roadieRouteNext" style="flex:1">PRÓXIMA ▶</button></div>
 <div class="roadie-actions">
 <button class="btn" id="roadieVoicePlay" type="button">🔊 OUVIR ROTA</button>
 <button class="btn alt" id="roadieVoiceStop" type="button">■ PARAR</button>
@@ -635,7 +636,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <a id="mapQuickAccess" href="./mapa.html" aria-label="Abrir mapa interativo da viagem">🗺 <span>MAPA</span></a>
 
-<nav class="bottomnav"><a href="#roteiro"><span>⚡</span>Roteiro</a><a href="#cacada"><span>🎯</span>Caçada</a><a href="#compras"><span>💿</span>Compras</a><a href="#gastos"><span>💰</span>Gastos</a><a href="#diario"><span>✎</span>Diário</a><a href="#resumo"><span>☠</span>Resumo</a></nav>
+<nav class="bottomnav"><a href="#roteiro"><span>⚡</span>Roteiro</a><a href="#cacada"><span>🎯</span>Caçada</a><a href="#compras"><span>💿</span>Compras</a><a href="#gastos"><span>💰</span>Gastos</a><a href="#walking"><span>🎧</span>Voz</a><a href="#diario"><span>✎</span>Diário</a><a href="#resumo"><span>☠</span>Resumo</a></nav>
 
 <dialog id="resetDialog" aria-labelledby="resetTitle" aria-describedby="resetDescription" style="max-width:440px;width:calc(100% - 48px);background:var(--panel,#151515);color:var(--text,#eee);border:2px solid var(--gold,#c8b98e);padding:22px">
 <h2 id="resetTitle">ZERAR TUDO?</h2>
@@ -1182,19 +1183,15 @@ function initRoadieVoice(){
     status.textContent='Nenhuma rota com instruções encontrada.';
     return;
   }
-  for(const day of ['15','16','17','18','19','']){
-    const entries=routes.map((route,index)=>({route,index})).filter(x=>x.route.day===day);
-    if(!entries.length)continue;
-    const group=document.createElement('optgroup');
-    group.label=day?day+'/10 • DESLOCAMENTOS':'OUTRAS ROTAS';
-    for(const item of entries){
-      const option=document.createElement('option');
-      option.value=String(item.index);
-      option.textContent=item.route.title;
-      group.appendChild(option);
-    }
-    select.appendChild(group);
-  }
+  // Opções diretas: menus nativos de alguns celulares falham com optgroup.
+  select.replaceChildren();
+  routes.forEach((route,index)=>{
+    const option=document.createElement('option');
+    option.value=String(index);
+    option.textContent=route.title;
+    select.appendChild(option);
+  });
+  select.value='0';
   let activeUtterance=null, pauseTimer=null, narrationId=0;
   const supported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
   function current(){
@@ -1274,7 +1271,15 @@ function initRoadieVoice(){
     status.textContent='Preparando instruções faladas de '+route.title+'…';
     next();
   }
-  select.addEventListener('change',()=>{if(activeUtterance)stopVoice();refresh()});
+  function stepRoute(delta){
+    const nextIndex=(Number(select.value)+delta+routes.length)%routes.length;
+    select.value=String(nextIndex);
+    stopVoice();refresh();
+  }
+  $('roadieRoutePrev').addEventListener('click',()=>stepRoute(-1));
+  $('roadieRouteNext').addEventListener('click',()=>stepRoute(1));
+  select.addEventListener('change',()=>{stopVoice();refresh()});
+  select.addEventListener('input',()=>{stopVoice();refresh()});
   play.addEventListener('click',playVoice);
   stop.addEventListener('click',stopVoice);
   refresh();

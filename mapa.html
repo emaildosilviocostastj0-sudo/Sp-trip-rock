@@ -158,6 +158,7 @@ $("skip").onclick=()=>{stopPlay();step(1)};
 const script=document.createElement("script");
 script.src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js";script.async=true;
 script.onerror=()=>{$("fallback").style.display="grid"};
+script.onload=()=>{if(mode==="street"){setupStreet();leafletMap?.invalidateSize();paintMap()}};
 document.head.appendChild(script);
 let mode="world",allpins=false;
 function color(type){return type==="disc"?"#dba94c":type==="event"?"#cb263e":type==="base"?"#5a9aca":"#70ac7e"}

@@ -1192,11 +1192,10 @@ function initRoadieVoice(){
     select.appendChild(option);
   });
   select.value='0';
-  let activeUtterance=null, pauseTimer=null, narrationId=0;
+  let activeUtterance=null;
   const supported=('speechSynthesis' in window)&&('SpeechSynthesisUtterance' in window);
   function current(){
-    const route=routes[Number(select.value)];
-    return route||routes[0];
+    return routes[Number(select.value)]||routes[0];
   }
   function refresh(){
     const route=current();
@@ -1204,72 +1203,55 @@ function initRoadieVoice(){
     maps.href=route.url;
   }
   function stopVoice(){
-    narrationId++;
-    if(pauseTimer!==null){clearTimeout(pauseTimer);pauseTimer=null;}
     activeUtterance=null;
     if(supported)window.speechSynthesis.cancel();
-    status.textContent='Narração interrompida. Se quiser, toque em OUVIR ROTA para repetir.';
+    status.textContent='Narração interrompida. Toque em OUVIR ROTA para repetir.';
   }
-  function spokenSteps(route){
-    const name=route.title.replace(/^\\d{2}(?: e \\d{2})?\\/10\\s*•\\s*/,'');
+  function spokenText(route){
+    const name=route.title.replace(/^\d{2}(?: e \d{2})?\/10\s*•\s*/,'');
     const details=route.details
-      .replace(/→/g,'. Depois, siga até ')
-      .replace(/•/g,'. ')
-      .replace(/\\bL3\\b/gi,'linha três')
-      .replace(/\\bL4\\b/gi,'linha quatro')
-      .replace(/\\bL1\\b/gi,'linha um')
-      .replace(/\\bL2\\b/gi,'linha dois')
-      .replace(/\\bL5\\b/gi,'linha cinco')
-      .replace(/\\bkm\\b/gi,'quilômetros')
-      .replace(/\\s+/g,' ').trim();
-    const text='Próximo deslocamento: '+name+'. '+details;
-    return text.split(/(?<=[.!?;])\\s+|\\s+[—–]\\s+/)
-      .flatMap(part=>part.split(/,\\s+(?=(?:depois|siga|pegue|desembarque|entre|saia|vire|caminhe|faça|troque)\\b)/i))
-      .map(part=>part.trim()).filter(Boolean);
+      .replace(/→/g,'. Depois, ')
+      .replace(/[•;]/g,'. ')
+      .replace(/\bL([1-5])\b/gi,(_,n)=>({1:'linha um',2:'linha dois',3:'linha três',4:'linha quatro',5:'linha cinco'})[n])
+      .replace(/\bkm\b/gi,'quilômetros')
+      .replace(/\s+/g,' ')
+      .replace(/\.{2,}/g,'.')
+      .trim();
+    return 'Próximo deslocamento: '+name+'. '+details+'.';
   }
   function playVoice(){
     if(!supported){
-      status.textContent='Este navegador não oferece leitura em voz alta. Você ainda pode abrir a rota no Maps.';
+      status.textContent='Este navegador não suporta narração. Use ABRIR MAPS.';
       return;
     }
-    stopVoice();
-    const route=current(),steps=spokenSteps(route);
-    const id=narrationId;
+    // Uma única fala iniciada pelo clique: evita bloqueios de reprodução
+    // causados por timers/novas falas fora da interação do usuário.
+    window.speechSynthesis.cancel();
+    activeUtterance=null;
+    const route=current();
+    const utterance=new SpeechSynthesisUtterance(spokenText(route));
+    utterance.lang='pt-BR';
+    utterance.rate=0.78;
+    utterance.pitch=1;
+    utterance.volume=0.75;
     const voices=window.speechSynthesis.getVoices();
-    const ptVoices=voices.filter(v=>/^pt(-|$)/i.test(v.lang));
-    const voice=ptVoices.find(v=>/^pt-BR$/i.test(v.lang) && /google|microsoft|natural/i.test(v.name))
-      ||ptVoices.find(v=>/^pt-BR$/i.test(v.lang))||ptVoices[0];
-    let index=0;
-    function next(){
-      if(id!==narrationId)return;
-      if(index>=steps.length){
-        activeUtterance=null;
-        status.textContent='Rota lida. Para ouvir outra vez, toque em OUVIR ROTA.';
-        return;
-      }
-      const utterance=new SpeechSynthesisUtterance(steps[index++]);
-      utterance.lang='pt-BR';
-      utterance.rate=0.76;
-      utterance.pitch=1;
-      utterance.volume=0.72;
-      if(voice)utterance.voice=voice;
-      activeUtterance=utterance;
-      utterance.onstart=()=>{if(id===narrationId)status.textContent='🔊 Lendo passo '+index+' de '+steps.length+': '+route.title;};
-      utterance.onend=()=>{
-        if(id!==narrationId)return;
-        activeUtterance=null;
-        pauseTimer=setTimeout(()=>{pauseTimer=null;next();},650);
-      };
-      utterance.onerror=e=>{
-        if(id!==narrationId)return;
-        activeUtterance=null;
-        status.textContent=e.error==='canceled'?'Narração interrompida.':'Não foi possível reproduzir a voz. Confira a voz em português do celular ou abra o Maps.';
-      };
-      try{window.speechSynthesis.speak(utterance);}
-      catch(e){activeUtterance=null;status.textContent='Voz indisponível neste navegador. Use o botão ABRIR MAPS.';}
-    }
-    status.textContent='Preparando instruções faladas de '+route.title+'…';
-    next();
+    const voice=voices.find(v=>/^pt-BR$/i.test(v.lang))||voices.find(v=>/^pt\b/i.test(v.lang));
+    if(voice)utterance.voice=voice;
+    activeUtterance=utterance;
+    utterance.onstart=()=>{if(activeUtterance===utterance)status.textContent='🔊 Lendo: '+route.title;};
+    utterance.onend=()=>{
+      if(activeUtterance!==utterance)return;
+      activeUtterance=null;
+      status.textContent='Rota lida. Toque em OUVIR ROTA para repetir.';
+    };
+    utterance.onerror=e=>{
+      if(activeUtterance!==utterance)return;
+      activeUtterance=null;
+      status.textContent=e.error==='canceled'?'Narração interrompida.':'Falha na narração ('+e.error+'). Confira o áudio do celular ou use ABRIR MAPS.';
+    };
+    status.textContent='Iniciando narração: '+route.title+'…';
+    try{window.speechSynthesis.speak(utterance);}
+    catch(e){activeUtterance=null;status.textContent='O navegador não conseguiu iniciar a voz. Use ABRIR MAPS.';}
   }
   function stepRoute(delta){
     const nextIndex=(Number(select.value)+delta+routes.length)%routes.length;

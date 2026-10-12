@@ -1,4 +1,4 @@
-const CACHE='sp-rock-trip-v14';
+const CACHE='sp-rock-trip-v15';
 const ASSETS=['./','./index.html','./mapa.html','./avatar-rock.svg','./manifest.webmanifest','./icon-v2.svg','./icon.svg'];
 const COVER_ASSETS=[
 "https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200",

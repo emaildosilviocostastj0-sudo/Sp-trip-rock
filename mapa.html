@@ -134,10 +134,10 @@ fabrique:{name:"Fabrique Club / Vulcano",addr:"Rua Barra Funda, 1071, São Paulo
 casarao:{name:"Casarão do Vinil",addr:"Rua dos Trilhos, 1212, Mooca, São Paulo, SP",icon:"💿",type:"disc",p:[-23.5523,-46.5969],approx:true}
 };
 const D=[
-{id:"15",date:"15/10",name:"CHEGADA + THE GATHERING",stops:[["cgh","10h30 • Pouso em SP"],["hotel","Deixar malas e almoçar"],["eric","13h15 • Garimpo"],["hotel","Check-in, banho e descanso"],["audio","19h • The Gathering"]]},
+{id:"15",date:"15/10",name:"CHEGADA + THE GATHERING",stops:[["cgh","10h30 • Pouso em SP"],["hotel","Deixar malas e almoçar"],["eric","13h15 • Uber • Garimpo"],["hotel","Uber de volta • check-in e descanso"],["audio","19h • The Gathering"]]},
 {id:"16",date:"16/10",name:"GARIMPO + APOCALYPTICA",stops:[["hotel","Manhã sem pressa"],["monalisa","13h • Almoço"],["barao","14h30 • Garimpo"],["galeria","16h15 • Garimpo"],["hotel","Descanso antes do show"],["carioca","21h • Apocalyptica"]]},
 {id:"17",date:"17/10",name:"MUSEU + HORROR + VULCANO",stops:[["hotel","Saída cedo"],["museu","9h–10h45 • Museu"],["expo","12h • Horror Expo"],["fabrique","18h portas • 19h shows"]]},
-{id:"18",date:"18/10",name:"DESCANSO + AMORPHIS",stops:[["hotel","Manhã livre"],["casarao","13h–15h • Opcional",true],["hotel","Descanso"],["carioca","19h • Amorphis"]]},
+{id:"18",date:"18/10",name:"DESCANSO + AMORPHIS",stops:[["hotel","Manhã livre"],["casarao","13h–15h • Uber • Opcional",true],["hotel","Uber de volta • descanso"],["carioca","19h • Amorphis"]]},
 {id:"19",date:"19/10",name:"VOLTA PARA BRASÍLIA",stops:[["hotel","Café e check-out"],["cgh","13h40 • Voo G3 1410"]]}
 ];
 const $=id=>document.getElementById(id);
@@ -150,6 +150,12 @@ const persist=()=>{try{localStorage.setItem("sp-rock-world-v1",JSON.stringify(sa
 const day=()=>D[dayIndex],steps=()=>day().stops,cur=()=>Math.min(steps().length-1,Math.max(0,Number(saved.steps[day().id]||0)));
 const pos=(i,n)=>({x:80+i*(840/Math.max(1,n-1)),y:[290,152,335,170,282,124,322][i%7]});
 const url=p=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(p.addr);
+function stageUrl(list,i){
+ const now=list[i]?.[0],before=list[i-1]?.[0];
+ if(before&&(now==="eric"||now==="casarao"||before==="eric"||before==="casarao"))
+   return "https://www.google.com/maps/dir/?api=1&origin="+encodeURIComponent(P[before].addr)+"&destination="+encodeURIComponent(P[now].addr)+"&travelmode=driving";
+ return url(P[now]);
+}
 function pathStr(n,k){let list=[];for(let i=0;i<=k;i++){const p=pos(i,n);list.push(p.x+","+p.y)}return list.join(" ")}
 function stopPlay(){playing=false;clearInterval(timer);timer=null;$("play").textContent="▶ ANIMAR"}
 function setDay(i){stopPlay();cancelAvatarMotion();dayIndex=i;draw();if(leafletMap)paintMap(true)}
@@ -168,7 +174,7 @@ function draw(){
  return '<button type="button" class="node '+(ix===i?"current ":"")+(visited?"done ":"")+(x[2]?"optional":"")+'" style="left:'+(p.x/10)+'%;top:'+(p.y/5.2)+'%" data-step="'+i+'" title="'+item.name+'" aria-label="Parada '+(i+1)+': '+item.name+'">'+(visited?"✓":item.icon)+'</button><span class="marker-label" style="left:'+(p.x/10)+'%;top:'+((p.y+37)/5.2)+'%">'+item.name+'</span>'}).join("");
  const p=pos(ix,a.length);$("hero").style.left=p.x/10+"%";$("hero").style.top=p.y/5.2+"%";
  const aNow=a[ix],s=P[aNow[0]],done=!!saved.visited[d.id+":"+ix];
- $("detail").innerHTML='<span class="bigicon">'+s.icon+'</span><div class="detail-text"><strong>'+s.name+'</strong><small>'+aNow[1]+(aNow[2]?" • sidequest opcional":"")+'</small></div><a class="btn primary" target="_blank" rel="noopener" href="'+url(s)+'">📍 ABRIR ROTA ↗</a>';
+ $("detail").innerHTML='<span class="bigicon">'+s.icon+'</span><div class="detail-text"><strong>'+s.name+'</strong><small>'+aNow[1]+(aNow[2]?" • sidequest opcional":"")+'</small></div><a class="btn primary" target="_blank" rel="noopener" href="'+stageUrl(a,ix)+'">📍 ABRIR ROTA ↗</a>';
  $("visited").textContent=done?"✓ VISITADO • DESMARCAR":"✓ MARCAR COMO VISITADO";
  $("skip").style.display=aNow[2]?"":"none";
  $("prev").disabled=ix===0;

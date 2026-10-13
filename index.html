@@ -274,6 +274,24 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 #cacada .hunt-observations .hunt-price-flag{display:inline-block;margin-left:3px;padding:1px 4px;border:1px solid #7e7149;border-radius:2px;color:#f6d995;font-weight:900;font-size:9px}
 #cacada .hunt-observations .hunt-offer-row{border-bottom:1px solid #5f513a42;padding:5px 0;line-height:1.4}
 #cacada .hunt-observations .hunt-offer-row:last-child{border-bottom:0}
+
+/* Pesquisas simples das quatro lojas nas reservas: mesmo esquema de cores do Companion. */
+.reserveitem .rformat{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:10px 0 7px;font:900 10px/1.2 'Oswald',Arial,sans-serif;color:#e6c58d}
+.reserveitem .rformat select{background:#15120f;color:#fff1d9;border:1px solid #8c7857;border-radius:3px;padding:7px;font-size:12px}
+.reserveitem .rshop-board{background:#17150f;border:1px solid #7c6944;border-radius:3px;padding:8px;margin:8px 0}
+.reserveitem .rshop-head{font:900 11px/1.3 'Oswald',Arial,sans-serif;letter-spacing:.3px;color:#e6c58d}
+.reserveitem .rshop-head small{display:block;margin:4px 0 7px;font:10px/1.45 Arial,sans-serif;letter-spacing:0;color:#c7bba8}
+.reserveitem .rshop-row{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:5px 8px;align-items:center;padding:7px 0;border-top:1px solid #55482e}
+.reserveitem .rshop-row strong{font:800 12px/1.35 'Oswald',Arial,sans-serif;color:#f0dbb4;min-width:0}
+.reserveitem .rshop-row em{font:900 9px/1.2 Arial,sans-serif;font-style:normal;color:#e7b84b}
+.reserveitem .rshop-row select,.reserveitem .rshop-row input{min-width:0;width:100%;min-height:36px;background:#15120f;color:#fff1d9;border:1px solid #8c7857;border-radius:3px;padding:6px 5px;font:11px 'Oswald',Arial,sans-serif}
+.reserveitem .rshop-row select{grid-column:1;grid-row:2}
+.reserveitem .rshop-row input{grid-column:2;grid-row:2;width:105px}
+.reserveitem .rshop-use{grid-column:2;grid-row:1;background:#292013;color:#efdbb8;border:1px solid #8c7857;border-radius:3px;padding:7px 9px;font:900 10px/1 'Oswald',Arial,sans-serif;white-space:nowrap}
+.reserveitem .rshop-row.rshop-selected{border-left:3px solid var(--gold);padding-left:6px;background:#26200e}
+.reserveitem .rshop-use:disabled{opacity:.55}
+.reserveitem .rshop-row.rshop-selected .rshop-use:disabled{opacity:1}
+
 .reservelegend{font-size:11px;opacity:.78;margin-top:7px}
 .format-priority{display:inline-block;margin-left:4px;padding:2px 6px;border:1px solid #8c8066;font-size:10px;font-weight:900;letter-spacing:1px}
 @media(max-width:600px){.reservegrid{grid-template-columns:1fr}.huntcoverwrap{max-height:none}}
@@ -1021,11 +1039,98 @@ function renderHunt(){
   huntPoolSpent.textContent=money(spent);
 }
 function reserveKey(i){return 'reserve_'+i}
+
+/* Nas reservas, uma ficha simples por loja e formato; estado da compra fica separado das ofertas. */
+const RESERVE_SHOPS=['Eric Discos','Galeria Nova Barão','Galeria do Rock','Casarão do Vinil'];
+function reserveShopRead(i,store,format){
+ const r=data.reserves[reserveKey(i)]||{};
+ return r.shopOffers?.[store+'::'+format]||{};
+}
+function reserveShopWrite(i,store,format){
+ const key=reserveKey(i),r=data.reserves[key]||(data.reserves[key]={});
+ if(!r.shopOffers||typeof r.shopOffers!=='object'||Array.isArray(r.shopOffers))r.shopOffers={};
+ const id=store+'::'+format;
+ return r.shopOffers[id]||(r.shopOffers[id]={status:'',price:0});
+}
+function reserveFormat(i,value){
+ const key=reserveKey(i),r=data.reserves[key]||(data.reserves[key]={});
+ if(r.bought)return;
+ const newFormat=value==='CD'?'CD':'LP';
+ if((r.format||'LP')===newFormat)return;
+ r.format=newFormat;
+ const quoted=reserveShopRead(i,r.place||'',newFormat);
+ r.price=quoted.status==='found'&&Number(quoted.price)>0?Number(quoted.price):0;
+ save();
+}
+function reserveShopStatus(i,shopIndex,value){
+ const store=RESERVE_SHOPS[shopIndex];if(!store)return;
+ const key=reserveKey(i),r=data.reserves[key]||(data.reserves[key]={});
+ if(r.bought)return;
+ const quote=reserveShopWrite(i,store,r.format||'LP');
+ quote.status=value==='found'?'found':value==='notfound'?'notfound':'';
+ if(quote.status==='notfound'){
+   quote.price=0;
+   if(r.place===store){r.place='';r.price=0}
+ }
+ save();
+}
+function reserveShopQuote(i,shopIndex,value){
+ const store=RESERVE_SHOPS[shopIndex];if(!store)return;
+ const key=reserveKey(i),r=data.reserves[key]||(data.reserves[key]={});
+ if(r.bought)return;
+ const quote=reserveShopWrite(i,store,r.format||'LP'),v=Number(value);
+ quote.price=Number.isFinite(v)&&v>0?v:0;
+ if(quote.price>0)quote.status='found';
+ if(r.place===store)r.price=quote.price;
+ save();
+}
+function reserveShopPick(i,shopIndex){
+ const store=RESERVE_SHOPS[shopIndex];if(!store)return;
+ const key=reserveKey(i),r=data.reserves[key]||(data.reserves[key]={});
+ if(r.bought)return;
+ const quote=reserveShopRead(i,store,r.format||'LP');
+ if(quote.status==='notfound'){alert('Este disco foi marcado como não encontrado nesta loja.');return}
+ r.place=store;
+ r.price=quote.status==='found'&&Number(quote.price)>0?Number(quote.price):0;
+ save();
+}
+function reserveShopFields(i,r){
+ const format=r.format==='CD'?'CD':'LP';
+ const offers=RESERVE_SHOPS.map((store,n)=>{
+   const quote=reserveShopRead(i,store,format);
+   return {store,n,status:quote.status||'',price:Number(quote.price)||0};
+ });
+ const valid=offers.filter(o=>o.status==='found'&&o.price>0);
+ const lowest=valid.length>1?Math.min(...valid.map(o=>o.price)):null;
+ const rows=offers.map(o=>{
+   const selected=r.place===o.store;
+   const disabledStatus=r.bought?' disabled':'';
+   const disabledPrice=r.bought||o.status==='notfound'?' disabled':'';
+   const disabledUse=r.bought||o.status==='notfound'?' disabled':'';
+   const statusOptions='<option value=""'+(!o.status?' selected':'')+'>AINDA NÃO PROCUREI</option>'+
+     '<option value="found"'+(o.status==='found'?' selected':'')+'>ACHEI</option>'+
+     '<option value="notfound"'+(o.status==='notfound'?' selected':'')+'>NÃO ACHEI</option>';
+   const lower=lowest!==null&&o.status==='found'&&o.price===lowest?' <em>MENOR PREÇO</em>':'';
+   return '<div class="rshop-row'+(selected?' rshop-selected':'')+'"><strong>'+esc(o.store)+lower+'</strong>'+
+     '<button class="rshop-use" type="button" onclick="reserveShopPick('+i+','+o.n+')"'+disabledUse+'>'+(selected?'✓ ESCOLHIDA':'USAR')+'</button>'+
+     '<select aria-label="Resultado em '+esc(o.store)+' para '+format+'" onchange="reserveShopStatus('+i+','+o.n+',this.value)"'+disabledStatus+'>'+statusOptions+'</select>'+
+     '<input type="number" min="0" step="0.01" inputmode="decimal" aria-label="Preço encontrado em '+esc(o.store)+' no formato '+format+'" placeholder="Preço '+format+'" value="'+(o.price>0?o.price:'')+'" onchange="reserveShopQuote('+i+','+o.n+',this.value)"'+disabledPrice+'>'+
+     '</div>';
+ }).join('');
+ return '<div class="rformat"><label for="reserve-format-'+i+'">FORMATO</label>'+
+   '<select id="reserve-format-'+i+'" aria-label="Formato da reserva '+(i+1)+'" onchange="reserveFormat('+i+',this.value)"'+(r.bought?' disabled':'')+'>'+
+   '<option value="LP"'+(format==='LP'?' selected':'')+'>LP • VINIL</option>'+
+   '<option value="CD"'+(format==='CD'?' selected':'')+'>CD</option></select></div>'+
+   '<div class="rshop-board"><div class="rshop-head">🏬 QUATRO LOJAS • PESQUISA POR '+format+
+   '<small>Registre se encontrou e o preço em cada loja. Toque em USAR para escolher a oferta; o valor efetivamente pago fica abaixo.</small></div>'+
+   rows+'</div>';
+}
+
 function reservePurchases(){
   return RESERVES.flatMap((x,i)=>{
     const r=data.reserves[reserveKey(i)];
     if(!r?.bought||num(r.price)<=0)return [];
-    return [{type:'Disco',format:r.format||'',price:num(r.price),artist:x.artist,title:x.album,
+    return [{type:'Disco',format:r.format||'LP',price:num(r.price),artist:x.artist,title:x.album,
       place:r.place||'Local não informado',edition:'',note:'Caçada • Suplente',_reserveIndex:i}];
   });
 }
@@ -1061,12 +1166,12 @@ function renderReserveGroup(list,targetId){
   const box=$(targetId);if(!box)return;
   box.innerHTML=list.map((x,i)=>{
     const r=data.reserves[reserveKey(i)]||{};
-    const places=['Eric Discos','Galeria Nova Barão','Galeria do Rock'];
+    const places=RESERVE_SHOPS;
     const options='<option value="" disabled '+(!r.place?'selected':'')+'>LOCAL DA COMPRA</option>'+
       places.map(p=>'<option value="'+p+'" '+(r.place===p?'selected':'')+'>'+p+'</option>').join('')+
       (r.place&&!places.includes(r.place)?'<option value="'+esc(r.place)+'" selected>'+esc(r.place)+'</option>':'')+
       '<option value="__other__">Outra loja…</option>';
-    return `<div class="reserveitem ${r.bought?'reservebought':''}"><div class="rtitle">${i+1}. ${esc(x.artist)} — <i>${esc(x.album)}</i></div><div class="rmeta">${esc(x.note)}</div><div class="rprice"><span>LP</span><b>${reserveLPPriceText(x)}</b><span>CD</span><b>${money(x.prices.CD.low)} / ${money(x.prices.CD.avg)} / ${money(x.prices.CD.high)}</b></div><div class="rquick"><select aria-label="Local da compra" onchange="reservePlace(${i},this.value)">${options}</select><input type="number" min="0" step="1" inputmode="decimal" placeholder="Preço pago" value="${r.price||''}" onchange="reservePrice(${i},this.value)" ${r.bought?'disabled':''}>${r.bought?'<span class="reserve-stamp" role="status">COMPRADO</span>':`<button class="btn" onclick="buyReserve(${i})">💿 COMPREI</button>`}</div>${r.bought?`<div class="rpaid">Preço pago: <b>${money(r.price)}</b> • ${esc(r.place||'Local não informado')}</div>`:''}</div>`
+    return `<div class="reserveitem ${r.bought?'reservebought':''}"><div class="rtitle">${i+1}. ${esc(x.artist)} — <i>${esc(x.album)}</i></div><div class="rmeta">${esc(x.note)}</div><div class="rprice"><span>LP</span><b>${reserveLPPriceText(x)}</b><span>CD</span><b>${money(x.prices.CD.low)} / ${money(x.prices.CD.avg)} / ${money(x.prices.CD.high)}</b></div>${reserveShopFields(i,r)}<div class="rquick"><select aria-label="Local da compra" onchange="reservePlace(${i},this.value)" ${r.bought?"disabled":""}>${options}</select><input type="number" min="0" step="0.01" inputmode="decimal" placeholder="Preço pago" value="${r.price||''}" onchange="reservePrice(${i},this.value)" ${r.bought?'disabled':''}>${r.bought?'<span class="reserve-stamp" role="status">COMPRADO</span>':`<button class="btn" onclick="buyReserve(${i})">💿 COMPREI</button>`}</div>${r.bought?`<div class="rpaid">Preço pago: <b>${money(r.price)}</b> • ${esc(r.place||'Local não informado')}</div>`:''}</div>`
   }).join('')
 }
 function renderReserves(){renderReserveGroup(RESERVES,'reserveGrid')}

@@ -752,6 +752,20 @@ if(data.garimpoRevisao20261014!=='v1'){
  try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}
 }
 
+/* Troca de reserva Accept → Gang of Four: preservar notas antigas sem atribuí-las ao novo disco. */
+if(data.garimpoGangOfFour20261014!=='v1'){
+ const prior=data.reserves?.reserve_6;
+ if(prior&&typeof prior==='object'&&Object.keys(prior).length){
+  data.reserves.arquivo_accept_balls_to_the_wall_20261014=prior;
+  if(prior.bought&&Number(prior.price)>0&&!data.purchases.some(x=>x.type==='Disco'&&x.artist==='Accept'&&x.title==='Balls to the Wall'&&Number(x.price)===Number(prior.price)&&x.place===prior.place)){
+   data.purchases.push({type:'Disco',artist:'Accept',title:'Balls to the Wall',format:prior.format||'LP',price:Number(prior.price),place:prior.place||'Local não informado',edition:'',note:'Histórico preservado • reserva substituída'});
+  }
+ }
+ delete data.reserves.reserve_6;
+ data.garimpoGangOfFour20261014='v1';
+ try{localStorage.setItem(KEY,JSON.stringify(data))}catch(e){}
+}
+
 const ROUTE_20261011_MIGRATED='spRockCompanionRouteMove1517';
 if(!localStorage.getItem(ROUTE_20261011_MIGRATED)){
   const order={2:3,3:2,7:8,8:9,9:7};
@@ -907,7 +921,7 @@ const RESERVES=[
 {artist:'Budgie',album:'Squawk',note:'hard rock / proto-metal',prices:{LP:{low:220,avg:280,high:350},CD:{low:100,avg:150,high:220}}},
 {artist:'Vários Artistas',album:'Grito Suburbano',note:'punk brasileiro',prices:{LP:{low:290,avg:360,high:520},CD:{low:100,avg:160,high:240}}},
 {artist:'Steely Dan',album:'Aja',note:'jazz-rock / pop',prices:{LP:{low:150,avg:350,high:450},CD:{low:60,avg:150,high:250}}},
-{artist:'Accept',album:'Balls to the Wall',note:'heavy metal tradicional',prices:{LP:{low:160,avg:200,high:280},CD:{low:70,avg:110,high:160}}},
+{artist:'Gang of Four',album:'Entertainment!',note:'🦗 GRILO FALANTE • BOM CANDIDATO • pós-punk / punk-funk • 1979 • influência direta na Legião Urbana',prices:{LP:{low:180,avg:220,high:398},CD:{low:70,avg:110,high:170}}},
 {artist:'Agnostic Front',album:'Cause for Alarm',note:'🦗 GRILO FALANTE • AVALIAR COM CUIDADO • hardcore / crossover • 1986',candidate:true,prices:{LP:{low:180,avg:290,high:390},CD:{low:60,avg:100,high:150}}},
 {artist:'Mountain',album:'Climbing!',note:'hard rock / 1970',prices:{LP:{low:180,avg:280,high:400},CD:{low:80,avg:130,high:200}}},
 {artist:'Redbone',album:'Wovoka',note:'rock / funk / 1973',prices:{LP:{low:120,avg:220,high:350},CD:{low:90,avg:130,high:180}}},
@@ -936,7 +950,7 @@ const LP_HARD_CAPS=new Map([
 ["Budgie|Squawk",310],
 ["Vários Artistas|Grito Suburbano",350],
 ["Steely Dan|Aja",241],
-["Accept|Balls to the Wall",200],
+["Gang of Four|Entertainment!",220],
 ["Mountain|Climbing!",250],
 ["Redbone|Wovoka",230],
 ["Immortal|Battles in the North",330],

@@ -1,13 +1,13 @@
-const CACHE='sp-rock-trip-v17';
+const CACHE='sp-rock-trip-v18';
 const ASSETS=['./','./index.html','./mapa.html','./avatar-rock.svg','./manifest.webmanifest','./icon-v2.svg','./icon.svg'];
 const COVER_ASSETS=[
 "https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200",
 "https://is1-ssl.mzstatic.com/image/thumb/Music/d2/db/21/mzi.kihcrutv.jpg/1200x1200bb.jpg",
 "https://www.thebadreligionpage.net/img/discography/Variations/1369_stranger_than_fiction_front.jpg",
-"https://media1.jpc.de/image/w1155/front/0/3760053842985.jpg",
+"https://is1-ssl.mzstatic.com/image/thumb/Music126/v4/1b/a9/5c/1ba95cac-b245-d386-63fb-6b857aa9dce8/634904078065.png/4000x4000bb.jpg",
 "https://i.scdn.co/image/dafffa369de6b87fc5bf2d669fe5333fa9c25f47",
 "https://coverartarchive.org/release/55ddf8e9-aa31-4a43-a1a0-8a6c9641a61e/front-1200",
-"https://is1-ssl.mzstatic.com/image/thumb/Music124/v4/80/a8/9a/80a89a18-88bd-4d3a-34cb-5c1748d24f0c/5099969444555.jpg/1200x1200bf-60.jpg",
+"https://i.scdn.co/image/ab67616d0000b273e9e72d3e6d239cd56ff73307",
 "https://muzikercdn.com/uploads/products/3728/372882/thumb_large_d_gallery_99118693.jpg",
 "https://i.scdn.co/image/ab67616d0000b273962e9ac8243100b876e81699",
 "https://us.rarevinyl.com/cdn/shop/products/the-cure-disintegration-vg-uk-vinyl-lp-album-record-fixh14-755023_1024x1024.jpg?v=1764073393"

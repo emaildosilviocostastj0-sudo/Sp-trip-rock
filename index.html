@@ -872,14 +872,72 @@ function addExpense(){
 }
 function delExpense(i){data.expenses.splice(i,1);save()}
 
+
+/* Diário de Guerra: quadro de missão derivado de HUNT/RESERVES e do histórico real.
+   Não duplica registros, não altera dados do diário, e respeita o layout aprovado. */
+function warDiaryBoardHtml(){
+ const candidates=HUNT.concat(RESERVES),discs=allPurchases().filter(p=>p.type==='Disco');
+ const planList=(arr)=>arr.map((x,i)=>{
+  const limit=lpHardCap(x,'LP');
+  const warning=limit===null?(x.candidate?' • AVALIAR COM CUIDADO':' • SEM TETO'):x.candidate?' • BOM CANDIDATO':'';
+  return '<li><strong>'+esc(x.artist)+'</strong> — <i>'+esc(x.album)+'</i> • '+(limit===null?'SEM TETO RÍGIDO':money(limit))+' LP'+esc(warning)+'</li>';
+ }).join('');
+ const reports=[];
+ function recordOffers(item,quotes,place,format){
+  if(!quotes||typeof quotes!=='object')return;
+  for(const [key,q] of Object.entries(quotes)){
+   if(!q||!['found','notfound'].includes(q.status))continue;
+   const pivot=key.lastIndexOf('::');
+   if(pivot<0)continue;
+   const store=key.slice(0,pivot),media=key.slice(pivot+2),p=Number(q.price)||0;
+   const purchase=q.status==='found'&&place===store&&format===media;
+   const reason=HUNT_REASONS.find(z=>z[0]===q.reason)?.[1]||'';
+   reports.push({item,store,media,status:q.status,price:p,purchase,reason,note:String(q.note||'').slice(0,180)});
+  }
+ }
+ for(const x of HUNT){
+  const h=data.hunt?.[x.id]||{};
+  recordOffers(x,h.sightings,h.bought?h.purchasePlace:null,h.bought?h.purchaseFormat:null);
+ }
+ RESERVES.forEach((x,i)=>{
+  const r=data.reserves?.[reserveKey(i)]||{};
+  recordOffers(x,r.shopOffers,r.bought?r.place:null,r.bought?r.format||'LP':null);
+ });
+ const seen=reports.filter(r=>r.status==='found'),missing=reports.filter(r=>r.status==='notfound');
+ const purchaseList=discs.map(d=>'<li><strong>'+esc(d.artist||'')+'</strong> — <i>'+esc(d.title||'')+'</i> • '+esc(d.format||'LP')+' • '+money(d.price)+' • '+esc(d.place||'Local não informado')+'</li>').join('');
+ const offerList=reports.map(r=>{
+  const detail=r.status==='notfound'?'NÃO ENCONTRADO':r.purchase?'ENCONTRADO • COMPRADO':'ENCONTRADO • NÃO COMPRADO';
+  const price=r.status==='found'?(r.price>0?' • '+money(r.price):' • preço não registrado'):'';
+  const remarks=[r.reason,r.note].filter(Boolean).join(' • ');
+  return '<li><strong>'+esc(r.item.artist)+'</strong> — <i>'+esc(r.item.album)+'</i> • '+esc(r.store)+' / '+esc(r.media)+' • '+detail+price+(remarks?' • '+esc(remarks):'')+'</li>';
+ }).join('');
+ return '<div class="card journal-theme poster-encore">'+
+  '<b>🦗 DIÁRIO DE GUERRA • CAÇADA DEFINITIVA</b>'+
+  '<p><small>MISSÃO FECHADA EM 14/10/2026 • 10 ALVOS PRINCIPAIS + 15 RESERVAS • 23 TETOS RÍGIDOS DE LP • PREFERÊNCIA POR VINIL, CD PERMITIDO.</small></p>'+
+  '<p><small>REGRAS: respeitar tetos e saldo; examinar mídia e capa; registrar onde achou, quanto pediram e por que não levou. As reservas não têm prioridade sobre os alvos principais.</small></p>'+
+  '<details data-diary-panel="principais"><summary><strong>🎯 10 ALVOS PRINCIPAIS — LISTA FECHADA</strong></summary><ol>'+planList(HUNT)+'</ol></details>'+
+  '<details data-diary-panel="reservas"><summary><strong>🛞 15 RESERVAS — LISTA FECHADA</strong></summary><ol>'+planList(RESERVES)+'</ol></details>'+
+  '<p><b>📓 BALANÇO AUTOMÁTICO</b></p>'+
+  '<p><small>COMPRAS: '+discs.length+' disco(s) • '+money(pooledDiscSpent())+' gastos em discos • '+money(DISC_BUDGET-pooledDiscSpent())+' disponíveis no caixa. OFERTAS REGISTRADAS: '+seen.length+' encontradas e '+missing.length+' não encontradas.</small></p>'+
+  (discs.length?'<details data-diary-panel="compras"><summary><strong>💿 COMPRAS E PREÇOS PAGOS ('+discs.length+')</strong></summary><ol>'+purchaseList+'</ol></details>':'<p><small>As compras aparecerão automaticamente aqui.</small></p>')+
+  (reports.length?'<details data-diary-panel="encontros"><summary><strong>🔎 OFERTAS, RECUSAS E AUSÊNCIAS ('+reports.length+')</strong></summary><ol>'+offerList+'</ol></details>':'<p><small>Registre seus achados (inclusive os recusados) na aba CAÇADA; o balanço aparecerá aqui sem apagar suas impressões.</small></p>')+
+  '<p><small>O resumo reflete apenas os registros feitos neste Companion. Não substitui os relatos escritos abaixo.</small></p></div>';
+}
+function renderWarDiaryBoard(){
+ const host=$('warDiaryBoard');if(!host)return;
+ const expanded=new Set([...host.querySelectorAll('details[open]')].map(el=>el.dataset.diaryPanel));
+ host.innerHTML=warDiaryBoardHtml();
+ [...host.querySelectorAll('details')].forEach(el=>{if(expanded.has(el.dataset.diaryPanel))el.open=true});
+}
 const journalPlaces=['The Gathering','Eric Discos','Monalisa','Galeria Nova Barão','Apocalyptica','Horror Expo','Vulcano / Hellbutcher','Museu da Língua Portuguesa','Amorphis','Viagem geral'];
 function makeJournal(){
-  $('journal').innerHTML=journalPlaces.map(p=>{
+  $('journal').innerHTML='<div id="warDiaryBoard"></div>'+journalPlaces.map(p=>{
     const j=data.journal[p]||{stars:0,text:''};
     const theme= p==='The Gathering'?'gathering':['Eric Discos','Monalisa','Galeria Nova Barão','Apocalyptica'].includes(p)?'apocalyptica':['Horror Expo','Vulcano / Hellbutcher'].includes(p)?'vulcano':['Museu da Língua Portuguesa','Amorphis'].includes(p)?'amorphis':'encore';
     const safeP=p.replaceAll("'","\\'");
     return `<div class="card journal-theme poster-${theme}"><b>${esc(p.toUpperCase())}</b><div class="stars">${[1,2,3,4,5].map(s=>`<button class="${s<=num(j.stars)?'on':''}" onclick="rate('${safeP}',${s})">★</button>`).join('')}</div><div class="field"><label>Impressões</label><textarea oninput="noteJournal('${safeP}',this.value)" placeholder="O que vale lembrar daqui?">${esc(j.text||'')}</textarea></div></div>`
-  }).join('')
+  }).join('');
+  renderWarDiaryBoard();
 }
 function rate(p,s){data.journal[p]=data.journal[p]||{};data.journal[p].stars=s;save()}
 function noteJournal(p,v){data.journal[p]=data.journal[p]||{};data.journal[p].text=v;localStorage.setItem(KEY,JSON.stringify(data))}
@@ -921,7 +979,7 @@ const RESERVES=[
 {artist:'Budgie',album:'Squawk',note:'hard rock / proto-metal',prices:{LP:{low:220,avg:280,high:350},CD:{low:100,avg:150,high:220}}},
 {artist:'Vários Artistas',album:'Grito Suburbano',note:'punk brasileiro',prices:{LP:{low:290,avg:360,high:520},CD:{low:100,avg:160,high:240}}},
 {artist:'Steely Dan',album:'Aja',note:'jazz-rock / pop',prices:{LP:{low:150,avg:350,high:450},CD:{low:60,avg:150,high:250}}},
-{artist:'Gang of Four',album:'Entertainment!',note:'🦗 GRILO FALANTE • BOM CANDIDATO • pós-punk / punk-funk • 1979 • influência direta na Legião Urbana',prices:{LP:{low:180,avg:220,high:398},CD:{low:70,avg:110,high:170}}},
+{artist:'Gang of Four',album:'Entertainment!',note:'🦗 GRILO FALANTE • BOM CANDIDATO • pós-punk / punk-funk • 1979 • influência direta na Legião Urbana',candidate:true,prices:{LP:{low:180,avg:220,high:398},CD:{low:70,avg:110,high:170}}},
 {artist:'Agnostic Front',album:'Cause for Alarm',note:'🦗 GRILO FALANTE • AVALIAR COM CUIDADO • hardcore / crossover • 1986',candidate:true,prices:{LP:{low:180,avg:290,high:390},CD:{low:60,avg:100,high:150}}},
 {artist:'Mountain',album:'Climbing!',note:'hard rock / 1970',prices:{LP:{low:180,avg:280,high:400},CD:{low:80,avg:130,high:200}}},
 {artist:'Redbone',album:'Wovoka',note:'rock / funk / 1973',prices:{LP:{low:120,avg:220,high:350},CD:{low:90,avg:130,high:180}}},
@@ -989,7 +1047,7 @@ function griloResult(item,price,format,media,cover,isReserve,isBought){
  else if(ratio<=.60){state='attack';title='★ ACHADO EXCEPCIONAL';}
  else if(ratio<=.75){state='attack';title='✓ BOM NEGÓCIO';}
  else if(ratio<=.90){state='fair';title='⚠ PREÇO ACEITÁVEL';}
- if(item.candidate){
+ if(item.candidate&&state!=='abort'){
   title=ratio<=.75?'✓ BOM CANDIDATO':'⚠ AVALIAR COM CUIDADO';
   if(cap===null&&ratio>1)title='⚠ AVALIAR COM CUIDADO • REF. ACIMA';
  }
@@ -1084,6 +1142,7 @@ function huntRecord(id){
 function huntPersist(){
   localStorage.setItem(KEY,JSON.stringify(data));
   renderHunt();
+  renderWarDiaryBoard();
 }
 function huntPrice(id,v){
   const {h,s}=huntRecord(id),p=Number(v);
@@ -1132,6 +1191,7 @@ function huntNote(id,note){
   const {s}=huntRecord(id);
   s.note=String(note||"").slice(0,180);
   localStorage.setItem(KEY,JSON.stringify(data));
+  renderWarDiaryBoard();
 }
 function buyHunt(id){
   const item=HUNT.find(x=>x.id===id);

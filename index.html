@@ -879,7 +879,7 @@ function warDiaryBoardHtml(){
  const candidates=HUNT.concat(RESERVES),discs=allPurchases().filter(p=>p.type==='Disco');
  const planList=(arr)=>arr.map((x,i)=>{
   const limit=lpHardCap(x,'LP');
-  const warning=limit===null?(x.candidate?' • AVALIAR COM CUIDADO':' • SEM TETO'):x.candidate?' • BOM CANDIDATO':'';
+  const warning=x.candidate?(((x.mission||x.note||'').includes('BOM CANDIDATO')?' • BOM CANDIDATO':' • AVALIAR COM CUIDADO')+(limit===null?' • SEM TETO RÍGIDO':'')):limit===null?' • SEM TETO RÍGIDO':'';
   return '<li><strong>'+esc(x.artist)+'</strong> — <i>'+esc(x.album)+'</i> • '+(limit===null?'SEM TETO RÍGIDO':money(limit))+' LP'+esc(warning)+'</li>';
  }).join('');
  const reports=[];

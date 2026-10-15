@@ -622,7 +622,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 }
 </style><section id="gastos" class="section"><h2 class="sectiontitle">💰 Caixa de guerra</h2>
 <div class="card war-card">
-<div class="war-total"><div><small>SALDO TOTAL DA VIAGEM</small><div class="money" id="remaining">R$ 5.400,00</div></div><div class="war-total-meta"><small>ORÇAMENTO TOTAL</small><b id="budgetLabel">R$ 5.400,00</b></div></div>
+<div class="war-total"><div><small>SALDO TOTAL DA VIAGEM</small><div class="money" id="remaining">R$ 5.590,00</div></div><div class="war-total-meta"><small>ORÇAMENTO TOTAL</small><b id="budgetLabel">R$ 5.590,00</b></div></div>
 
 <div class="war-section-label">💿 GARIMPO DE DISCOS</div>
 <div class="war-disc-total">
@@ -639,8 +639,8 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="war-section-label">OUTROS ENVELOPES</div>
 <div class="war-envelopes">
 <div class="war-envelope"><strong>👕 MERCHANDISE</strong><div class="war-values"><div><small>Verba</small><b>R$ 830,00</b></div><div><small>Saldo</small><b id="merchRemaining">R$ 830,00</b></div></div><small class="war-spent">Gasto: <b id="merchMoney">R$ 0,00</b></small></div>
-<div class="war-envelope"><strong>🍔 ALIMENTAÇÃO</strong><div class="war-values"><div><small>Verba</small><b>R$ 300,00</b></div><div><small>Saldo</small><b id="foodRemaining">R$ 300,00</b></div></div><small class="war-spent">Gasto: <b id="foodMoney">R$ 0,00</b></small></div>
-<div class="war-envelope"><strong>🚇 TRANSPORTE</strong><div class="war-values"><div><small>Verba</small><b>R$ 470,00</b></div><div><small>Saldo</small><b id="transportRemaining">R$ 470,00</b></div></div><small class="war-spent">Gasto: <b id="transportMoney">R$ 0,00</b></small></div>
+<div class="war-envelope"><strong>🍔 ALIMENTAÇÃO</strong><div class="war-values"><div><small>Verba</small><b>R$ 395,00</b></div><div><small>Saldo</small><b id="foodRemaining">R$ 395,00</b></div></div><small class="war-spent">Gasto: <b id="foodMoney">R$ 0,00</b></small></div>
+<div class="war-envelope"><strong>🚇 TRANSPORTE</strong><div class="war-values"><div><small>Verba</small><b>R$ 565,00</b></div><div><small>Saldo</small><b id="transportRemaining">R$ 565,00</b></div></div><small class="war-spent">Gasto: <b id="transportMoney">R$ 0,00</b></small></div>
 <div class="war-envelope"><strong>🆘 EMERGÊNCIAS</strong><div class="war-values"><div><small>Reserva</small><b>R$ 300,00</b></div><div><small>Saldo</small><b id="emergencyRemaining">R$ 300,00</b></div></div><small class="war-spent">Gasto: <b id="emergencyMoney">R$ 0,00</b></small></div>
 </div>
 
@@ -683,7 +683,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 
 <dialog id="resetDialog" aria-labelledby="resetTitle" aria-describedby="resetDescription" style="max-width:440px;width:calc(100% - 48px);background:var(--panel,#151515);color:var(--text,#eee);border:2px solid var(--gold,#c8b98e);padding:22px">
 <h2 id="resetTitle">ZERAR TUDO?</h2>
-<p id="resetDescription">Apagar checklist, marcações de ingressos, compras, gastos, diário, resumo e registros do garimpo? O orçamento geral permanece em R$ 5.400 e o caixa de discos em R$ 3.500. Esta ação não pode ser desfeita sem um backup.</p>
+<p id="resetDescription">Apagar checklist, marcações de ingressos, compras, gastos, diário, resumo e registros do garimpo? O orçamento geral permanece em R$ 5.590 e o caixa de discos em R$ 3.500. Esta ação não pode ser desfeita sem um backup.</p>
 <p>O roteiro, a lista de discos e o orçamento geral permanecem.</p>
 <p id="resetError" role="alert"></p>
 <div style="display:flex;gap:10px;flex-wrap:wrap"><button type="button" class="btn alt" autofocus onclick="document.getElementById('resetDialog').close()">CANCELAR</button><button type="button" class="btn" onclick="confirmReset()">SIM, ZERAR TUDO</button></div>
@@ -693,8 +693,8 @@ const KEY='spRockCompanionV3';
 const OLDKEY='spRockCompanionV2';
 const DISC_BUDGET=3500;
 const MERCH_BUDGET=830;
-const FOOD_BUDGET=300;
-const TRANSPORT_BUDGET=470;
+const FOOD_BUDGET=395;
+const TRANSPORT_BUDGET=565;
 const EMERGENCY_BUDGET=300;
 const BUDGET=DISC_BUDGET+MERCH_BUDGET+FOOD_BUDGET+TRANSPORT_BUDGET+EMERGENCY_BUDGET;
 

@@ -1621,10 +1621,8 @@ function validateBackup(imported){
 }
 
 /* Importação aditiva local: nunca altera dias congelados ou substitui backups. */
-$('importChatFile').onchange=async function(){
- const file=this.files&&this.files[0];if(!file)return;
+async function applyChatBatch(q){
  try{
-  const q=JSON.parse(await file.text());
   if(!q||q.app!=='sp-rock-trip-lancamentos'||q.version!==1||
     typeof q.batchId!=='string'||!/^[A-Za-z0-9-]{8,100}$/.test(q.batchId)||
     !Array.isArray(q.purchases)||!Array.isArray(q.expenses)||
@@ -1679,6 +1677,11 @@ $('importChatFile').onchange=async function(){
   alert('IMPORTADO! '+purchases.length+' compras e '+expenses.length+
    ' despesas: '+money(total)+'. Faça um backup atualizado.');
  }catch(err){alert('Não foi possível importar: '+(err.message||'arquivo inválido'))}
+}
+$('importChatFile').onchange=async function(){
+ const file=this.files&&this.files[0];if(!file)return;
+ try{await applyChatBatch(JSON.parse(await file.text()))}
+ catch(e){alert('Falha ao abrir o arquivo: '+(e.message||'JSON inválido'))}
  finally{this.value=''}
 };
 
@@ -1843,13 +1846,9 @@ async function importChatHashLink(){
   const candidate=JSON.parse(text);
   if(candidate.app!=='sp-rock-trip-lancamentos'||candidate.version!==1)
     throw Error('Link não contém lançamentos compatíveis.');
-  const carrier=new DataTransfer();
-  carrier.items.add(new File([text],'lancamentos-chat.json',{type:'application/json'}));
-  const chooser=$('importChatFile');
-  chooser.files=carrier.files;
-  chooser.dispatchEvent(new Event('change',{bubbles:true}));
+  await applyChatBatch(candidate);
  }catch(err){
-  alert('Não foi possível abrir o lote do chat: '+err.message+'\\nUse o arquivo JSON na seção Compras / Haul.');
+  alert('Não foi possível abrir o lote do chat: '+err.message+'\nUse o arquivo JSON na seção Compras / Haul.');
  }
 }
 

@@ -562,7 +562,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 </section>
 <div class="metal-divider">☠ ϟ ☠ ϟ ☠</div><section id="compras" class="section"><h2 class="sectiontitle">💿 Compras / Haul</h2>
 <div class="card grid2">
-<div class="field"><label>Tipo</label><select id="ptype"><option>Disco</option><option>Merchandise</option><option>Presente</option><option>Livro</option><option>Outro</option></select></div>
+<div class="field"><label>Tipo</label><select id="ptype"><option>Disco</option><option>Merchandise</option><option>Presente</option><option>Compra pessoal</option><option>Livro</option><option>Outro</option></select></div>
 <div class="field"><label>Formato (se for disco)</label><select id="pformat"><option value="LP">LP • vinil</option><option value="CD">CD</option></select></div>
 <div class="field"><label>Preço (R$)</label><input id="pprice" type="number" min="0" step="0.01" placeholder="0,00"></div>
 <div class="field"><label>Artista / item</label><input id="partist" placeholder="Artista ou produto"></div>
@@ -575,8 +575,11 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <button class="btn wide" onclick="addPurchase()">+ ADICIONAR À SACOLA</button>
 </div>
 <div class="card"><div id="purchases"></div><div class="budgetline"><small>🎁 Presentes: <b id="giftCount">0</b> • <b id="giftMoney">R$ 0,00</b> (já incluídos no total)</small></div><div class="budgetline"><b>Total em compras</b><b id="purchaseTotal">R$ 0,00</b></div></div>
-</section>
-
+<div class="card" style="margin-top:12px;border:1px solid #6e5b36"><b>📥 IMPORTAR COMPRAS INFORMADAS NO CHAT</b>
+<p style="color:#c9c0ae;font-size:12px">Acrescenta somente compras e despesas, sem restaurar o backup ou alterar dias congelados. A importação exige confirmação e impede repetir o mesmo lote.</p>
+<input id="importChatFile" type="file" accept=".json,application/json" style="display:none">
+<button type="button" class="btn" onclick="document.getElementById('importChatFile').click()">📥 SELECIONAR ARQUIVO DE LANÇAMENTOS</button>
+</div></section>
 <div class="metal-divider">ϟ ☠ ϟ ☠ ϟ</div><style id="war-chest-layout">
 #gastos .war-card{border-top:3px solid #8e0010}
 #gastos .war-total{display:grid;grid-template-columns:minmax(0,1fr) auto;gap:12px;align-items:end;padding-bottom:12px;border-bottom:1px solid #3b3b3b}
@@ -700,7 +703,7 @@ const TRANSPORT_BUDGET=565;
 const EMERGENCY_BUDGET=300;
 const BUDGET=DISC_BUDGET+MERCH_BUDGET+FOOD_BUDGET+TRANSPORT_BUDGET+EMERGENCY_BUDGET;
 
-function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},routeChanges:{},limits:{},dayArchives:{}}}
+function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},routeChanges:{},limits:{},dayArchives:{},importBatches:{}}}
 let data;
 try{
   data=JSON.parse(localStorage.getItem(KEY)||'null');
@@ -712,6 +715,7 @@ try{
 data={...blankData(),...data};
 data.purchases=Array.isArray(data.purchases)?data.purchases:[];
 data.expenses=Array.isArray(data.expenses)?data.expenses:[];
+data.importBatches=data.importBatches&&typeof data.importBatches==="object"&&!Array.isArray(data.importBatches)?data.importBatches:{};
 data.reserves=data.reserves&&typeof data.reserves==='object'&&!Array.isArray(data.reserves)?data.reserves:{};
 data.routeChanges=data.routeChanges&&typeof data.routeChanges==='object'&&!Array.isArray(data.routeChanges)?data.routeChanges:{};
 
@@ -1607,7 +1611,7 @@ function validateBackup(imported){
 
   const arrays=['purchases','expenses'];
   arrays.forEach(k=>{if(candidate[k]!==undefined&&!Array.isArray(candidate[k]))throw new Error('Campo '+k+' inválido')});
-  const objects=['checks','tickets','journal','summary','hunt','reserves','routeChanges','limits','dayArchives'];
+  const objects=['checks','tickets','journal','summary','hunt','reserves','routeChanges','limits','dayArchives','importBatches'];
   objects.forEach(k=>{if(candidate[k]!==undefined&&(!candidate[k]||typeof candidate[k]!=='object'||Array.isArray(candidate[k])))throw new Error('Campo '+k+' inválido')});
 
   return {...blankData(),...candidate,
@@ -1615,6 +1619,69 @@ function validateBackup(imported){
     expenses:Array.isArray(candidate.expenses)?candidate.expenses:[]
   };
 }
+
+/* Importação aditiva local: nunca altera dias congelados ou substitui backups. */
+$('importChatFile').onchange=async function(){
+ const file=this.files&&this.files[0];if(!file)return;
+ try{
+  const q=JSON.parse(await file.text());
+  if(!q||q.app!=='sp-rock-trip-lancamentos'||q.version!==1||
+    typeof q.batchId!=='string'||!/^[A-Za-z0-9-]{8,100}$/.test(q.batchId)||
+    !Array.isArray(q.purchases)||!Array.isArray(q.expenses)||
+    (q.purchases.length+q.expenses.length)<1||q.purchases.length>80||q.expenses.length>80)
+   throw Error('Arquivo não é um lote válido de lançamentos.');
+  if(data.importBatches[q.batchId]){alert('Este lote já foi importado. Nenhum registro foi duplicado.');return;}
+  const accepted=new Set(['Disco','Merchandise','Presente','Compra pessoal','Livro','Outro']),ids=new Set();
+  const clean=(z,purchase)=>{
+   if(!z||typeof z!=='object'||Array.isArray(z)||
+     typeof z._importItemId!=='string'||!/^[a-zA-Z0-9_-]{1,32}$/.test(z._importItemId)||
+     typeof z._day!=='string'||!/^2026-10-(15|16|17|18|19)$/.test(z._day)||
+     z._day>todaySP()||closedDay(z._day))
+    throw Error('Registro inválido, data futura ou dia congelado.');
+   const id=(purchase?'P:':'E:')+z._importItemId;
+   if(ids.has(id))throw Error('Identificadores repetidos no arquivo.');ids.add(id);
+   const amount=Number(purchase?z.price:z.value);
+   if(!Number.isFinite(amount)||amount<=0||amount>20000)throw Error('Preço inválido.');
+   const str=k=>typeof z[k]==='string'?z[k].trim().slice(0,240):'';
+   if(purchase){
+    if(!accepted.has(z.type)||!(str('artist')||str('title')))throw Error('Compra sem tipo ou nome válido.');
+    if(z.type==='Presente'&&!str('recipient'))throw Error('Presente sem destinatário.');
+    return {_day:z._day,_importBatchId:q.batchId,_importItemId:z._importItemId,
+     type:z.type,format:str('format'),price:amount,artist:str('artist'),title:str('title'),
+     place:str('place')||'Outro',edition:str('edition'),note:str('note'),recipient:str('recipient')};
+   }
+   if(!str('cat'))throw Error('Despesa sem categoria.');
+   return {_day:z._day,_importBatchId:q.batchId,_importItemId:z._importItemId,
+    cat:str('cat'),value:amount,desc:str('desc')};
+  };
+  const purchases=q.purchases.map(x=>clean(x,true));
+  const expenses=q.expenses.map(x=>clean(x,false));
+  const duplicate=(arr,x)=>arr.some(v=>v._importBatchId===x._importBatchId&&v._importItemId===x._importItemId);
+  if(purchases.some(x=>duplicate(data.purchases,x))||expenses.some(x=>duplicate(data.expenses,x)))
+   throw Error('Parte deste lote já consta no registro. Importação cancelada para evitar duplicidade.');
+  const total=purchases.reduce((a,x)=>a+x.price,0)+expenses.reduce((a,x)=>a+x.value,0);
+  const days=[...new Set(purchases.concat(expenses).map(x=>x._day))].sort().join(', ');
+  if(!confirm('IMPORTAR ESTE LOTE?\n\n'+purchases.length+' compras e '+expenses.length+
+     ' despesas\nTotal: '+money(total)+'\nDia(s): '+days+'\n\n'+
+     'Os registros anteriores e os dias congelados serão PRESERVADOS.\n'+
+     'O mesmo lote não poderá ser importado novamente.'))return;
+  if(purchases.concat(expenses).some(x=>closedDay(x._day)))
+   throw Error('Um dia foi encerrado antes da confirmação.');
+  const beforeP=data.purchases.length,beforeE=data.expenses.length;
+  data.purchases.push(...purchases);data.expenses.push(...expenses);
+  data.importBatches[q.batchId]={date:todaySP(),items:purchases.length+expenses.length,total};
+  try{localStorage.setItem(KEY,JSON.stringify(data))}
+  catch(err){
+   data.purchases.length=beforeP;data.expenses.length=beforeE;delete data.importBatches[q.batchId];
+   throw Error('Falha ao salvar no aparelho. Nenhum lançamento foi confirmado.');
+  }
+  renderAll();
+  alert('IMPORTADO! '+purchases.length+' compras e '+expenses.length+
+   ' despesas: '+money(total)+'. Faça um backup atualizado.');
+ }catch(err){alert('Não foi possível importar: '+(err.message||'arquivo inválido'))}
+ finally{this.value=''}
+};
+
 $('importFile').onchange=e=>{
   const f=e.target.files[0];if(!f)return;
   const r=new FileReader();

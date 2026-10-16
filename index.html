@@ -1451,7 +1451,7 @@ function initLock(){
  const evidence=data.purchases.some(x=>x._day==='2026-10-15')||data.expenses.some(x=>x._day==='2026-10-15')||
   Object.keys(data.journal||{}).some(x=>DAYINFO['2026-10-15'].places.includes(x))||
   Object.keys(data.checks||{}).some(i=>nodeDay(checks[Number(i)])==='2026-10-15');
- if(evidence&&!data.dayArchives['2026-10-15'])finishDay('2026-10-15',true);
+ if(evidence&&!data.dayArchives['2026-10-15'])data.dayArchives['2026-10-15']={locked:true,closedAt:new Date().toISOString(),snapshot:backupDay('2026-10-15'),history:[]};
  localStorage.setItem(KEY,JSON.stringify(data))
 }
 function paintLocks(){
@@ -1461,7 +1461,7 @@ function paintLocks(){
  Object.entries(DAYINFO).map(([d,item])=>'<div class="day-lock-row"><div><b>'+(closedDay(d)?'🔒 ':'🔓 ')+esc(item.name)+'</b><small>'+
  (closedDay(d)?'Encerrado e protegido':d>todaySP()?'Aguardando a data':'Aberto para lançamentos')+
  '</small></div><button type="button" '+(d>todaySP()?'disabled ':'')+'onclick="'+(closedDay(d)?'reopenDay':'finishDay')+'(\''+d+'\')">'+(closedDay(d)?'DESTRAVAR':'ENCERRAR')+'</button></div>').join('');
- checks.forEach(el=>{const d=nodeDay(el);if(closedDay(d))el.disabled=true});
+ checks.forEach((el,i)=>{const d=nodeDay(el);el.disabled=closedDay(d)||data.routeChanges[i]?.mode==='skip'});
  tchecks.forEach(el=>el.disabled=closedDay(nodeDay(el)));
  document.querySelectorAll('.route-flex select').forEach(el=>{const d=nodeDay(el);if(d)el.disabled=closedDay(d)});
  document.querySelectorAll('#purchases .purchase').forEach((row,i)=>{if(closedDay(allPurchases()[i]?._day)){const b=row.querySelector('.del');if(b)b.outerHTML='<span title="Dia encerrado">🔒</span>'}});

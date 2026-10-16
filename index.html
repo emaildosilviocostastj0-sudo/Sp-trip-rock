@@ -1826,9 +1826,37 @@ function initRoadieVoice(){
   }
 }
 
+/* Acesso direto aos lançamentos do chat por link com fragmento local.
+   Os dados não são incluídos neste HTML, e o fragmento não vai ao servidor. */
+async function importChatHashLink(){
+ const found=/^#lote-chat=([A-Za-z0-9_-]{50,12000})$/.exec(location.hash);
+ if(!found)return;
+ try{history.replaceState(null,'',location.pathname+location.search)}catch(e){}
+ try{
+  if(typeof DecompressionStream!=='function')throw Error('Seu navegador não oferece a descompactação necessária. Use o arquivo JSON na importação.');
+  const b64=found[1].replace(/-/g,'+').replace(/_/g,'/');
+  const padded=b64.padEnd(Math.ceil(b64.length/4)*4,'=');
+  const packed=Uint8Array.from(atob(padded),char=>char.charCodeAt(0));
+  const uncompressed=new Blob([packed]).stream().pipeThrough(new DecompressionStream('deflate'));
+  const text=await new Response(uncompressed).text();
+  if(text.length>50000)throw Error('Lote maior que o permitido.');
+  const candidate=JSON.parse(text);
+  if(candidate.app!=='sp-rock-trip-lancamentos'||candidate.version!==1)
+    throw Error('Link não contém lançamentos compatíveis.');
+  const carrier=new DataTransfer();
+  carrier.items.add(new File([text],'lancamentos-chat.json',{type:'application/json'}));
+  const chooser=$('importChatFile');
+  chooser.files=carrier.files;
+  chooser.dispatchEvent(new Event('change',{bubbles:true}));
+ }catch(err){
+  alert('Não foi possível abrir o lote do chat: '+err.message+'\\nUse o arquivo JSON na seção Compras / Haul.');
+ }
+}
+
 initLock();
 renderAll();
 updateBackupHint();
+importChatHashLink();
 initRoadieVoice();
 </script>
 

@@ -575,6 +575,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <button class="btn wide" onclick="addPurchase()">+ ADICIONAR À SACOLA</button>
 </div>
 <div class="card"><div id="purchases"></div><div class="budgetline"><small>🎁 Presentes: <b id="giftCount">0</b> • <b id="giftMoney">R$ 0,00</b> (já incluídos no total)</small></div><div class="budgetline"><b>Total em compras</b><b id="purchaseTotal">R$ 0,00</b></div></div>
+<div class="card" id="shopAreaCard"><div id="shopAreaBreakdown"></div></div>
 <div class="card" style="margin-top:12px;border:1px solid #6e5b36"><b>📥 IMPORTAR COMPRAS INFORMADAS NO CHAT</b>
 <p style="color:#c9c0ae;font-size:12px">Acrescenta somente compras e despesas, sem restaurar o backup ou alterar dias congelados. A importação exige confirmação e impede repetir o mesmo lote.</p>
 <input id="importChatFile" type="file" accept=".json,application/json" style="display:none">
@@ -630,6 +631,7 @@ font:700 10px 'Oswald',sans-serif;letter-spacing:2px;text-transform:uppercase;bo
 <div class="war-total"><div><small>SALDO TOTAL DA VIAGEM</small><div class="money" id="remaining">R$ 5.590,00</div></div><div class="war-total-meta"><small>ORÇAMENTO TOTAL</small><b id="budgetLabel">R$ 5.590,00</b></div></div>
 
 <div class="war-section-label">💿 GARIMPO DE DISCOS</div>
+<p style="color:#aaa;font-size:11px;margin:5px 0 9px">Discos agrupados por galeria, inclusive quando a compra foi lançada pelo nome da loja. Valores detalhados em Compras / Haul.</p>
 <div class="war-disc-total">
 <div><small>Verba única • todas as lojas</small><b id="discBudgetLabel">R$ 3.350,00</b></div>
 <div><small>Gasto</small><b id="discMoney">R$ 0,00</b></div>
@@ -970,8 +972,63 @@ function totals(){
 data.hunt=data.hunt||{};
 // Limites antigos de backups são preservados nos dados, mas não têm efeito no caixa único.
 let huntFilter='all';
-function discSpentAt(place){return allPurchases().filter(x=>x.type==='Disco'&&x.place===place).reduce((a,x)=>a+num(x.price),0)}
-function discCountAt(place){return allPurchases().filter(x=>x.type==='Disco'&&x.place===place).length}
+/* Área de compra e loja individual são campos conceitualmente diferentes.
+   O campo place já existente no armazenamento não é modificado. */
+function purchaseArea(place){
+ const raw=String(place||'').trim();
+ const p=raw.normalize('NFD').replace(/[\u0300-\u036f]/g,'').toLowerCase();
+ if(p.includes('nova barao')||p.includes('locomotiva discos'))return 'Galeria Nova Barão';
+ if(p.includes('galeria do rock')||p.includes('baratos afins')||p.includes('baratos e afins')||
+    p.includes('rockway')||p.includes('aqualung')||p.includes('allied forces')||p.includes('seven cats'))
+    return 'Galeria do Rock';
+ if(p.includes('eric discos'))return 'Eric Discos';
+ if(p.includes('comercio de rua')||p.includes('camelo'))return 'Comércio de rua';
+ return raw||'Local não informado';
+}
+function purchaseStore(place){
+ const raw=String(place||'').trim();if(!raw)return 'Local não informado';
+ const name=raw.split(/\s+[—–-]\s+/)[0].trim();
+ return name||raw;
+}
+function purchasesAtArea(area){return allPurchases().filter(x=>purchaseArea(x.place)===area)}
+function discSpentAt(area){return purchasesAtArea(area).filter(x=>x.type==='Disco').reduce((a,x)=>a+num(x.price),0)}
+function discCountAt(area){return purchasesAtArea(area).filter(x=>x.type==='Disco').length}
+function renderShopAreaBreakdown(){
+ const host=$('shopAreaBreakdown');if(!host)return;
+ const opened=new Set([...host.querySelectorAll('details[open]')].map(x=>x.dataset.area));
+ const first=!host.dataset.ready;
+ const groups=new Map(), sum=list=>list.reduce((a,p)=>a+num(p.price),0);
+ for(const p of allPurchases()){const area=purchaseArea(p.place);if(!groups.has(area))groups.set(area,[]);groups.get(area).push(p)}
+ const priority=['Galeria do Rock','Galeria Nova Barão','Eric Discos','Comércio de rua'];
+ const areas=[...groups.keys()].sort((a,b)=>{
+  const ai=priority.indexOf(a),bi=priority.indexOf(b);
+  return (ai<0?100:ai)-(bi<0?100:bi)||a.localeCompare(b,'pt-BR');
+ });
+ host.innerHTML='<h3 style="margin:0 0 6px">📍 COMPRAS POR GALERIA E LOJA</h3>'+
+  '<p style="font-size:12px;color:#aaa">Os valores abaixo já integram a contabilidade. Esta visão organiza as compras por endereço e loja, sem criar novos gastos.</p>'+
+  (areas.map(area=>{
+   const purchases=groups.get(area),discs=purchases.filter(x=>x.type==='Disco'),others=purchases.filter(x=>x.type!=='Disco');
+   const shops=new Map();
+   for(const p of purchases){const name=purchaseStore(p.place);if(!shops.has(name))shops.set(name,[]);shops.get(name).push(p)}
+   const shopRows=[...shops.entries()].map(([name,list])=>
+    '<div style="padding:7px 0;border-top:1px solid #494038">'+
+    '<div style="display:flex;justify-content:space-between;gap:8px"><b>'+esc(name)+'</b><b>'+money(sum(list))+'</b></div>'+
+    '<ul style="padding-left:18px;margin:5px 0;font-size:12px;line-height:1.55">'+
+    list.map(p=>'<li>'+esc([p.artist,p.title].filter(Boolean).join(' — '))+' • '+
+     esc(p.type)+(p.format?' ('+esc(p.format)+')':'')+
+     (p.recipient?' • Para: '+esc(p.recipient):'')+' • <b>'+money(p.price)+'</b></li>').join('')+
+    '</ul></div>').join('');
+   const show=opened.has(area)||(first&&(area==='Galeria do Rock'||area==='Galeria Nova Barão'));
+   return '<details data-area="'+esc(area)+'" '+(show?'open':'')+
+    ' style="padding:9px;margin:8px 0;border:1px solid #64584c;border-radius:8px">'+
+    '<summary style="cursor:pointer"><b>'+esc(area)+'</b> • '+purchases.length+' compra(s) • <b>'+money(sum(purchases))+'</b></summary>'+
+    '<small style="color:#bdb4a5">Discos: '+discs.length+' / '+money(sum(discs))+
+    ' • Outros: '+others.length+' / '+money(sum(others))+'</small>'+
+    shopRows+'</details>';
+  }).join('')||'<small>Nenhuma compra registrada.</small>');
+ host.dataset.ready='1';
+}
+
 function pooledDiscSpent(){return allPurchases().filter(x=>x.type==='Disco').reduce((a,x)=>a+num(x.price),0)}
 const HUNT=[
 {id:'funkadelic',artist:'Funkadelic',album:'Maggot Brain',tags:['hard70'],mission:'🦄 QUESTÃO DE HONRA • prioridade máxima',tier:'wildcard',cover:'https://coverartarchive.org/release/127116d4-5724-444b-b385-049fb1bdaebc/front-1200',prices:{LP:{low:250,avg:400,high:550},CD:{low:90,avg:140,high:225}}},
@@ -1521,6 +1578,7 @@ function renderAll(){
   $('giftCount').textContent=gifts.length;
   $('giftMoney').textContent=money(gifts.reduce((a,x)=>a+num(x.price),0));
   $('purchaseTotal').textContent=money(t.purchaseTotal);
+  renderShopAreaBreakdown();
   $('purchaseSpent').textContent=money(t.purchaseTotal);
   $('expenseSpent').textContent=money(t.expenseTotal);
   $('spent').textContent=money(t.total);

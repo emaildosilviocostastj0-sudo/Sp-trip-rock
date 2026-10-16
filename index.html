@@ -698,7 +698,7 @@ const TRANSPORT_BUDGET=565;
 const EMERGENCY_BUDGET=300;
 const BUDGET=DISC_BUDGET+MERCH_BUDGET+FOOD_BUDGET+TRANSPORT_BUDGET+EMERGENCY_BUDGET;
 
-function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},routeChanges:{},limits:{}}}
+function blankData(){return {checks:{},tickets:{},purchases:[],expenses:[],journal:{},summary:{},hunt:{},reserves:{},routeChanges:{},limits:{},dayArchives:{}}}
 let data;
 try{
   data=JSON.parse(localStorage.getItem(KEY)||'null');
@@ -785,7 +785,7 @@ function save(){localStorage.setItem(KEY,JSON.stringify(data));renderAll()}
 function go(id){$(id).scrollIntoView()}
 
 const checks=[...document.querySelectorAll('.check')];
-checks.forEach((b,i)=>{b.checked=!!data.checks[i];b.onchange=()=>{data.checks[i]=b.checked;save()}});
+checks.forEach((b,i)=>{b.checked=!!data.checks[i];b.onchange=()=>{if(blockDay(nodeDay(b))){b.checked=!!data.checks[i];return}data.checks[i]=b.checked;save()}});
 /* Somente passeios negociáveis. Shows, Horror Expo, voos e check-out permanecem fixos. */
 const FLEXIBLE_STOPS=[1,2,4,5,7,10];
 const flexibleNodes=new Map();
@@ -797,7 +797,7 @@ FLEXIBLE_STOPS.forEach(i=>{
   place.appendChild(tool);
   flexibleNodes.set(i,tool);
 });
-function changeRoute(i,mode){
+function changeRoute(i,mode){if(blockDay(nodeDay(checks[i])))return;
   if(!FLEXIBLE_STOPS.includes(i))return;
   const prior=data.routeChanges[i]||{};
   if(mode==='replace'){
@@ -836,7 +836,7 @@ function renderRouteChanges(){
 }
 
 const tchecks=[...document.querySelectorAll('.ticketcheck')];
-tchecks.forEach((b,i)=>{b.checked=!!data.tickets[i];b.onchange=()=>{data.tickets[i]=b.checked;save()}});
+tchecks.forEach((b,i)=>{b.checked=!!data.tickets[i];b.onchange=()=>{if(blockDay(nodeDay(b))){b.checked=!!data.tickets[i];return}data.tickets[i]=b.checked;save()}});
 
 function addPurchase(){
   const price=num($('pprice').value);
@@ -848,12 +848,12 @@ function addPurchase(){
     if(cap!==null&&price>cap)return alert('GRILO FALANTE: compra vetada, teto rígido '+money(cap)+'.');
     if(price>DISC_BUDGET-pooledDiscSpent()+1e-7)return alert('GRILO FALANTE: caixa de discos insuficiente.');
   }
-  data.purchases.push({type,format:type==='Disco'?$('pformat').value:'',price,artist:$('partist').value.trim(),title:$('ptitle').value.trim(),place:$('pplace').value,edition:$('pedition').value.trim(),note:$('pnote').value.trim()});
+  data.purchases.push({type,format:type==='Disco'?$('pformat').value:'',price,artist:$('partist').value.trim(),title:$('ptitle').value.trim(),place:$('pplace').value,edition:$('pedition').value.trim(),note:$('pnote').value.trim(),_day:todaySP()});
   ['pprice','partist','ptitle','pedition','pnote'].forEach(id=>$(id).value='');
   $('pformat').value='LP';
   save()
 }
-function delPurchase(i){
+function delPurchase(i){if(blockDay(allPurchases()[i]?._day))return;
   if(i<data.purchases.length){data.purchases.splice(i,1)}
   else{
     const reserve=reservePurchases()[i-data.purchases.length];
@@ -866,11 +866,11 @@ function delPurchase(i){
 function addExpense(){
   const v=num($('evalue').value);
   if(v<=0)return alert('Informe um valor maior que zero.');
-  data.expenses.push({cat:$('ecat').value,value:v,desc:$('edesc').value.trim()});
+  data.expenses.push({cat:$('ecat').value,value:v,desc:$('edesc').value.trim(),_day:todaySP()});
   $('evalue').value=$('edesc').value='';
   save()
 }
-function delExpense(i){data.expenses.splice(i,1);save()}
+function delExpense(i){if(blockDay(data.expenses[i]?._day))return;data.expenses.splice(i,1);save()}
 
 
 /* Diário de Guerra: quadro de missão derivado de HUNT/RESERVES e do histórico real.
@@ -939,8 +939,8 @@ function makeJournal(){
   }).join('');
   renderWarDiaryBoard();
 }
-function rate(p,s){data.journal[p]=data.journal[p]||{};data.journal[p].stars=s;save()}
-function noteJournal(p,v){data.journal[p]=data.journal[p]||{};data.journal[p].text=v;localStorage.setItem(KEY,JSON.stringify(data))}
+function rate(p,s){if(closedPlace(p))return;data.journal[p]=data.journal[p]||{};data.journal[p].stars=s;save()}
+function noteJournal(p,v){if(closedPlace(p))return;data.journal[p]=data.journal[p]||{};data.journal[p].text=v;localStorage.setItem(KEY,JSON.stringify(data))}
 
 [...document.querySelectorAll('.summaryInput')].forEach(el=>{
   el.value=data.summary[el.dataset.key]||'';
@@ -1145,6 +1145,7 @@ function huntPersist(){
   renderWarDiaryBoard();
 }
 function huntPrice(id,v){
+ if(blockDay(storeDay((data.hunt[id]||{}).place||'Eric Discos')))return;
   const {h,s}=huntRecord(id),p=Number(v);
   s.price=Number.isFinite(p)&&p>0?p:0;
   if(s.price>0)s.status="found";
@@ -1159,6 +1160,7 @@ function huntPlace(id,v){
   huntPersist();
 }
 function huntFormat(id,v){
+ if(blockDay(storeDay((data.hunt[id]||{}).place||'Eric Discos')))return;
   const {h}=huntRecord(id);
   h.format=v;
   const {s}=huntRecord(id);
@@ -1166,6 +1168,7 @@ function huntFormat(id,v){
   huntPersist();
 }
 function huntOutcome(id,status){
+ if(blockDay(storeDay((data.hunt[id]||{}).place||'Eric Discos')))return;
   const {h,s}=huntRecord(id);
   s.status=["","found","notfound"].includes(status)?status:"";
   if(s.status==="notfound"){s.price=0;h.price=0;s.condition="";s.reason="";}
@@ -1173,34 +1176,39 @@ function huntOutcome(id,status){
   huntPersist();
 }
 function huntCondition(id,grade){
+ if(blockDay(storeDay((data.hunt[id]||{}).place||'Eric Discos')))return;
   const {s}=huntRecord(id);
   s.condition=HUNT_GRADES.some(x=>x[0]===grade)?grade:"";
   huntPersist();
 }
 function huntCoverCondition(id,grade){
+ if(blockDay(storeDay((data.hunt[id]||{}).place||'Eric Discos')))return;
  const {s}=huntRecord(id);
  s.coverCondition=HUNT_GRADES.some(g=>g[0]===grade)?grade:"";
  huntPersist();
 }
 function huntReason(id,reason){
+ if(blockDay(storeDay((data.hunt[id]||{}).place||'Eric Discos')))return;
   const {s}=huntRecord(id);
   s.reason=HUNT_REASONS.some(x=>x[0]===reason)?reason:"";
   huntPersist();
 }
 function huntNote(id,note){
+ if(blockDay(storeDay((data.hunt[id]||{}).place||'Eric Discos')))return;
   const {s}=huntRecord(id);
   s.note=String(note||"").slice(0,180);
   localStorage.setItem(KEY,JSON.stringify(data));
   renderWarDiaryBoard();
 }
 function buyHunt(id){
+ if(blockDay(storeDay((data.hunt[id]||{}).place||'Eric Discos')))return;
   const item=HUNT.find(x=>x.id===id);
   if(!item)return;
   const {h,s,place,format}=huntRecord(id),price=Number(s.price||0);
   if(h.bought){alert("Este item já foi marcado como comprado.");return}
   if(!Number.isFinite(price)||price<=0){alert("Digite o preço encontrado primeiro.");return}
   if(!griloCanBuy(item,price,format,s.condition,s.coverCondition,false))return;
-  data.purchases.push({type:"Disco",format,price,artist:item.artist,title:item.album,place,edition:"",note:"Caçada • "+item.mission});
+  data.purchases.push({type:"Disco",format,price,artist:item.artist,title:item.album,place,edition:"",note:"Caçada • "+item.mission,_day:todaySP()});
   s.status="found";
   h.price=price;
   h.bought=true;
@@ -1255,7 +1263,7 @@ function reserveFormat(i,value){
  save();
 }
 function reserveShopStatus(i,shopIndex,value){
- const store=RESERVE_SHOPS[shopIndex];if(!store)return;
+ const store=RESERVE_SHOPS[shopIndex];if(!store)return;if(blockDay(storeDay(store)))return;
  const key=reserveKey(i),r=data.reserves[key]||(data.reserves[key]={});
  if(r.bought)return;
  const quote=reserveShopWrite(i,store,r.format||'LP');
@@ -1267,7 +1275,7 @@ function reserveShopStatus(i,shopIndex,value){
  save();
 }
 function reserveShopQuote(i,shopIndex,value){
- const store=RESERVE_SHOPS[shopIndex];if(!store)return;
+ const store=RESERVE_SHOPS[shopIndex];if(!store)return;if(blockDay(storeDay(store)))return;
  const key=reserveKey(i),r=data.reserves[key]||(data.reserves[key]={});
  if(r.bought)return;
  const quote=reserveShopWrite(i,store,r.format||'LP'),v=Number(value);
@@ -1277,7 +1285,7 @@ function reserveShopQuote(i,shopIndex,value){
  save();
 }
 function reserveShopPick(i,shopIndex){
- const store=RESERVE_SHOPS[shopIndex];if(!store)return;
+ const store=RESERVE_SHOPS[shopIndex];if(!store)return;if(blockDay(storeDay(store)))return;
  const key=reserveKey(i),r=data.reserves[key]||(data.reserves[key]={});
  if(r.bought)return;
  const quote=reserveShopRead(i,store,r.format||'LP');
@@ -1343,7 +1351,7 @@ function reservePurchases(){
     const r=data.reserves[reserveKey(i)];
     if(!r?.bought||num(r.price)<=0)return [];
     return [{type:'Disco',format:r.format||'LP',price:num(r.price),artist:x.artist,title:x.album,
-      place:r.place||'Local não informado',edition:'',note:'Caçada • Suplente',_reserveIndex:i}];
+      place:r.place||'Local não informado',edition:'',note:'Caçada • Suplente',_reserveIndex:i,_day:r._day||todaySP()}];
   });
 }
 function allPurchases(){return [...data.purchases,...reservePurchases()]}
@@ -1370,7 +1378,7 @@ function buyReserve(i){
   if(!r.place){alert('Informe o local da compra.');return}
   if(r.bought){return}
   if(!griloCanBuy(RESERVES[i],price,r.format||'LP',r.media,r.cover,true))return;
-  data.reserves[k]={...r,bought:true,price};
+  data.reserves[k]={...r,bought:true,price,_day:todaySP()};
   save()
 }
 function renderReserveGroup(list,targetId){
@@ -1386,6 +1394,98 @@ function renderReserveGroup(list,targetId){
   }).join('')
 }
 function renderReserves(){renderReserveGroup(RESERVES,'reserveGrid')}
+
+
+/* Fechamento diário: fotos históricas dentro do backup local. Nenhum dado privado é enviado ao GitHub. */
+const DAYINFO={
+ '2026-10-15':{name:'15/10 • The Gathering',places:['The Gathering','Eric Discos'],stores:['Eric Discos']},
+ '2026-10-16':{name:'16/10 • Apocalyptica',places:['Monalisa','Galeria Nova Barão','Apocalyptica'],stores:['Galeria Nova Barão','Galeria do Rock']},
+ '2026-10-17':{name:'17/10 • Horror Expo e Vulcano',places:['Museu da Língua Portuguesa','Horror Expo','Vulcano / Hellbutcher'],stores:[]},
+ '2026-10-18':{name:'18/10 • Amorphis',places:['Amorphis'],stores:['Casarão do Vinil']},
+ '2026-10-19':{name:'19/10 • Volta',places:['Viagem geral'],stores:[]}
+};
+function todaySP(){const p=new Intl.DateTimeFormat('en-US',{timeZone:'America/Sao_Paulo',year:'numeric',month:'2-digit',day:'2-digit'}).formatToParts(new Date());const v=t=>p.find(x=>x.type===t).value;return v('year')+'-'+v('month')+'-'+v('day')}
+function nodeDay(el){const x=el?.closest('.day')?.querySelector('.dayhead b')?.textContent.trim();return x&&/^\d\d\/\d\d$/.test(x)?'2026-'+x.slice(3)+'-'+x.slice(0,2):null}
+function closedDay(d){return !!data.dayArchives?.[d]?.locked}
+function closedAny(){return Object.values(data.dayArchives||{}).some(x=>x?.locked)}
+function closedPlace(p){return Object.entries(DAYINFO).some(([d,x])=>closedDay(d)&&x.places.includes(p))}
+function closedStore(p){return Object.entries(DAYINFO).some(([d,x])=>closedDay(d)&&x.stores.includes(p))}
+function blockDay(d){if(!closedDay(d))return false;alert('🔒 Dia encerrado. Destrave '+DAYINFO[d].name+' no Diário para corrigir.');return true}
+function storeDay(p){return Object.keys(DAYINFO).find(d=>DAYINFO[d].stores.includes(p)&&closedDay(d))}
+function backupDay(d){
+ const info=DAYINFO[d],stores=info.stores;
+ const marks=nodes=>Object.fromEntries(nodes.flatMap((el,i)=>nodeDay(el)===d?[[i,!!el.checked]]:[]));
+ const quotes=(part)=>Object.fromEntries(Object.entries(part||{}).flatMap(([id,item])=>{
+  const source=part===data.hunt?item.sightings:item.shopOffers;
+  const keep=Object.fromEntries(Object.entries(source||{}).filter(([key])=>stores.some(s=>key.startsWith(s+'::'))));
+  return Object.keys(keep).length?[[id,keep]]:[];
+ }));
+ return JSON.parse(JSON.stringify({
+  purchases:data.purchases.filter(x=>x._day===d),expenses:data.expenses.filter(x=>x._day===d),
+  journal:Object.fromEntries(info.places.filter(p=>data.journal[p]).map(p=>[p,data.journal[p]])),
+  checks:marks(checks),tickets:marks(tchecks),
+  routeChanges:Object.fromEntries(Object.entries(data.routeChanges||{}).filter(([i])=>nodeDay(checks[Number(i)])===d)),
+  hunt:quotes(data.hunt),reserves:quotes(data.reserves)
+ }));
+}
+function finishDay(d,automatic){
+ if(!DAYINFO[d]||d>todaySP())return;
+ if(closedDay(d))return;
+ if(!automatic&&!confirm('ENCERRAR '+DAYINFO[d].name+'?\nCompras, gastos, checklist, avaliações e pesquisa das lojas ficarão protegidos.'))return;
+ const old=data.dayArchives[d],history=old?.history||[];
+ if(old?.snapshot)history.push({closedAt:old.closedAt,snapshot:old.snapshot});
+ data.dayArchives[d]={locked:true,closedAt:new Date().toISOString(),snapshot:backupDay(d),history:history.slice(-5)};
+ localStorage.setItem(KEY,JSON.stringify(data));renderAll()
+}
+function reopenDay(d){
+ if(!closedDay(d))return;
+ if(!confirm('DESBLOQUEAR '+DAYINFO[d].name+'?\nIsso permitirá alterar os registros históricos.'))return;
+ if(!confirm('SEGUNDA CONFIRMAÇÃO: deseja realmente destravar este dia?'))return;
+ data.dayArchives[d].locked=false;save()
+}
+function initLock(){
+ data.dayArchives=data.dayArchives&&typeof data.dayArchives==='object'&&!Array.isArray(data.dayArchives)?data.dayArchives:{};
+ const p=[['Saxon',250],['Agua de Annique',70],['Camiseta',190]],e=[['Transporte',35],['Transporte',38.27],['Alimentação',20.98],['Transporte',5.4],['Emergência / imprevisto',40.37],['Ingresso',5.49],['Alimentação',29.8],['Alimentação',22.36]];
+ data.purchases.forEach((x,i)=>{if(!x._day)x._day=i<p.length&&x.artist===p[i][0]&&Number(x.price)===p[i][1]?'2026-10-15':todaySP()});
+ data.expenses.forEach((x,i)=>{if(!x._day)x._day=i<e.length&&x.cat===e[i][0]&&Number(x.value)===e[i][1]?'2026-10-15':todaySP()});
+ const evidence=data.purchases.some(x=>x._day==='2026-10-15')||data.expenses.some(x=>x._day==='2026-10-15')||
+  Object.keys(data.journal||{}).some(x=>DAYINFO['2026-10-15'].places.includes(x))||
+  Object.keys(data.checks||{}).some(i=>nodeDay(checks[Number(i)])==='2026-10-15');
+ if(evidence&&!data.dayArchives['2026-10-15'])finishDay('2026-10-15',true);
+ localStorage.setItem(KEY,JSON.stringify(data))
+}
+function paintLocks(){
+ let box=$('dayLockBoard');
+ if(!box){box=document.createElement('div');box.id='dayLockBoard';box.className='card';$('diario').insertBefore(box,$('journal'))}
+ box.innerHTML='<h3>🔒 FECHAMENTO DOS DIAS</h3><p>Os dias encerrados ficam somente para leitura e são preservados nos backups JSON. Para corrigir algo, o destravamento exige duas confirmações.</p>'+
+ Object.entries(DAYINFO).map(([d,item])=>'<div class="day-lock-row"><div><b>'+(closedDay(d)?'🔒 ':'🔓 ')+esc(item.name)+'</b><small>'+
+ (closedDay(d)?'Encerrado e protegido':d>todaySP()?'Aguardando a data':'Aberto para lançamentos')+
+ '</small></div><button type="button" '+(d>todaySP()?'disabled ':'')+'onclick="'+(closedDay(d)?'reopenDay':'finishDay')+'(\''+d+'\')">'+(closedDay(d)?'DESTRAVAR':'ENCERRAR')+'</button></div>').join('');
+ checks.forEach(el=>{const d=nodeDay(el);if(closedDay(d))el.disabled=true});
+ tchecks.forEach(el=>el.disabled=closedDay(nodeDay(el)));
+ document.querySelectorAll('.route-flex select').forEach(el=>{const d=nodeDay(el);if(d)el.disabled=closedDay(d)});
+ document.querySelectorAll('#purchases .purchase').forEach((row,i)=>{if(closedDay(allPurchases()[i]?._day)){const b=row.querySelector('.del');if(b)b.outerHTML='<span title="Dia encerrado">🔒</span>'}});
+ document.querySelectorAll('#expenses .expense').forEach((row,i)=>{if(closedDay(data.expenses[i]?._day)){const b=row.querySelector('.del');if(b)b.outerHTML='<span title="Dia encerrado">🔒</span>'}});
+ document.querySelectorAll('#journal .journal-theme').forEach(card=>{
+  const place=Object.values(DAYINFO).flatMap(d=>d.places).find(p=>p.toUpperCase()===card.querySelector('b')?.textContent.trim());
+  if(!closedPlace(place))return;
+  card.querySelectorAll('.stars button').forEach(b=>b.disabled=true);
+  const field=card.querySelector('textarea');if(field)field.readOnly=true;
+  if(!card.querySelector('.day-locked-note'))card.querySelector('b').insertAdjacentHTML('afterend',' <span class="day-locked-note">🔒 ENCERRADO</span>');
+ });
+ document.querySelectorAll('[data-hunt-id]').forEach(card=>{
+  const h=data.hunt[card.dataset.huntId]||{};
+  if(!closedStore(h.place||'Eric Discos'))return;
+  card.querySelectorAll('.hunt-research input,.hunt-research select,.huntprice input,.huntactions button,.huntformat select').forEach(el=>el.disabled=true);
+ });
+ document.querySelectorAll('.rshop-row').forEach(row=>{
+  const t=row.querySelector('strong')?.textContent||'';
+  if(Object.values(DAYINFO).some(d=>d.stores.some(s=>closedStore(s)&&t.startsWith(s))))row.querySelectorAll('button,input,select').forEach(el=>el.disabled=true);
+ });
+}
+const style=document.createElement('style');
+style.textContent='.day-lock-row{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid #66583b;padding:10px 0}.day-lock-row b{font-size:13px}.day-lock-row small{display:block;font-size:11px;color:#bdb5a7;margin-top:4px}.day-lock-row button{background:#352816;color:#f8e5b8;border:1px solid #9b7b46;border-radius:6px;padding:8px;font-size:11px;font-weight:700}.day-lock-row button:disabled{opacity:.4}#dayLockBoard{border:1px solid #af8848}#dayLockBoard h3{color:#efd195;font-size:16px;margin-bottom:5px}#dayLockBoard p{font-size:12px;line-height:1.55;color:#d0c8bc}.day-locked-note{font-size:10px;color:#9fe4ad}';
+document.head.appendChild(style);
 
 function renderAll(){
   checks.forEach((b,i)=>{b.checked=!!data.checks[i];b.closest('.item').classList.toggle('done',b.checked)});
@@ -1456,7 +1556,8 @@ function renderAll(){
   renderHunt();
   renderReserves();
   renderRouteChanges();
-  makeJournal()
+  makeJournal();
+  paintLocks()
 }
 
 const BACKUP_VERSION=1;
@@ -1493,7 +1594,7 @@ function validateBackup(imported){
 
   const arrays=['purchases','expenses'];
   arrays.forEach(k=>{if(candidate[k]!==undefined&&!Array.isArray(candidate[k]))throw new Error('Campo '+k+' inválido')});
-  const objects=['checks','tickets','journal','summary','hunt','reserves','routeChanges','limits'];
+  const objects=['checks','tickets','journal','summary','hunt','reserves','routeChanges','limits','dayArchives'];
   objects.forEach(k=>{if(candidate[k]!==undefined&&(!candidate[k]||typeof candidate[k]!=='object'||Array.isArray(candidate[k])))throw new Error('Campo '+k+' inválido')});
 
   return {...blankData(),...candidate,
@@ -1513,6 +1614,7 @@ $('importFile').onchange=e=>{
         e.target.value='';
         return;
       }
+      if(closedAny()){alert('🔒 Importação bloqueada enquanto houver dias encerrados. Destrave os dias intencionalmente antes de substituir tudo.');e.target.value='';return;}
       data=restored;
       save();
       location.reload();
@@ -1524,8 +1626,8 @@ $('importFile').onchange=e=>{
   r.onerror=()=>{e.target.value='';alert('Não foi possível ler o arquivo de backup.')};
   r.readAsText(f)
 };
-function resetAll(){const dialog=$('resetDialog');if(!dialog.open)dialog.showModal()}
-function confirmReset(){
+function resetAll(){if(closedAny()){alert('🔒 ZERAR TUDO bloqueado enquanto houver dia encerrado. Destrave com duas confirmações.');return;}const dialog=$('resetDialog');if(!dialog.open)dialog.showModal()}
+function confirmReset(){if(closedAny()){alert('🔒 Não é possível zerar dias encerrados.');return;}
   const fresh=blankData();
   try{localStorage.setItem(KEY,JSON.stringify(fresh));localStorage.removeItem(OLDKEY)}
   catch(e){$('resetError').textContent='Não foi possível apagar os registros salvos. Tente abrir o arquivo no navegador e repetir.';return}
@@ -1644,6 +1746,7 @@ function initRoadieVoice(){
   }
 }
 
+initLock();
 renderAll();
 updateBackupHint();
 initRoadieVoice();

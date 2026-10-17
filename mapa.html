@@ -131,13 +131,13 @@ carioca:{name:"Carioca Club",addr:"Rua Cardeal Arcoverde, 2899, São Paulo, SP",
 museu:{name:"Museu da Língua Portuguesa",addr:"Praça da Luz, s/n, São Paulo, SP",icon:"🏛️",type:"other",p:[-23.53483,-46.63502]},
 expo:{name:"Horror Expo / Expo Barra Funda",addr:"Rua Tagipuru, 1001, São Paulo, SP",icon:"👻",type:"event",p:[-23.52702,-46.67012]},
 fabrique:{name:"Fabrique Club / Vulcano",addr:"Rua Barra Funda, 1071, São Paulo, SP",icon:"🤘",type:"event",p:[-23.5303,-46.6599],approx:true},
-casarao:{name:"Casarão do Vinil",addr:"Rua dos Trilhos, 1212, Mooca, São Paulo, SP",icon:"💿",type:"disc",p:[-23.5523,-46.5969],approx:true}
+eldorado:{name:"A Mente de um Serial Killer / Shopping Eldorado",addr:"Shopping Eldorado, Avenida Rebouças, 3970, Pinheiros, São Paulo, SP",icon:"🕵️",type:"event",p:[-23.572744,-46.695763]}
 };
 const D=[
 {id:"15",date:"15/10",name:"CHEGADA + THE GATHERING",stops:[["cgh","10h30 • Pouso em SP"],["hotel","Deixar malas e almoçar"],["eric","13h15 • Garimpo • metrô ou Uber"],["hotel","Volta • metrô ou Uber • descanso"],["audio","19h • The Gathering"]]},
 {id:"16",date:"16/10",name:"GARIMPO + APOCALYPTICA",stops:[["hotel","Manhã sem pressa"],["monalisa","13h • Almoço"],["barao","14h30 • Garimpo"],["galeria","16h15 • Garimpo"],["hotel","Descanso antes do show"],["carioca","21h • Apocalyptica"]]},
 {id:"17",date:"17/10",name:"MUSEU + HORROR + VULCANO",stops:[["hotel","Saída cedo"],["museu","9h–10h45 • Museu"],["expo","12h • Horror Expo"],["fabrique","18h portas • 19h shows"]]},
-{id:"18",date:"18/10",name:"DESCANSO + AMORPHIS",stops:[["hotel","Manhã livre"],["casarao","13h–15h • Metrô ou Uber • Opcional",true],["hotel","Volta • metrô ou Uber • descanso"],["carioca","19h • Amorphis"]]},
+{id:"18",date:"18/10",name:"SERIAL KILLERS + AMORPHIS",stops:[["hotel","09h40 • Saída • Uber ou metrô"],["eldorado","10h30–12h • Exposição imersiva"],["hotel","13h30 • Volta e descanso"],["carioca","19h • Amorphis"]]},
 {id:"19",date:"19/10",name:"VOLTA PARA BRASÍLIA",stops:[["hotel","Café e check-out"],["cgh","13h40 • Voo G3 1410"]]}
 ];
 const $=id=>document.getElementById(id);
@@ -152,7 +152,7 @@ const pos=(i,n)=>({x:80+i*(840/Math.max(1,n-1)),y:[290,152,335,170,282,124,322][
 const url=p=>"https://www.google.com/maps/search/?api=1&query="+encodeURIComponent(p.addr);
 function isChoiceLeg(list,i){
  const now=list[i]?.[0],before=list[i-1]?.[0];
- return !!before&&(now==="eric"||now==="casarao"||before==="eric"||before==="casarao");
+ return !!before&&(now==="eric"||now==="eldorado"||before==="eric"||before==="eldorado");
 }
 function stageUrl(list,i,mode="transit"){
  const now=list[i]?.[0],before=list[i-1]?.[0];
